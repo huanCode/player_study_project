@@ -4,6 +4,7 @@
 #include "amcomdef.h"
 #include "ToolList.h"
 #include "ToolBuffer.h"
+#include "IDataRead.h"
 
 enum IBaseIoType
 {
@@ -15,7 +16,7 @@ enum IBaseIoType
 
 
 class IBaseIo;
-class SourceFrame
+class SourceFrame:public IDataRead
 {
 public:
 
@@ -24,8 +25,9 @@ public:
 	
 	MBool Open(MPChar strUrl);
 	MBool IoRead(MChar**, MDWord dwSize,MInt32& out_readSize);
-	MInt32 IoReadLine(MChar** ppBuffer);
+	//MInt32 IoReadLine(MChar** ppBuffer);
 	MBool isFinish(){return m_isFinish;};
+	MVoid Close();
 private:
 	MBool createBaseIo(MPChar strUrl);
 	IBaseIoType parseUrl(MPChar strUrl);

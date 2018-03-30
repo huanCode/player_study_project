@@ -19,14 +19,14 @@
     <Filter Include="include">
       <UniqueIdentifier>{1eb2e286-4e0b-4a0e-b2be-641dfabe1eec}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ts">
-      <UniqueIdentifier>{116ae89b-b113-43b0-bf7c-8bb6bec9ed78}</UniqueIdentifier>
-    </Filter>
     <Filter Include="SourceFrame">
       <UniqueIdentifier>{2bbb8d97-7531-4a13-a0a1-9f4231aed877}</UniqueIdentifier>
     </Filter>
     <Filter Include="ParseFrame">
       <UniqueIdentifier>{442b2fad-c668-44db-8bc2-b9a116a07dcd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ParseFrame\ts">
+      <UniqueIdentifier>{35b4797d-a79d-4423-ba0c-c194a76b8812}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -45,20 +45,8 @@
     <ClInclude Include="include\amtypes.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="common.h">
-      <Filter>ts</Filter>
-    </ClInclude>
-    <ClInclude Include="TsStream.h">
-      <Filter>ts</Filter>
-    </ClInclude>
     <ClInclude Include="ToolString.h">
       <Filter>tool</Filter>
-    </ClInclude>
-    <ClInclude Include="ParseHls.h">
-      <Filter>ts</Filter>
-    </ClInclude>
-    <ClInclude Include="IParse.h">
-      <Filter>ts</Filter>
     </ClInclude>
     <ClInclude Include="include\amstring.h">
       <Filter>include</Filter>
@@ -75,17 +63,8 @@
     <ClInclude Include="HttpIo.h">
       <Filter>SourceFrame</Filter>
     </ClInclude>
-    <ClInclude Include="tsFilter.h">
-      <Filter>ts</Filter>
-    </ClInclude>
-    <ClInclude Include="tsPat.h">
-      <Filter>ts</Filter>
-    </ClInclude>
     <ClInclude Include="include\mhttp.h">
       <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="tool\mv3File.h">
-      <Filter>SourceFrame</Filter>
     </ClInclude>
     <ClInclude Include="SourceFrame.h">
       <Filter>SourceFrame</Filter>
@@ -99,6 +78,30 @@
     <ClInclude Include="ParseFrame.h">
       <Filter>ParseFrame</Filter>
     </ClInclude>
+    <ClInclude Include="ParseHls.h">
+      <Filter>ParseFrame</Filter>
+    </ClInclude>
+    <ClInclude Include="TsStream.h">
+      <Filter>ParseFrame\ts</Filter>
+    </ClInclude>
+    <ClInclude Include="tsPat.h">
+      <Filter>ParseFrame\ts</Filter>
+    </ClInclude>
+    <ClInclude Include="tsFilter.h">
+      <Filter>ParseFrame\ts</Filter>
+    </ClInclude>
+    <ClInclude Include="common.h">
+      <Filter>tool</Filter>
+    </ClInclude>
+    <ClInclude Include="tool\mv3File.h">
+      <Filter>tool</Filter>
+    </ClInclude>
+    <ClInclude Include="IParse.h">
+      <Filter>ParseFrame</Filter>
+    </ClInclude>
+    <ClInclude Include="IDataRead.h">
+      <Filter>SourceFrame</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -107,28 +110,10 @@
     <ClCompile Include="tsFileParse.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="common.cpp">
-      <Filter>ts</Filter>
-    </ClCompile>
-    <ClCompile Include="TsStream.cpp">
-      <Filter>ts</Filter>
-    </ClCompile>
     <ClCompile Include="ToolString.cpp">
       <Filter>tool</Filter>
     </ClCompile>
-    <ClCompile Include="ParseHls.cpp">
-      <Filter>ts</Filter>
-    </ClCompile>
-    <ClCompile Include="IBaseIo.cpp">
-      <Filter>SourceFrame</Filter>
-    </ClCompile>
     <ClCompile Include="HttpIo.cpp">
-      <Filter>SourceFrame</Filter>
-    </ClCompile>
-    <ClCompile Include="tsFilter.cpp">
-      <Filter>ts</Filter>
-    </ClCompile>
-    <ClCompile Include="tool\mv3File.cpp">
       <Filter>SourceFrame</Filter>
     </ClCompile>
     <ClCompile Include="SourceFrame.cpp">
@@ -142,6 +127,21 @@
     </ClCompile>
     <ClCompile Include="ParseFrame.cpp">
       <Filter>ParseFrame</Filter>
+    </ClCompile>
+    <ClCompile Include="ParseHls.cpp">
+      <Filter>ParseFrame</Filter>
+    </ClCompile>
+    <ClCompile Include="TsStream.cpp">
+      <Filter>ParseFrame\ts</Filter>
+    </ClCompile>
+    <ClCompile Include="tsFilter.cpp">
+      <Filter>ParseFrame\ts</Filter>
+    </ClCompile>
+    <ClCompile Include="common.cpp">
+      <Filter>tool</Filter>
+    </ClCompile>
+    <ClCompile Include="tool\mv3File.cpp">
+      <Filter>tool</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

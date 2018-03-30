@@ -20,44 +20,7 @@ ParseHls::ParseHls()
 
 }
 
-void ParseHls::ff_parse_key_val_cb(void* srcData, MPChar key, MInt32 keyLen, MPChar value)
-{
-	if (srcData == MNull || key == MNull || value == MNull)
-	{
-		return;
-	}
-
-
-	Playlist* playlist = (Playlist*)srcData;
-
-	if (!MStrNCmp(key, "BANDWIDTH=", keyLen)) {
-		playlist->iBandwidth = MAtoi(value);
-	}
-	//else if (!strncmp(key, "AUDIO=", key_len)) {
-	//	*dest = info->audio;
-	//	*dest_len = sizeof(info->audio);
-	//}
-	//else if (!strncmp(key, "VIDEO=", key_len)) {
-	//	*dest = info->video;
-	//	*dest_len = sizeof(info->video);
-	//}
-	//else if (!strncmp(key, "SUBTITLES=", key_len)) {
-	//	*dest = info->subtitles;
-	//	*dest_len = sizeof(info->subtitles);
-	//}
-
-}
-
-MBool ParseHls::hls_probe(MPChar p_buffer, MUInt32 p_size)
-{
-	if (MStrNCmp(p_buffer, "#EXTM3U", 7) == 0)
-		return MTrue;
-
-	return MFalse;
-}
-
-
-MBool ParseHls::Parse()
+MBool ParseHls::ReadHeader()
 {
 	MPChar strUrl = "bipbopall.m3u8";
 
@@ -86,25 +49,70 @@ MBool ParseHls::Parse()
 	return MTrue;
 }
 
+MBool ParseHls::ReadPacket()
+{
+
+}
+
+void ParseHls::ff_parse_key_val_cb(void* srcData, MPChar key, MInt32 keyLen, MPChar value)
+{
+	if (srcData == MNull || key == MNull || value == MNull)
+	{
+		return;
+	}
+
+
+	Playlist* playlist = (Playlist*)srcData;
+
+	if (!MStrNCmp(key, "BANDWIDTH=", keyLen)) {
+		playlist->iBandwidth = MAtoi(value);
+	}
+	//else if (!strncmp(key, "AUDIO=", key_len)) {
+	//	*dest = info->audio;
+	//	*dest_len = sizeof(info->audio);
+	//}
+	//else if (!strncmp(key, "VIDEO=", key_len)) {
+	//	*dest = info->video;
+	//	*dest_len = sizeof(info->video);
+	//}
+	//else if (!strncmp(key, "SUBTITLES=", key_len)) {
+	//	*dest = info->subtitles;
+	//	*dest_len = sizeof(info->subtitles);
+	//}
+
+}
+
+IParse* ParseHls::hls_probe(MPChar p_buffer, MUInt32 p_size)
+{
+	if (MStrNCmp(p_buffer, "#EXTM3U", 7) == 0) {
+		return new ParseHls();
+	}
+		
+
+	return MNull;
+}
+
+
+
 
 
 MBool ParseHls::ParseM3u8(MPChar strUrl, Playlist* playlist)
 {
-	mv3File file;
-	
-	//MPChar url = "prog_index.m3u8";
-	//MPChar url = "demo.m3u8";
-	//MPChar url = "bipbopall.m3u8";
-	if (!file.Open(strUrl, mv3File::stream_read))
+
+
+	if (m_dataRead == MNull)
 	{
-		return false;
+		return MFalse;
 	}
+
+
 	MChar buffer[MAX_URL_SIZE] = { 0 };
-	MChar line[MAX_URL_SIZE];
+	MChar line[MAX_URL_SIZE] = { 0 };
+	MChar tmp_strUrl[MAX_URL_SIZE] = {0};
 
 	MInt32 iCopySize = 0;
 	MInt32 iReadByte = 0;
-	file.Read((MByte*)buffer, MAX_URL_SIZE, iReadByte);
+
 
 
 	MPChar ptr = MNull;
@@ -114,21 +122,31 @@ MBool ParseHls::ParseM3u8(MPChar strUrl, Playlist* playlist)
 	//is_segment = 1,±íÊ¾Îªts url
 	MInt32 ret = 0, is_segment = 0, is_variant = 0;
 
-	MBool bb = MFalse;
+
 	MBool	isFirst = MTrue;
 	MPChar  bufferTmp = buffer ,bufferEnd = buffer + iReadByte;
 	MInt32	bufferSize = 0;
 
 	MInt64 duration = 0;
 
-	MChar tmp_strUrl[MAX_URL_SIZE];
-	while (bufferTmp <= bufferEnd)
+	
+
+	MInt32 bufferReadSize = 0;
+	MPChar curBufferPos = buffer;
+	while (m_dataRead->IoRead(&curBufferPos, MAX_URL_SIZE, bufferReadSize))
 	{
+		while (bufferReadSize)
+		{
+
+		}
+
+
+
 		bufferSize = iReadByte - (bufferTmp - buffer);
-		lineSize = ToolString::Read_line(bufferTmp, bufferSize, line, MAX_URL_SIZE);
+		lineSize = ToolString::Read_line(curBufferPos, bufferReadSize, line, MAX_URL_SIZE);
 		if (!lineSize)
 		{
-			file.Close();
+
 			return MTrue;
 		}
 
@@ -136,7 +154,7 @@ MBool ParseHls::ParseM3u8(MPChar strUrl, Playlist* playlist)
 		//iCopySize += lineSize;
 		if (MStrCmp((MPChar)line, "#EXTM3U")&& isFirst)
 		{
-			file.Close();
+
 			return MFalse;
 		}
 		else if (ToolString::av_strstart(line, "#EXT-X-STREAM-INF:", &ptr)) {
@@ -255,6 +273,6 @@ MBool ParseHls::ParseM3u8(MPChar strUrl, Playlist* playlist)
 
 	}
 	
-	file.Close();
+
 	return MTrue;
 }

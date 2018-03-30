@@ -1,23 +1,30 @@
 #include "stdafx.h"
 #include "ParseFrame.h"
 #include "ParseHls.h"
-
+#include "IParse.h"
 ParseFrame::ParseFrame()
 {
 	//m_probeList.AddNode(ParseHls::hls_probe);
-
+	m_parse = MNull;
 }
 
 MBool ParseFrame::FindParse(MPChar pbuf, MInt32 iBufSize)
 {
 	read_probe probeFuntion = MNull;
-	//for (MInt32 i = 0; i < m_probeList.GetSize(); i++)
-	//{
-	//	probeFuntion = m_probeList.GetNodePtrByIndex(i);
-	//	probeFuntion(pbuf, iBufSize);
-	//}
+	m_parse = ParseHls::hls_probe(pbuf, iBufSize);
+	return m_parse ? MTrue : MFalse;
+}
 
-	return ParseHls::hls_probe(pbuf, iBufSize);
+MVoid	ParseFrame::SetDataRead(IDataRead* obj)
+{
+	if (m_parse)
+	{
+		m_parse->SetDataRead(obj);
+	}
+}
 
 
+MBool	ParseFrame::ReadHeader()
+{
+	return m_parse->ReadHeader();
 }

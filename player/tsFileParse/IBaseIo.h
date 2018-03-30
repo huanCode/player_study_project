@@ -10,7 +10,7 @@ public:
 		m_strType = strType;
 	}
 
-	virtual MBool Open(MPChar strUrl) = 0;
+	virtual MBool IoOpen(MPChar strUrl) = 0;
 	virtual MInt32 IoRead(MPChar pBuf, MDWord dwSize, MInt64 llOffset = 0) = 0;
 	virtual MVoid	IoClose() = 0;
 private:

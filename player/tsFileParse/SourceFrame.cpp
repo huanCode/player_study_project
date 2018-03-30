@@ -51,10 +51,15 @@ MBool SourceFrame::Open(MPChar strUrl)
 		return MFalse;
 	}
 
-	return m_baseIo->Open(strUrl);
+	return m_baseIo->IoOpen(strUrl);
 	 
 }
 
+
+MVoid SourceFrame::Close()
+{
+	m_baseIo->IoClose();
+}
 
 
 MBool SourceFrame::IoRead(MChar** pBuf, MDWord dwSize, MInt32& out_readSize)

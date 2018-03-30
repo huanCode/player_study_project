@@ -28,12 +28,30 @@ MBool SourceParse::Open(MPChar strUrl)
 		
 		if (m_sourceFrame.IoRead(&m_pBuffer, BUFFER_SIZE, m_iBufferCanReadSize))
 		{
-			return m_parseFrame.FindParse(m_pBuffer, m_iBufferCanReadSize);
+			
+			if (m_parseFrame.FindParse(m_pBuffer, m_iBufferCanReadSize))
+			{
+				m_sourceFrame.Close();
+				
+				if (m_sourceFrame.Open(strUrl))
+
+					m_parseFrame.SetDataRead(&m_sourceFrame);
+					return m_parseFrame.ReadHeader();
+				}
+
+				
+			}
 		}
 	}
+
+
+	return MFalse;
 }
 
 MBool SourceParse::ReadFrame()
 {
+
+
+
 	return MFalse;
 }

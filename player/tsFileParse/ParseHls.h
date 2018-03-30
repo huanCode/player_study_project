@@ -3,7 +3,7 @@
 #define _PARSEHLS_H
 #include "amcomdef.h"
 #include "ToolList.h"
-
+#include "IParse.h"
 struct segment {
 	MInt64 duration;
 	MInt64 url_offset;
@@ -20,7 +20,7 @@ struct segment {
 
 
 
-class ParseHls
+class ParseHls:public IParse
 {
 private:
 	class Playlist
@@ -48,10 +48,17 @@ private:
 
 public:
 	ParseHls();
-	static MBool hls_probe(MPChar p_buffer, MUInt32 p_size);
-	MBool Parse();
-	MBool ParseM3u8(MPChar strUrl,Playlist* playlist = MNull);
 
+
+	MBool	ReadHeader();
+	MBool	ReadPacket();
+
+
+	static IParse* hls_probe(MPChar p_buffer, MUInt32 p_size);
+
+	MBool ParseM3u8(MPChar strUrl,Playlist* playlist = MNull);
+private:
+	MBool read_line();
 private:
 	enum m3u8Level
 	{

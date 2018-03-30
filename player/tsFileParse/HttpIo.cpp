@@ -8,7 +8,7 @@ HttpIo::HttpIo():
 }
 
 
-MBool HttpIo::Open(MPChar strUrl)
+MBool HttpIo::IoOpen(MPChar strUrl)
 {
 
 
@@ -29,6 +29,15 @@ MBool HttpIo::Open(MPChar strUrl)
 	}
 
 	return MFalse;
+}
+
+MVoid	HttpIo::IoClose()
+{
+	if (m_hHttp)
+	{
+		Http_Close(m_hHttp);
+		m_hHttp = MNull;
+	}
 }
 
 MInt32 HttpIo::IoRead(MPChar pBuf, MDWord dwSize, MInt64 llOffset)

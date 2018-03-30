@@ -2,27 +2,25 @@
 #include "ToolString.h"
 #include "amstring.h"
 #include "ammem.h"
+#include "common.h"
 MInt32 ToolString::Read_line(MChar*& srcBuffer, MInt32 iSrcLen, MPChar dstBuffer, MInt32 idstMaxLen)
 {
 
 	int i = 0;
-	char c;
-
-	//MPChar tmpBuffer = MNull;
-	//if (*srcBuffer == '\n' || *srcBuffer == '\r')
-	//{
-	//	tmpBuffer = srcBuffer + 2;
-	//}
-	//else
-	//{
-	//	tmpBuffer = srcBuffer;
-	//}
-
 	
 
+	MInt32 len = FFMIN(iSrcLen, idstMaxLen);
 
+	char c = 0;
+	//while (len)
+	//{
+	//	c = *srcBuffer;
+	//	if (c == '\n' && c == '\r')
+	//	{
+	//		return i;
+	//	}
+	//}
 
-	MInt32 len = iSrcLen >= idstMaxLen ? iSrcLen : idstMaxLen;
 
 	do {
 		c = *srcBuffer;
@@ -34,8 +32,8 @@ MInt32 ToolString::Read_line(MChar*& srcBuffer, MInt32 iSrcLen, MPChar dstBuffer
 			
 	} while (c != '\n' && c != '\r' && c);
 
-
 	dstBuffer[i] = 0;
+	//
 
 	while (i > 0 && av_isspace(dstBuffer[i - 1]))
 		dstBuffer[--i] = '\0';

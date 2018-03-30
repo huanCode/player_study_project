@@ -8,7 +8,7 @@ class HttpIo:public IBaseIo
 public:
 	HttpIo();
 
-	MBool Open(MPChar strUrl);
+	MBool IoOpen(MPChar strUrl);
 	MInt32 IoRead(MPChar pBuf, MDWord dwSize, MInt64 llOffset = 0);
 	MVoid IoClose();
 private:
