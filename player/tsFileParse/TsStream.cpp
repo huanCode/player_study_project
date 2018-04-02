@@ -2,10 +2,10 @@
 #include "tsFilter.h"
 #include "TsStream.h"
 #include "common.h"
+#include "ammem.h"
 
-#define PACKET_SIZE	188
 #define SECTION_HEADER_SIZE_8_BYTE		8
-#define PROBE_BUFFER_SIZE	PACKET_SIZE * 10
+
 
 #define TS_PACKET_SYNC_BYTE		0x47
 
@@ -43,7 +43,7 @@ TsStream::TsStream()
 	memset(&m_buffer, 0, 512000);
 	MBool ret = m_fileWrite.Open("bigbuckbunny_480x272.h265", mv3File::stream_write);
 	m_isStart = MFalse;
-
+	m_packetBuffer = MNull;
 
 }
 
@@ -57,6 +57,15 @@ MBool TsStream::Init()
 	{
 		goto Exit;
 	}
+
+	m_packetBuffer = (MPChar)MMemAlloc(MNull, PACKET_SIZE);
+	if (m_packetBuffer == MNull)
+	{
+		return MFalse;
+	}
+	MMemSet(m_packetBuffer, 0, PACKET_SIZE);
+
+
 	return MTrue;
 Exit:
 
@@ -67,42 +76,42 @@ Exit:
 
 MUInt32 TsStream::mpegts_read_header()
 {
-	MUInt32 ret = 0;
-	mv3File file;
+	//MUInt32 ret = 0;
+	//mv3File file;
 
-	if (!file.Open("playlist-00001.ts", mv3File::stream_read))
-	{
-		return -1;
-	}
-	MByte packet[PACKET_SIZE] = { 0 };
-	int i = 0;
-	int length = file.GetFileSize();
-	
+	//if (!file.Open("playlist-00001.ts", mv3File::stream_read))
+	//{
+	//	return -1;
+	//}
+	//MByte packet[PACKET_SIZE] = { 0 };
+	//int i = 0;
+	//int length = file.GetFileSize();
+
 	//if (file.Read(packet, PROBE_BUFFER_SIZE))
 	//{
 	//	read_probe(packet, PROBE_BUFFER_SIZE);
 	//}
-	//file.SetFileBeginPos();
-	MInt32 iReadByteLen = 0;
-	while (file.Read(packet, 188, iReadByteLen))
-	{
-		//printf("i = %d ,curpos = %d\n",i++,file.GetFileCurPos());
+	////file.SetFileBeginPos();
+	//MInt32 iReadByteLen = 0;
+	//while (file.Read(packet, 188, iReadByteLen))
+	//{
+	//	//printf("i = %d ,curpos = %d\n",i++,file.GetFileCurPos());
 
-		read_header(packet, 188);
+	//	read_header(packet, 188);
 
-		//ret = parse_ts(packet);
-		//if (ret != 0)
-		//{
-		//	return ret;
-		//}
-		if (i == 32397)
-		{
-			int a = 1;
-			m_fileWrite.Close();
-		}
+	//	//ret = parse_ts(packet);
+	//	//if (ret != 0)
+	//	//{
+	//	//	return ret;
+	//	//}
+	//	if (i == 32397)
+	//	{
+	//		int a = 1;
+	//		m_fileWrite.Close();
+	//	}
 
-		printf("\n");
-	}
+	//	printf("\n");
+	//}
 
 
 	return 0;
@@ -121,17 +130,17 @@ MVoid TsStream::Release()
 	}
 }
 
-MBool TsStream::read_probe(MPByte p_buffer, MUInt32 p_size)
+IParse* TsStream::read_probe(MPChar p_buffer, MUInt32 p_size)
 {
 	if (p_buffer == MNull || p_size < PROBE_BUFFER_SIZE)
 	{
-		return MFalse;
+		return MNull;
 	}
-	MUInt32 check_count = p_size / TS_PACKET_SIZE;
+	MUInt32 check_count = p_size / PACKET_SIZE;
 	MUInt32	standard_count = 10;
 	if (check_count < standard_count)
 	{
-		return MFalse;
+		return MNull;
 	}
 
 	MUInt32 best_score = 0;
@@ -146,30 +155,135 @@ MBool TsStream::read_probe(MPByte p_buffer, MUInt32 p_size)
 	}
 	if (check_count == standard_count)
 	{
-		return Init();
+		IParse* obj = new TsStream();
+		return obj;
+		//return Init();
 	}
-	return MFalse;
+	return MNull;
 }
 
 
+//
+//MInt32 TsStream::read_header(MPByte p_buffer_packet, MUInt32 p_size)
+//{
+//	if (p_buffer_packet == MNull || p_size != PACKET_SIZE)
+//	{
+//		return -1;
+//	}
+//	ts_packet_header tsHeader;
+//	parse_ts_packet_header(p_buffer_packet, tsHeader);
+//	MPByte	pData = p_buffer_packet + TS_PACKET_HEADER_SIZE;
+//	if (tsHeader.sync_byte != TS_PACKET_SYNC_BYTE || tsHeader.transport_error)
+//	{
+//		return -1;
+//	}
+//
+//	if (tsHeader.pid == 0x1FFF || tsHeader.has_payload == MFalse)
+//	{
+//		return 0;
+//	}
+//
+//	MUInt16 adaptation_length = 0;
+//	if (tsHeader.has_adaptation)
+//	{
+//		adaptation_length = get8(pData) + 1;
+//		if (adaptation_length > 1)
+//		{
+//			bool is_discontinuity = get8(pData) & 0x80;
+//			if (is_discontinuity)
+//			{
+//				int i = 0;
+//			}
+//			//printf("is_discontinuity = %d =====================\n", is_discontinuity);
+//		}
+//		//printf("has_adaptation ,adaptation_length = %d\n", adaptation_length);
+//	}
+//	//printf("continuity_counter = %d\n", tsHeader.continuity_counter);
+//
+//
+//
+//	pData += adaptation_length + 1;
+//	MInt32 remainderSize = PACKET_SIZE - adaptation_length - 1 - TS_PACKET_HEADER_SIZE;
+//
+//	tsFilter* filter = get_filter(tsHeader.pid);
+//	if (!filter)
+//	{
+//		filter = add_filter(tsHeader.pid);
+//	}
+//
+//
+//	if (filter->GetType() == tsFilter::MPEGTS_SECTION)
+//	{
+//		if (tsHeader.bStart_payload)
+//		{
+//			/* pointer field present */
+//			MByte* point_field = p_buffer_packet + TS_PACKET_HEADER_SIZE + adaptation_length;
+//			MUInt16 point_field_length = point_field[0];
+//			//MUInt32 expected_cc = tsHeader.has_payload ? (filter->last_cc + 1) & 0x0f : filter->last_cc;
+//			//if (expected_cc == tsHeader.continuity_counter && point_field_length)
+//			//{
+//			//	filter->write_section_data(pData, remainderSize, MFalse);
+//			//}
+//			if (point_field_length)
+//			{
+//				return -1;
+//			}
+//			tsSection* filterTmp = (tsSection*)filter;
+//			filterTmp->write_section_data(this, point_field + 1, remainderSize, MTrue);
+//		}
+//		else
+//		{
+//			//
+//			return -1;
+//		}
+//	}
+//	else
+//	{
+//		m_isStart = tsHeader.bStart_payload;
+//		filter->parse(this,pData, remainderSize);
+//	}
+//
+//
+//	return 0;
+//}
 
-MInt32 TsStream::read_header(MPByte p_buffer_packet, MUInt32 p_size)
+
+
+MBool TsStream::ReadHeader(MPChar strUrl)
 {
-	if (p_buffer_packet == MNull || p_size != PACKET_SIZE)
+
+
+	
+	if (!m_dataRead->Open(strUrl))
 	{
-		return -1;
+		return MFalse;
+	}
+	
+	if (!Init())
+	{
+		return MFalse;
+	}
+	if (!m_dataRead->Read(&m_packetBuffer, PACKET_SIZE, m_iReadSize))
+	{
+		return MFalse;
+	}
+	
+
+	if (m_iReadSize != PACKET_SIZE)
+	{
+		return MFalse;
 	}
 	ts_packet_header tsHeader;
-	parse_ts_packet_header(p_buffer_packet, tsHeader);
-	MPByte	pData = p_buffer_packet + TS_PACKET_HEADER_SIZE;
+	parse_ts_packet_header(m_packetBuffer, tsHeader);
+	MPChar	pData = m_packetBuffer + TS_PACKET_HEADER_SIZE;
 	if (tsHeader.sync_byte != TS_PACKET_SYNC_BYTE || tsHeader.transport_error)
 	{
-		return -1;
+		return MFalse;
 	}
 
 	if (tsHeader.pid == 0x1FFF || tsHeader.has_payload == MFalse)
 	{
-		return 0;
+		return MTrue;
 	}
 
 	MUInt16 adaptation_length = 0;
@@ -206,7 +320,7 @@ MInt32 TsStream::read_header(MPByte p_buffer_packet, MUInt32 p_size)
 		if (tsHeader.bStart_payload)
 		{
 			/* pointer field present */
-			MByte* point_field = p_buffer_packet + TS_PACKET_HEADER_SIZE + adaptation_length;
+			MPChar point_field = m_packetBuffer + TS_PACKET_HEADER_SIZE + adaptation_length;
 			MUInt16 point_field_length = point_field[0];
 			//MUInt32 expected_cc = tsHeader.has_payload ? (filter->last_cc + 1) & 0x0f : filter->last_cc;
 			//if (expected_cc == tsHeader.continuity_counter && point_field_length)
@@ -215,7 +329,7 @@ MInt32 TsStream::read_header(MPByte p_buffer_packet, MUInt32 p_size)
 			//}
 			if (point_field_length)
 			{
-				return -1;
+				return MFalse;
 			}
 			tsSection* filterTmp = (tsSection*)filter;
 			filterTmp->write_section_data(this, point_field + 1, remainderSize, MTrue);
@@ -223,43 +337,17 @@ MInt32 TsStream::read_header(MPByte p_buffer_packet, MUInt32 p_size)
 		else
 		{
 			//
-			return -1;
+			return MFalse;
 		}
 	}
 	else
 	{
 		m_isStart = tsHeader.bStart_payload;
-		filter->parse(this,pData, remainderSize);
+		filter->parse(this, pData, remainderSize);
 	}
-
-
-	//if(tsHeader.pid == PAT_PID)
-	//{
-	//	//printf("PAT \n");
-	//	pat_cb(buffer_packet_section_strat_pos);
-	//}
-	//else if (tsHeader.pid == PMT_PID && m_isFoundPmt)
-	//{
-	//	//printf("PMT \n");
-	//	pmt_cb(buffer_packet_section_strat_pos);
-	//}
-	//else if (tsHeader.pid == m_streamVideo.pid)
-	//{
-	//	//printf("PES Video \n");
-	//	parse_frame(buffer_packet_section_strat_pos, buffer_remain_size, tsHeader.bStart_payload);
-	//}
-	//else if (tsHeader.pid == m_streamAudio.pid)
-	//{
-	//	//printf("PES Audio \n");
-	//	parse_frame(buffer_packet_section_strat_pos, buffer_remain_size, tsHeader.bStart_payload);
-	//}
-	//
-	return 0;
 }
 
-
-
-MVoid TsStream::parse_ts_packet_header(MByte* buffer, ts_packet_header &tsHeader)
+MVoid TsStream::parse_ts_packet_header(MPChar buffer, ts_packet_header &tsHeader)
 {
 	tsHeader.sync_byte = buffer[0];
 

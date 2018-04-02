@@ -10,7 +10,7 @@ public:
 	{
 		m_dataRead = MNull;
 	}
-	virtual MBool	ReadHeader() = 0;
+	virtual MBool	ReadHeader(MPChar strUrl) = 0;
 	virtual MBool	ReadPacket() = 0;
 	MVoid	SetDataRead(IDataRead* obj)
 	{

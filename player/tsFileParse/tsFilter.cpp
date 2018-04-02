@@ -14,11 +14,11 @@ tsSection::tsSection()
 	m_last_ver = -1;
 	m_crc = 0;
 	m_last_crc = 0;
-	m_section_buf = new MByte[MAX_SECTION_SIZE];
+	m_section_buf = new MChar[MAX_SECTION_SIZE];
 	memset(m_section_buf,0, MAX_SECTION_SIZE);
 }
 
-MVoid tsSection::write_section_data(TsStream* p_tsStream, const MByte *p_buf, MUInt32 p_buf_size, MBool p_is_start)
+MVoid tsSection::write_section_data(TsStream* p_tsStream, const MPChar p_buf, MUInt32 p_buf_size, MBool p_is_start)
 {
 	if (!m_section_buf)
 	{
@@ -64,7 +64,7 @@ MVoid tsSection::write_section_data(TsStream* p_tsStream, const MByte *p_buf, MU
 	}
 }
 
-MInt32 tsFilter::parse_section_header(MByte* buffer_section_header, SectionHeader &section_header)
+MInt32 tsFilter::parse_section_header(MPChar buffer_section_header, SectionHeader &section_header)
 {
 	int val;
 
@@ -99,10 +99,10 @@ MInt32 tsFilter::parse_section_header(MByte* buffer_section_header, SectionHeade
 }
 /*========================================================================*/
 
-MUInt32 tsSectionPat::parse(TsStream* p_tsStream, MPByte p_buffer, MUInt32 p_buffer_size)
+MUInt32 tsSectionPat::parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buffer_size)
 {
 	SectionHeader section_header;
-	MByte* pat_data = p_buffer;
+	MPChar pat_data = p_buffer;
 	MInt32 ret = parse_section_header(pat_data, section_header);
 	if (ret != 0)
 	{
@@ -175,7 +175,7 @@ MBool tsSectionPmt::is_pes_stream(int stream_type, MUInt32 prog_reg_desc)
 //	}
 //}
 
-MUInt32 tsSectionPmt::parse(TsStream* p_tsStream, MPByte p_buffer, MUInt32 p_buffer_size)
+MUInt32 tsSectionPmt::parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buffer_size)
 {
 	SectionHeader section_header;
 	MInt32 ret = parse_section_header(p_buffer, section_header);
@@ -183,8 +183,8 @@ MUInt32 tsSectionPmt::parse(TsStream* p_tsStream, MPByte p_buffer, MUInt32 p_buf
 	{
 		return -1;
 	}
-	MByte* pData = p_buffer + SECTION_HEADER_SIZE_8_BYTE;
-	MByte* pData_end = p_buffer + p_buffer_size - 4;
+	MPChar pData = p_buffer + SECTION_HEADER_SIZE_8_BYTE;
+	MPChar pData_end = p_buffer + p_buffer_size - 4;
 	if (section_header.tid != PMT_TID)
 		return 0;
 
@@ -263,7 +263,7 @@ MUInt32 tsSectionPmt::parse(TsStream* p_tsStream, MPByte p_buffer, MUInt32 p_buf
 
 
 /*==========================================================================*/
-MUInt32 tsSectionPes::parse(TsStream* p_tsStream, MPByte p_buffer, MUInt32 p_buffer_size)
+MUInt32 tsSectionPes::parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buffer_size)
 {
 	//is_start = 1，表示这个时pes的开始
 	//is_start = 0,表示这个时pes中的后续字节
@@ -289,7 +289,7 @@ MUInt32 tsSectionPes::parse(TsStream* p_tsStream, MPByte p_buffer, MUInt32 p_buf
 
 	MUInt16 length = 0;
 	MInt32	code = 0;
-	MPByte pBuffer = p_buffer;
+	MPChar pBuffer = p_buffer;
 	while (p_buffer_size > 0)
 	{
 		if (m_state == MPEGTS_HEADER)

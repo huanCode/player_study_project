@@ -4,6 +4,7 @@
 #include "ToolString.h"
 #include "amstring.h"
 #include "ammem.h"
+#include "TsStream.h"
 #define MAX_URL_SIZE 4096
 #define AV_TIME_BASE            1000000
 
@@ -17,12 +18,13 @@ void ParseHls::Playlist::AddSegment(segment* ts)
 
 ParseHls::ParseHls()
 {
-
+	m_curIndex = 0;
+	m_pTs = MNull;
 }
 
-MBool ParseHls::ReadHeader()
+MBool ParseHls::ReadHeader(MPChar strUrl)
 {
-	MPChar strUrl = "bipbopall.m3u8";
+	//MPChar strUrl = "bipbopall.m3u8";
 
 	//解析m3u8
 	if (!ParseM3u8(strUrl))
@@ -31,17 +33,44 @@ MBool ParseHls::ReadHeader()
 	}
 
 	//判断上面解析的m3u8是否为嵌套,是嵌套则去解析新的
+	Playlist* playlist = MNull;
 	if (m_playlistList.GetSize() > 1 || m_playlistList.GetLastNode()->segmentList.GetSize() == 0)
 	{
-		Playlist* playlist = MNull;
-		for (MInt32 i = 1; i <= m_playlistList.GetSize(); i++)
+		
+		playlist = m_playlistList.GetLastNode();
+		if (!ParseM3u8(playlist->strUrl, playlist))
 		{
-			playlist = m_playlistList.GetNodePtrByIndex(i);
-			if (!ParseM3u8("prog_index.m3u8", playlist))
+			return MFalse;
+		}
+	}
+
+	if (playlist->segmentList.GetSize() > 0)
+	{
+		if (m_dataRead->Open(playlist->segmentList.GetLastNode()->url))
+		{
+			MPChar tmpBuffer = (MPChar)MMemAlloc(MNull, PROBE_BUFFER_SIZE);
+			if (tmpBuffer == MNull)
 			{
 				return MFalse;
 			}
+
+			MMemSet(tmpBuffer, 0, PROBE_BUFFER_SIZE);
+			MInt32 iReadSize = 0;
+			m_dataRead->Read(&tmpBuffer, PROBE_BUFFER_SIZE, iReadSize);
+			if (iReadSize != PROBE_BUFFER_SIZE)
+			{
+				return MFalse;
+			}
+
+			m_pTs = TsStream::read_probe(tmpBuffer, PROBE_BUFFER_SIZE);
+			if (m_pTs == MNull)
+			{
+				return MFalse;
+			}
+
+			return MTrue;
 		}
+		
 	}
 
 
@@ -51,7 +80,7 @@ MBool ParseHls::ReadHeader()
 
 MBool ParseHls::ReadPacket()
 {
-
+	return MFalse;
 }
 
 void ParseHls::ff_parse_key_val_cb(void* srcData, MPChar key, MInt32 keyLen, MPChar value)
@@ -105,8 +134,8 @@ MBool ParseHls::ParseM3u8(MPChar strUrl, Playlist* playlist)
 		return MFalse;
 	}
 
-
-	MChar buffer[MAX_URL_SIZE] = { 0 };
+	MInt32 max_buffer_size = 1024 * 8;
+	MChar buffer[1024*8] = { 0 };
 	MChar line[MAX_URL_SIZE] = { 0 };
 	MChar tmp_strUrl[MAX_URL_SIZE] = {0};
 
@@ -120,11 +149,11 @@ MBool ParseHls::ParseM3u8(MPChar strUrl, Playlist* playlist)
 
 	//is_variant = 1,表示为嵌套m3u8
 	//is_segment = 1,表示为ts url
-	MInt32 ret = 0, is_segment = 0, is_variant = 0;
+	MInt32 is_segment = 0, is_variant = 0;
 
 
 	MBool	isFirst = MTrue;
-	MPChar  bufferTmp = buffer ,bufferEnd = buffer + iReadByte;
+	MPChar  bufferEnd = MNull;
 	MInt32	bufferSize = 0;
 
 	MInt64 duration = 0;
@@ -132,147 +161,183 @@ MBool ParseHls::ParseM3u8(MPChar strUrl, Playlist* playlist)
 	
 
 	MInt32 bufferReadSize = 0;
-	MPChar curBufferPos = buffer;
-	while (m_dataRead->IoRead(&curBufferPos, MAX_URL_SIZE, bufferReadSize))
+	MPChar curBufferPos = MNull;
+
+
+	if (!m_dataRead->Open(strUrl))
 	{
-		while (bufferReadSize)
+		return MFalse;
+	}
+
+	MBool ret = MFalse;
+
+	MInt32 iBufferSize = MAX_URL_SIZE;
+	while (true)
+	{
+
+		curBufferPos = buffer;
+		iBufferSize = max_buffer_size;
+		MBool retRead = MFalse;
+		do
 		{
 
-		}
+			retRead = m_dataRead->Read(&curBufferPos, iBufferSize, bufferReadSize);
+			curBufferPos += bufferReadSize;
+			iBufferSize -= bufferReadSize;
+				
 
+		} while (retRead && iBufferSize > 0);
 
-
-		bufferSize = iReadByte - (bufferTmp - buffer);
-		lineSize = ToolString::Read_line(curBufferPos, bufferReadSize, line, MAX_URL_SIZE);
-		if (!lineSize)
+		if (!retRead && curBufferPos == buffer)
 		{
-
-			return MTrue;
+			break;
 		}
 
-
-		//iCopySize += lineSize;
-		if (MStrCmp((MPChar)line, "#EXTM3U")&& isFirst)
+		bufferEnd = curBufferPos;
+		curBufferPos = buffer;
+		bufferReadSize = bufferEnd - buffer;
+		while (curBufferPos<bufferEnd)
 		{
-
-			return MFalse;
-		}
-		else if (ToolString::av_strstart(line, "#EXT-X-STREAM-INF:", &ptr)) {
-			//说明目前该m3u8是顶级，里面的内容包含二级m3u8
-			// #EXT-X-STREAM-INF:值指定码率值
-			is_variant = 1;	//表示为嵌套m3u8
-			playlist = new Playlist();
-			ToolString::ff_parse_key_value(ptr, ParseHls::ff_parse_key_val_cb, playlist);
-			
-		}
-		else if (ToolString::av_strstart(line, "#EXT-X-KEY:", &ptr)) {
-			//暂时忽略
-		}
-		else if (ToolString::av_strstart(line, "#EXT-X-MEDIA:", &ptr)) {
-			//暂时忽略
-		}
-		else if (ToolString::av_strstart(line, "#EXT-X-TARGETDURATION:", &ptr)) {
-			//  #EXT-X-TARGETDURATION:指定最大的媒体段时间长度(秒), 
-			//  #EXTINF:指定的时间长度必须小于或等于这个最大值。
-			playlist = createPlaylist(playlist);
-			if (playlist == MNull)
+			lineSize = ToolString::Read_line(curBufferPos, bufferReadSize, line, MAX_URL_SIZE);
+			if (!lineSize)
 			{
-				return MFalse;
+				goto Exit;
+				//return MTrue;
 			}
 
-		}
-		else if (ToolString::av_strstart(line, "#EXT-X-MEDIA-SEQUENCE:", &ptr)) {
-			//暂时忽略
-			playlist = createPlaylist(playlist);
-			if (playlist == MNull)
-			{
-				return MFalse;
-			}
-		}
-		else if (ToolString::av_strstart(line, "#EXT-X-PLAYLIST-TYPE:", &ptr)) {
-			//暂时忽略
-			playlist = createPlaylist(playlist);
-			if (playlist == MNull)
-			{
-				return MFalse;
-			}
-		}
-		else if (ToolString::av_strstart(line, "#EXT-X-MAP:", &ptr)) {
-			//暂时忽略
-			playlist = createPlaylist(playlist);
-			if (playlist == MNull)
-			{
-				return MFalse;
-			}
-		}
-		else if (ToolString::av_strstart(line, "#EXT-X-ENDLIST", &ptr)) {
 
-		}
-		else if (ToolString::av_strstart(line, "#EXTINF:", &ptr)) {
-			is_segment = 1;
-			duration = MStoi64(ptr) * AV_TIME_BASE;
-		}
-		else if (ToolString::av_strstart(line, "#EXT-X-BYTERANGE:", &ptr)) {
-			//暂时忽略
-		}
-		else if (ToolString::av_strstart(line, "#", NULL)) {
-			isFirst = MFalse;
-			continue;
-			
-		}
-		else if (line[0]) {
-
-			if (is_variant)
+			//iCopySize += lineSize;
+			if (MStrCmp((MPChar)line, "#EXTM3U") && isFirst)
 			{
-				MInt32 strNameSize = sizeof(line) + sizeof(strUrl)+1;
-				playlist->strUrl = (MPChar)MMemAlloc(MNull, strNameSize);
-				ToolString::ff_make_absolute_url(playlist->strUrl, strNameSize, "http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8", line);
-				//MMemCpy(playlist->strName, line, sizeof(line));
-				m_playlistList.AddNode(playlist);
-				is_variant = 0;
+				goto Exit;
+				//return MFalse;
 			}
+			else if (ToolString::av_strstart(line, "#EXT-X-STREAM-INF:", &ptr)) {
+				//说明目前该m3u8是顶级，里面的内容包含二级m3u8
+				// #EXT-X-STREAM-INF:值指定码率值
+				is_variant = 1;	//表示为嵌套m3u8
+				playlist = new Playlist();
+				ToolString::ff_parse_key_value(ptr, ParseHls::ff_parse_key_val_cb, playlist);
 
-			if (is_segment)
-			{
+			}
+			else if (ToolString::av_strstart(line, "#EXT-X-KEY:", &ptr)) {
+				//暂时忽略
+			}
+			else if (ToolString::av_strstart(line, "#EXT-X-MEDIA:", &ptr)) {
+				//暂时忽略
+			}
+			else if (ToolString::av_strstart(line, "#EXT-X-TARGETDURATION:", &ptr)) {
+				//  #EXT-X-TARGETDURATION:指定最大的媒体段时间长度(秒), 
+				//  #EXTINF:指定的时间长度必须小于或等于这个最大值。
+				playlist = createPlaylist(playlist);
 				if (playlist == MNull)
 				{
-					playlist = createPlaylist(playlist);
+					// return MFalse;
+					goto Exit;
+				}
+
+			}
+			else if (ToolString::av_strstart(line, "#EXT-X-MEDIA-SEQUENCE:", &ptr)) {
+				//暂时忽略
+				playlist = createPlaylist(playlist);
+				if (playlist == MNull)
+				{
+					//return MFalse;
+					goto Exit;
+				}
+			}
+			else if (ToolString::av_strstart(line, "#EXT-X-PLAYLIST-TYPE:", &ptr)) {
+				//暂时忽略
+				playlist = createPlaylist(playlist);
+				if (playlist == MNull)
+				{
+					//return MFalse;
+					goto Exit;
+				}
+			}
+			else if (ToolString::av_strstart(line, "#EXT-X-MAP:", &ptr)) {
+				//暂时忽略
+				playlist = createPlaylist(playlist);
+				if (playlist == MNull)
+				{
+					//return MFalse;
+					goto Exit;
+				}
+			}
+			else if (ToolString::av_strstart(line, "#EXT-X-ENDLIST", &ptr)) {
+				break;
+			}
+			else if (ToolString::av_strstart(line, "#EXTINF:", &ptr)) {
+				is_segment = 1;
+				duration = MStoi64(ptr) * AV_TIME_BASE;
+			}
+			else if (ToolString::av_strstart(line, "#EXT-X-BYTERANGE:", &ptr)) {
+				//暂时忽略
+			}
+			else if (ToolString::av_strstart(line, "#", NULL)) {
+				isFirst = MFalse;
+				continue;
+
+			}
+			else if (line[0]) {
+
+				if (is_variant)
+				{
+					MInt32 strNameSize = sizeof(line) + sizeof(strUrl) + 1;
+					playlist->strUrl = (MPChar)MMemAlloc(MNull, strNameSize);
+					ToolString::ff_make_absolute_url(playlist->strUrl, strNameSize, "http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8", line);
+					//MMemCpy(playlist->strName, line, sizeof(line));
+					m_playlistList.AddNode(playlist);
+					is_variant = 0;
+				}
+
+				if (is_segment)
+				{
 					if (playlist == MNull)
 					{
-						return MFalse;
+						playlist = createPlaylist(playlist);
+						if (playlist == MNull)
+						{
+							goto Exit;
+							//return MFalse;
+						}
+						m_playlistList.AddNode(playlist);
 					}
-					m_playlistList.AddNode(playlist);
+
+
+					segment *seg = (segment *)MMemAlloc(MNull, sizeof(struct segment));
+					if (seg == MNull)
+					{
+						goto Exit;
+						//return MFalse;
+					}
+
+					seg->duration = duration;
+					ToolString::ff_make_absolute_url(tmp_strUrl, sizeof(tmp_strUrl), strUrl, line);
+
+					seg->url = ToolString::av_strdup(tmp_strUrl);
+					if (!seg->url) {
+						MMemFree(MNull, seg);
+						goto Exit;
+						//return MFalse;
+					}
+
+
+					is_segment = 0;
+					playlist->segmentList.AddNode(seg);
 				}
 
 
-				segment *seg = (segment *)MMemAlloc(MNull, sizeof(struct segment));
-				if (seg == MNull)
-				{
-					return MFalse;
-				}
 
-				seg->duration = duration;
-				ToolString::ff_make_absolute_url(tmp_strUrl, sizeof(tmp_strUrl), strUrl, line);
-
-				seg->url = ToolString::av_strdup(tmp_strUrl);
-				if (!seg->url) {
-					MMemFree(MNull,seg);
-					return MFalse;
-				}
-
-
-				is_segment = 0;
-				playlist->segmentList.AddNode(seg);
 			}
 
-
-
+			isFirst = MFalse;
 		}
-
-		isFirst = MFalse;
-
 	}
-	
 
-	return MTrue;
+	ret = MTrue;
+Exit:	
+	m_dataRead->Close();
+
+	return ret;
 }

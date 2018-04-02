@@ -5,7 +5,7 @@
 class ToolString
 {
 public:
-	static MInt32 Read_line(MChar*& srcBuffer, MInt32 iSrcLen, MPChar dstBuffer,MInt32 idstMaxLen);
+	static MInt32 Read_line(MChar*& srcBuffer, MInt32 iSrcLen, MPChar dstBuffer,MInt32 idstMaxLen/*,MBool& isLine*/);
 	//static MInt32 av_strstart(MPChar str, MPChar pfx, MChar **ptr)
 	//{
 	//	while (*pfx && *pfx == *str) {

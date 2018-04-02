@@ -3,11 +3,13 @@
 #include "mv3File.h"
 #include "TsStreamDef.h"
 //#include "tsFilter.h"
+#include "IParse.h"
+#define PACKET_SIZE	188
 #define FILTER_NUM	6
-
+#define PROBE_BUFFER_SIZE	PACKET_SIZE * 10
 using namespace std;
 class tsFilter;
-class TsStream
+class TsStream:public IParse
 {
 public:
 	TsStream();
@@ -74,8 +76,16 @@ private:
 public:
 	MUInt32 mpegts_read_header();
 	//½âÎöts
-	MBool	read_probe(MPByte p_buffer, MUInt32 p_size);
-	MInt32	read_header(MPByte p_buffer, MUInt32 p_size);
+	static IParse*	read_probe(MPChar p_buffer, MUInt32 p_size);
+	//MInt32	read_header(MPChar p_buffer, MUInt32 p_size);
+
+
+	MBool	ReadHeader(MPChar strUrl);
+	MBool	ReadPacket() { 
+	
+		return MFalse;
+	};
+
 
 private:
 	MBool	Init();
@@ -90,7 +100,7 @@ private:
 
 
 
-	MVoid parse_ts_packet_header(MByte* buffer, ts_packet_header &tsHeader);
+	MVoid parse_ts_packet_header(MPChar buffer, ts_packet_header &tsHeader);
 
 	
 
@@ -115,6 +125,10 @@ private:
 	friend class tsSectionPmt;
 	friend class tsSectionPes;
 	tsFilter*	m_filter[FILTER_NUM];
+
+
+	MPChar		m_packetBuffer;
+	MInt32		m_iReadSize = 0;
 public:
 
 

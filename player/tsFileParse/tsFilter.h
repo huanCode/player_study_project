@@ -18,7 +18,7 @@ public:
 		m_last_pcr = -1;
 		m_description = MNull;
 	}
-	virtual MUInt32 parse(TsStream* p_tsStream, MPByte p_buffer,MUInt32 p_buffer_size) = 0;
+	virtual MUInt32 parse(TsStream* p_tsStream, MPChar p_buffer,MUInt32 p_buffer_size) = 0;
 	virtual MVoid	SetPid(MInt32 p_pid) = 0;
 	MInt32 GetPid() { return m_pid; };
 	MpegTSFilterType GetType() {
@@ -46,7 +46,7 @@ protected:
 		MUInt8 sec_num;
 		MUInt8 last_sec_num;
 	} SectionHeader;
-	MInt32 parse_section_header(MByte* buffer_section_header, SectionHeader &section_header);
+	MInt32 parse_section_header(MPChar buffer_section_header, SectionHeader &section_header);
 private:
 
 	MInt32 m_es_id;
@@ -62,14 +62,14 @@ class tsSection :public tsFilter
 {
 public:
 	tsSection();
-	MVoid write_section_data(TsStream* p_tsStream, const MByte *p_buf, MUInt32 p_buf_size, MBool p_is_start);
+	MVoid write_section_data(TsStream* p_tsStream, const MPChar p_buf, MUInt32 p_buf_size, MBool p_is_start);
 protected:
 	MInt32 m_section_index;
 	MInt32 m_section_length;
 	MInt32 m_last_ver;
 	MUInt32 m_crc;
 	MUInt32 m_last_crc;
-	MByte *m_section_buf;
+	MPChar  m_section_buf;
 	MBool	m_end_of_section_reached;
 };
 
@@ -83,7 +83,7 @@ public:
 		m_pid = SDT_PID;
 		m_description = "sdt";
 	}
-	MUInt32 parse(TsStream* p_tsStream, MPByte p_buffer, MUInt32 p_buffer_size) { return 0; };
+	MUInt32 parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buffer_size) { return 0; };
 	MVoid	SetPid(MInt32 p_pid) {};
 };
 
@@ -97,7 +97,7 @@ public:
 		m_pid = PAT_PID;
 		m_description = "pat";
 	}
-	MUInt32 parse(TsStream* p_tsStream, MPByte p_buffer, MUInt32 p_buffer_size);
+	MUInt32 parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buffer_size);
 	MVoid	SetPid(MInt32 p_pid) {};
 };
 
@@ -112,7 +112,7 @@ public:
 		m_type = MPEGTS_SECTION;
 		m_description = "pmt";
 	}
-	MUInt32 parse(TsStream* p_tsStream, MPByte p_buffer, MUInt32 p_buffer_size);
+	MUInt32 parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buffer_size);
 	MVoid	SetPid(MInt32 p_pid) {
 		m_pid = p_pid;
 	};
@@ -144,7 +144,7 @@ public:
 		m_stream_type = 0;
 		m_buffer_size = 0;
 	}
-	MUInt32 parse(TsStream* p_tsStream, MPByte p_buffer, MUInt32 p_buffer_size);
+	MUInt32 parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buffer_size);
 	MVoid	SetPid(MInt32 p_pid) {
 		m_pid = p_pid;
 	};

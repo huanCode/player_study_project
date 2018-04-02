@@ -62,13 +62,13 @@ MVoid SourceFrame::Close()
 }
 
 
-MBool SourceFrame::IoRead(MChar** pBuf, MDWord dwSize, MInt32& out_readSize)
+MBool SourceFrame::Read(MChar** pBuf, MDWord dwSize, MInt32& out_readSize)
 {
 	if (pBuf == MNull || dwSize <=0)
 	{
 		return 0;
 	}
-
+	out_readSize = 0;
 	MPChar buffer = *pBuf;
 	MInt32 readSize = 0;
 	while (dwSize)
@@ -76,6 +76,7 @@ MBool SourceFrame::IoRead(MChar** pBuf, MDWord dwSize, MInt32& out_readSize)
 		readSize = m_baseIo->IoRead(buffer,dwSize);
 		if (readSize == dwSize)
 		{
+			out_readSize = readSize;
 			return MTrue;
 		}
 		else if (readSize < dwSize && readSize > 0)
@@ -106,15 +107,15 @@ MBool SourceFrame::IoRead(MChar** pBuf, MDWord dwSize, MInt32& out_readSize)
 }
 
 
-MInt32 SourceFrame::IoReadLine(MChar** ppBuffer)
-{
-	if (*ppBuffer == MNull)
-	{
-		return 0;
-	}
-
-
-}
+//MInt32 SourceFrame::IoReadLine(MChar** ppBuffer)
+//{
+//	if (*ppBuffer == MNull)
+//	{
+//		return 0;
+//	}
+//
+//
+//}
 
 IBaseIoType SourceFrame::parseUrl(MPChar strUrl)
 {

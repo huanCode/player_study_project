@@ -50,7 +50,7 @@ public:
 	ParseHls();
 
 
-	MBool	ReadHeader();
+	MBool	ReadHeader(MPChar strUrl);
 	MBool	ReadPacket();
 
 
@@ -88,6 +88,11 @@ private:
 
 	ToolList<Playlist*>		m_playlistList;
 	MBool					m_playListType;
+	MInt32					m_curIndex;
+
+
+	IParse*		m_pTs;
+	MBool		m_bTsReady;
 };
 
 

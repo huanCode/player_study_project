@@ -4,7 +4,7 @@
 #include "amcomdef.h"
 #include "IBaseIo.h"
 #include "ToolList.h"
-
+class IDataRead;
 class IParse;
 class ParseFrame
 {
@@ -13,7 +13,7 @@ public:
 	ParseFrame();
 
 	MBool FindParse(MPChar pbuf,MInt32 iBufSize);
-	MBool	ReadHeader();
+	MBool	ReadHeader(MPChar strUrl);
 	MVoid	SetDataRead(IDataRead* obj);
 private:
 	IParse*	m_parse;

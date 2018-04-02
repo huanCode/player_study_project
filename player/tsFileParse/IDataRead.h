@@ -5,8 +5,9 @@
 class IDataRead
 {
 public:
-	virtual MBool IoRead(MChar**, MDWord dwSize, MInt32& out_readSize) = 0;
-
+	virtual MBool Open(MPChar strUrl) = 0;
+	virtual MBool Read(MChar**, MDWord dwSize, MInt32& out_readSize) = 0;
+	virtual MVoid Close() = 0;
 
 };
 

@@ -24,7 +24,7 @@ MVoid	ParseFrame::SetDataRead(IDataRead* obj)
 }
 
 
-MBool	ParseFrame::ReadHeader()
+MBool	ParseFrame::ReadHeader(MPChar strUrl)
 {
-	return m_parse->ReadHeader();
+	return m_parse->ReadHeader(strUrl);
 }

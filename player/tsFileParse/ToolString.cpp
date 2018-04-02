@@ -3,7 +3,7 @@
 #include "amstring.h"
 #include "ammem.h"
 #include "common.h"
-MInt32 ToolString::Read_line(MChar*& srcBuffer, MInt32 iSrcLen, MPChar dstBuffer, MInt32 idstMaxLen)
+MInt32 ToolString::Read_line(MChar*& srcBuffer, MInt32 iSrcLen, MPChar dstBuffer, MInt32 idstMaxLen/*, MBool& isLine*/)
 {
 
 	int i = 0;
@@ -31,6 +31,15 @@ MInt32 ToolString::Read_line(MChar*& srcBuffer, MInt32 iSrcLen, MPChar dstBuffer
 		}
 			
 	} while (c != '\n' && c != '\r' && c);
+
+	//if (c != '\n' && c != '\r' && c)
+	//{
+	//	isLine = MFalse;
+	//}
+	//else
+	//{
+	//	isLine = MTrue;
+	//}
 
 	dstBuffer[i] = 0;
 	//

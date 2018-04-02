@@ -28,6 +28,9 @@
     <Filter Include="ParseFrame\ts">
       <UniqueIdentifier>{35b4797d-a79d-4423-ba0c-c194a76b8812}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ParseFrame\hls">
+      <UniqueIdentifier>{75220b5a-86b0-4180-a486-f0b4c13b98ec}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -78,9 +81,6 @@
     <ClInclude Include="ParseFrame.h">
       <Filter>ParseFrame</Filter>
     </ClInclude>
-    <ClInclude Include="ParseHls.h">
-      <Filter>ParseFrame</Filter>
-    </ClInclude>
     <ClInclude Include="TsStream.h">
       <Filter>ParseFrame\ts</Filter>
     </ClInclude>
@@ -101,6 +101,9 @@
     </ClInclude>
     <ClInclude Include="IDataRead.h">
       <Filter>SourceFrame</Filter>
+    </ClInclude>
+    <ClInclude Include="ParseHls.h">
+      <Filter>ParseFrame\hls</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -128,9 +131,6 @@
     <ClCompile Include="ParseFrame.cpp">
       <Filter>ParseFrame</Filter>
     </ClCompile>
-    <ClCompile Include="ParseHls.cpp">
-      <Filter>ParseFrame</Filter>
-    </ClCompile>
     <ClCompile Include="TsStream.cpp">
       <Filter>ParseFrame\ts</Filter>
     </ClCompile>
@@ -142,6 +142,9 @@
     </ClCompile>
     <ClCompile Include="tool\mv3File.cpp">
       <Filter>tool</Filter>
+    </ClCompile>
+    <ClCompile Include="ParseHls.cpp">
+      <Filter>ParseFrame\hls</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

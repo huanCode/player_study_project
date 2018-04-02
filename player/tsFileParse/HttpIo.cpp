@@ -48,11 +48,3 @@ MInt32 HttpIo::IoRead(MPChar pBuf, MDWord dwSize, MInt64 llOffset)
 	return lReadSize;
 }
 
-MVoid HttpIo::IoClose()
-{
-	if (m_hHttp)
-	{
-		//Http_Close(m_hHttp);
-		m_hHttp = MNull;
-	}
-}
