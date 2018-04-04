@@ -43,7 +43,7 @@ MBool ParseHls::ReadHeader(MPChar strUrl)
 			return MFalse;
 		}
 	}
-
+	m_bTsReady = MTrue;
 	if (playlist->segmentList.GetSize() > 0)
 	{
 		if (m_dataRead->Open(playlist->segmentList.GetLastNode()->url))

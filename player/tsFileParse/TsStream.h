@@ -6,7 +6,7 @@
 #include "IParse.h"
 #define PACKET_SIZE	188
 #define FILTER_NUM	6
-#define PROBE_BUFFER_SIZE	PACKET_SIZE * 10
+#define PROBE_BUFFER_SIZE	204 * 10
 using namespace std;
 class tsFilter;
 class TsStream:public IParse
@@ -81,20 +81,23 @@ public:
 
 
 	MBool	ReadHeader(MPChar strUrl);
-	MBool	ReadPacket() { 
-	
-		return MFalse;
-	};
+	MBool	ReadPacket();
 
 
 private:
 	MBool	Init();
 
 
+	MBool handle_packets(MInt32 nb_packets = 100);
+	MBool handle_packet(MPChar pBuffer);
+
+
 	tsFilter*	add_filter(MInt32 pid);
 	tsFilter*	get_filter(MInt32 pid);
 	MVoid	Release();
-	
+
+	MInt32 get_packet_size(MPChar buf, MInt32 size);
+	MInt32 analyze(MPChar buf, MInt32 size, MInt32 packet_size, MInt32 probe);
 private:
 
 
@@ -129,6 +132,13 @@ private:
 
 	MPChar		m_packetBuffer;
 	MInt32		m_iReadSize = 0;
+
+
+	static MInt32	Packet_Size;
+
+	MInt32		m_trackNum;		//有几条流
+
+	MBool		m_stopParse;
 public:
 
 

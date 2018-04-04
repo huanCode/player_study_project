@@ -17,13 +17,17 @@ public:
 		m_last_cc = -1;
 		m_last_pcr = -1;
 		m_description = MNull;
+		m_last_version = -1;
 	}
 	virtual MUInt32 parse(TsStream* p_tsStream, MPChar p_buffer,MUInt32 p_buffer_size) = 0;
 	virtual MVoid	SetPid(MInt32 p_pid) = 0;
+
+
 	MInt32 GetPid() { return m_pid; };
 	MpegTSFilterType GetType() {
 		return m_type;
 	}
+
 private:
 
 
@@ -47,6 +51,7 @@ protected:
 		MUInt8 last_sec_num;
 	} SectionHeader;
 	MInt32 parse_section_header(MPChar buffer_section_header, SectionHeader &section_header);
+	MBool skip_identical(MInt32 iVersion, MInt32 iCrc);
 private:
 
 	MInt32 m_es_id;
@@ -55,7 +60,9 @@ private:
 protected:
 	MInt32 m_pid;
 	MPChar	m_description;
+	MInt32	m_last_version;
 	enum MpegTSFilterType m_type;
+
 };
 
 class tsSection :public tsFilter
@@ -143,13 +150,18 @@ public:
 		m_dts = 0;
 		m_stream_type = 0;
 		m_buffer_size = 0;
+		m_curIndex = -1;
 	}
 	MUInt32 parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buffer_size);
 	MVoid	SetPid(MInt32 p_pid) {
 		m_pid = p_pid;
 	};
 
-	MVoid mpegts_find_stream_type(MInt32 stream_type, const StreamType *types);
+	MVoid SetIndex(MInt32 iIndex)
+	{
+		m_curIndex = iIndex;
+	};
+	MBool mpegts_find_stream_type(MInt32 stream_type, const StreamType *types);
 private:
 	inline MInt64 ff_parse_pes_pts(const MUInt8 *buffer);
 	//typedef struct PESContext {
@@ -191,6 +203,8 @@ private:
 	MInt64			m_pts;
 	MInt64			m_dts;
 	MInt32			m_stream_type;
+
+	MInt32			m_curIndex;
 };
 
 

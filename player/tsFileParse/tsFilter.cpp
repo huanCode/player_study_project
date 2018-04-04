@@ -64,6 +64,18 @@ MVoid tsSection::write_section_data(TsStream* p_tsStream, const MPChar p_buf, MU
 	}
 }
 
+
+
+MBool tsFilter::skip_identical(MInt32 iVersion, MInt32 iCrc)
+{
+	if (m_last_version == iVersion /*&& tssf->last_crc == tssf->crc*/)
+		return MTrue;
+
+	m_last_version = iVersion;
+
+	return 0;
+}
+
 MInt32 tsFilter::parse_section_header(MPChar buffer_section_header, SectionHeader &section_header)
 {
 	int val;
@@ -209,6 +221,8 @@ MUInt32 tsSectionPmt::parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buf
 
 	MInt32 stream_type = 0;
 	MInt32 pid = 0;
+
+	MInt32 iIndex = 0;
 	while (true)
 	{
 		//27 0x1b H264
@@ -227,7 +241,12 @@ MUInt32 tsSectionPmt::parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buf
 				return -1;
 			}
 			tsSectionPes* filterPes = (tsSectionPes*)filter;
-			filterPes->mpegts_find_stream_type(stream_type, ISO_types);
+			if (!filterPes->mpegts_find_stream_type(stream_type, ISO_types))
+			{
+				return -1;
+			}
+			filterPes->SetIndex(iIndex++);
+			
 		}
 		else
 		{
@@ -261,8 +280,24 @@ MUInt32 tsSectionPmt::parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buf
 }
 
 
-
 /*==========================================================================*/
+
+MBool tsSectionPes::mpegts_find_stream_type(MInt32 stream_type, const StreamType *types)
+{
+	for (; types->stream_type; types++) {
+		if (stream_type == types->stream_type) {
+			if (m_mediaType != types->codec_type || m_mediaCodecID != types->codec_id) {
+				m_mediaType = types->codec_type;
+				m_mediaCodecID = types->codec_id;
+				m_stream_type = stream_type;
+			}
+			return MTrue;
+		}
+	}
+
+	return MFalse;
+}
+
 MUInt32 tsSectionPes::parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buffer_size)
 {
 	//is_start = 1，表示这个时pes的开始
@@ -482,19 +517,7 @@ inline MInt64 tsSectionPes::ff_parse_pes_pts(const MUInt8 *buf) {
 		AV_RB16(buf + 3) >> 1;
 }
 
-MVoid tsSectionPes::mpegts_find_stream_type(MInt32 stream_type, const StreamType *types)
-{
-	for (; types->stream_type; types++) {
-		if (stream_type == types->stream_type) {
-			if (m_mediaType != types->codec_type || m_mediaCodecID != types->codec_id) {
-				m_mediaType = types->codec_type;
-				m_mediaCodecID = types->codec_id;
-				m_stream_type = stream_type;
-			}
-			return;
-		}
-	}
-}
+
 
 tsFilter* FilterFactory::CreateFilter(MInt32 pid)
 {

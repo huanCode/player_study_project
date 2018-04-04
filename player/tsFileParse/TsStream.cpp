@@ -22,8 +22,12 @@
 #define PES_START_SIZE  6
 #define PES_HEADER_SIZE 9
 
+
+#define TS_FEC_PACKET_SIZE 204
+#define TS_DVHS_PACKET_SIZE 192
 #define TS_PACKET_SIZE 188
 
+#define TS_MAX_PACKET_SIZE 204
 
 //#define AV_RB32(x)  ((((const uint8_t*)(x))[0] << 24) | /
 //(((const uint8_t*)(x))[1] << 16) | /
@@ -44,8 +48,14 @@ TsStream::TsStream()
 	MBool ret = m_fileWrite.Open("bigbuckbunny_480x272.h265", mv3File::stream_write);
 	m_isStart = MFalse;
 	m_packetBuffer = MNull;
+	m_trackNum = 0;
+
+	m_stopParse = MFalse;
 
 }
+
+
+MInt32	TsStream::Packet_Size = 0;
 
 MBool TsStream::Init()
 {
@@ -58,7 +68,7 @@ MBool TsStream::Init()
 		goto Exit;
 	}
 
-	m_packetBuffer = (MPChar)MMemAlloc(MNull, PACKET_SIZE);
+	m_packetBuffer = (MPChar)MMemAlloc(MNull, TsStream::Packet_Size);
 	if (m_packetBuffer == MNull)
 	{
 		return MFalse;
@@ -73,6 +83,57 @@ Exit:
 
 	return MFalse;
 }
+
+
+MInt32 TsStream::get_packet_size(MPChar buf, MInt32 size)
+{
+	int score, fec_score, dvhs_score;
+
+	if (size < (TS_FEC_PACKET_SIZE * 5 + 1))
+		return 0;
+
+	score		= analyze(buf, size, TS_PACKET_SIZE, 0);
+	dvhs_score	= analyze(buf, size, TS_DVHS_PACKET_SIZE, 0);
+	fec_score	= analyze(buf, size, TS_FEC_PACKET_SIZE, 0);
+
+
+	if (score > fec_score && score > dvhs_score)
+		return TS_PACKET_SIZE;
+	else if (dvhs_score > score && dvhs_score > fec_score)
+		return TS_DVHS_PACKET_SIZE;
+	else if (score < fec_score && dvhs_score < fec_score)
+		return TS_FEC_PACKET_SIZE;
+	else
+		return 0;
+}
+
+MInt32 TsStream::analyze(MPChar buf, MInt32 size, MInt32 packet_size, MInt32 probe)
+{
+	int stat[TS_MAX_PACKET_SIZE];
+	int stat_all = 0;
+	int i;
+	int best_score = 0;
+
+	memset(stat, 0, packet_size * sizeof(*stat));
+
+	for (i = 0; i < size - 3; i++) {
+		if (buf[i] == 0x47) {
+			int pid = AV_RB16(buf + 1) & 0x1FFF;
+			int asc = buf[i + 3] & 0x30;
+			if (!probe || pid == 0x1FFF || asc) {
+				int x = i % packet_size;
+				stat[x]++;
+				stat_all++;
+				if (stat[x] > best_score) {
+					best_score = stat[x];
+				}
+			}
+		}
+	}
+
+	return best_score - FFMAX(stat_all - 10 * best_score, 0) / 10;
+}
+
 
 MUInt32 TsStream::mpegts_read_header()
 {
@@ -155,10 +216,18 @@ IParse* TsStream::read_probe(MPChar p_buffer, MUInt32 p_size)
 	}
 	if (check_count == standard_count)
 	{
+		TsStream::Packet_Size = PACKET_SIZE;
 		IParse* obj = new TsStream();
+
 		return obj;
 		//return Init();
 	}
+
+
+
+
+
+
 	return MNull;
 }
 
@@ -249,33 +318,45 @@ IParse* TsStream::read_probe(MPChar p_buffer, MUInt32 p_size)
 
 
 
-MBool TsStream::ReadHeader(MPChar strUrl)
+
+MBool TsStream::handle_packets(MInt32 nb_packets)
 {
 
+	m_stopParse = MFalse;
+	MInt32 packet_num = 0;
 
-	
-	if (!m_dataRead->Open(strUrl))
-	{
-		return MFalse;
-	}
-	
-	if (!Init())
-	{
-		return MFalse;
-	}
-	if (!m_dataRead->Read(&m_packetBuffer, PACKET_SIZE, m_iReadSize))
-	{
-		return MFalse;
-	}
-	
+	MInt32 iReadSize = 0;
+	MBool ret = MFalse;
+	for (;;) {
+		packet_num++;
+		if (nb_packets != 0 && packet_num >= nb_packets) {
+			ret = MFalse;
+			break;
+		}
+		if (m_stopParse > 0)
+		{
+			ret = MTrue;
+			break;
+		}
+			
 
-	if (m_iReadSize != PACKET_SIZE)
-	{
-		return MFalse;
+		ret = m_dataRead->Read(&m_packetBuffer,TsStream::Packet_Size, iReadSize);
+		if (!ret || TsStream::Packet_Size != iReadSize)
+			break;
+
+		
+		if (!handle_packet(m_packetBuffer))
+			break;
 	}
+
+	return ret;
+}
+
+MBool TsStream::handle_packet(MPChar pBuffer)
+{
 	ts_packet_header tsHeader;
-	parse_ts_packet_header(m_packetBuffer, tsHeader);
-	MPChar	pData = m_packetBuffer + TS_PACKET_HEADER_SIZE;
+	parse_ts_packet_header(pBuffer, tsHeader);
+	MPChar	pData = pBuffer + TS_PACKET_HEADER_SIZE;
 	if (tsHeader.sync_byte != TS_PACKET_SYNC_BYTE || tsHeader.transport_error)
 	{
 		return MFalse;
@@ -320,7 +401,7 @@ MBool TsStream::ReadHeader(MPChar strUrl)
 		if (tsHeader.bStart_payload)
 		{
 			/* pointer field present */
-			MPChar point_field = m_packetBuffer + TS_PACKET_HEADER_SIZE + adaptation_length;
+			MPChar point_field = pBuffer + TS_PACKET_HEADER_SIZE + adaptation_length;
 			MUInt16 point_field_length = point_field[0];
 			//MUInt32 expected_cc = tsHeader.has_payload ? (filter->last_cc + 1) & 0x0f : filter->last_cc;
 			//if (expected_cc == tsHeader.continuity_counter && point_field_length)
@@ -346,6 +427,54 @@ MBool TsStream::ReadHeader(MPChar strUrl)
 		filter->parse(this, pData, remainderSize);
 	}
 }
+
+
+
+MBool TsStream::ReadHeader(MPChar strUrl)
+{
+	//1、通过解析ts前面，得到ts packet_size,这步在read_probe已经处理过
+
+	
+	if (!m_dataRead->Open(strUrl))
+	{
+		return MFalse;
+	}
+	
+	if (!Init())
+	{
+		return MFalse;
+	}
+	if (!m_dataRead->Read(&m_packetBuffer, TsStream::Packet_Size, m_iReadSize))
+	{
+		return MFalse;
+	}
+	
+
+	if (m_iReadSize != TsStream::Packet_Size)
+	{
+		return MFalse;
+	}
+	
+	return handle_packets();
+}
+
+
+
+MBool	TsStream::ReadPacket()
+{
+
+
+	if (!handle_packets()) {
+		return MFalse;
+	}
+
+
+
+
+	return MFalse;
+}
+
+
 
 MVoid TsStream::parse_ts_packet_header(MPChar buffer, ts_packet_header &tsHeader)
 {
