@@ -120,6 +120,12 @@ MUInt32 tsSectionPat::parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buf
 	{
 		return -1;
 	}
+
+	if (skip_identical(section_header.version))
+	{
+		return 0;
+	}
+
 	pat_data += SECTION_HEADER_SIZE_8_BYTE;
 
 	if (section_header.tid != PAT_TID)
@@ -195,6 +201,13 @@ MUInt32 tsSectionPmt::parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buf
 	{
 		return -1;
 	}
+
+	if (skip_identical(section_header.version))
+	{
+		return 0;
+	}
+
+
 	MPChar pData = p_buffer + SECTION_HEADER_SIZE_8_BYTE;
 	MPChar pData_end = p_buffer + p_buffer_size - 4;
 	if (section_header.tid != PMT_TID)
@@ -222,6 +235,7 @@ MUInt32 tsSectionPmt::parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buf
 	MInt32 stream_type = 0;
 	MInt32 pid = 0;
 
+	p_tsStream->m_stopParse = MTrue;
 	MInt32 iIndex = 0;
 	while (true)
 	{
@@ -492,6 +506,8 @@ skip:
 			}
 
 			p_buffer_size = 0;
+
+			p_tsStream->m_stopParse = MTrue;
 			break;
 		}
 		else if (m_state == MPEGTS_SKIP)

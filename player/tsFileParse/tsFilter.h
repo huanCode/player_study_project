@@ -51,9 +51,9 @@ protected:
 		MUInt8 last_sec_num;
 	} SectionHeader;
 	MInt32 parse_section_header(MPChar buffer_section_header, SectionHeader &section_header);
-	MBool skip_identical(MInt32 iVersion, MInt32 iCrc);
+	MBool skip_identical(MInt32 iVersion, MInt32 iCrc = 0 /*‘› ±Œ¥”√*/);
 private:
-
+	 
 	MInt32 m_es_id;
 	MInt32 m_last_cc; /* last cc code (-1 if first packet) */
 	MInt64 m_last_pcr;
