@@ -31,9 +31,6 @@
     <Filter Include="ParseFrame\hls">
       <UniqueIdentifier>{75220b5a-86b0-4180-a486-f0b4c13b98ec}</UniqueIdentifier>
     </Filter>
-    <Filter Include="tool\MemoryPool">
-      <UniqueIdentifier>{5035029a-c875-472f-afb0-02aaae539e80}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -105,9 +102,6 @@
     <ClInclude Include="ParseHls.h">
       <Filter>ParseFrame\hls</Filter>
     </ClInclude>
-    <ClInclude Include="MemoryPool.h">
-      <Filter>tool\MemoryPool</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -148,9 +142,6 @@
     </ClCompile>
     <ClCompile Include="ParseHls.cpp">
       <Filter>ParseFrame\hls</Filter>
-    </ClCompile>
-    <ClCompile Include="MemoryPool.cpp">
-      <Filter>tool\MemoryPool</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

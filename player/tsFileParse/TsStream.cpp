@@ -61,8 +61,8 @@ MBool TsStream::Init()
 {
 
 	//MHandle m_hHttp = Http_Open("hhh", HTTP_POST, 0);
-	tsFilter* pat = add_filter(PAT_PID);
-	tsFilter* sdt = add_filter(PAT_PID);
+	tsFilter* pat = add_filter(TYPE_PAT,PAT_PID);
+	tsFilter* sdt = add_filter(TYPE_SDT,SDT_PID);
 	if (pat == MNull || sdt == MNull)
 	{
 		goto Exit;
@@ -392,7 +392,7 @@ MBool TsStream::handle_packet(MPChar pBuffer)
 	tsFilter* filter = get_filter(tsHeader.pid);
 	if (!filter)
 	{
-		filter = add_filter(tsHeader.pid);
+		return MFalse;
 	}
 
 
@@ -426,6 +426,8 @@ MBool TsStream::handle_packet(MPChar pBuffer)
 		m_isStart = tsHeader.bStart_payload;
 		filter->parse(this, pData, remainderSize);
 	}
+
+	return MTrue;
 }
 
 
@@ -444,16 +446,16 @@ MBool TsStream::ReadHeader(MPChar strUrl)
 	{
 		return MFalse;
 	}
-	if (!m_dataRead->Read(&m_packetBuffer, TsStream::Packet_Size, m_iReadSize))
-	{
-		return MFalse;
-	}
+	//if (!m_dataRead->Read(&m_packetBuffer, TsStream::Packet_Size, m_iReadSize))
+	//{
+	//	return MFalse;
+	//}
 	
 
-	if (m_iReadSize != TsStream::Packet_Size)
-	{
-		return MFalse;
-	}
+	//if (m_iReadSize != TsStream::Packet_Size)
+	//{
+	//	return MFalse;
+	//}
 	
 	return handle_packets();
 }
@@ -511,13 +513,13 @@ MVoid TsStream::parse_ts_packet_header(MPChar buffer, ts_packet_header &tsHeader
 
 
 
-tsFilter* TsStream::add_filter(MInt32 pid)
+tsFilter* TsStream::add_filter(MInt32 type,MInt32 pid)
 {
 	for (int i = 0;i<FILTER_NUM;i++)
 	{
 		if (m_filter[i] == MNull)
 		{
-			m_filter[i] = FilterFactory::CreateFilter(pid);
+			m_filter[i] = FilterFactory::CreateFilter(type,pid);
 			return m_filter[i];
 		}
 	}

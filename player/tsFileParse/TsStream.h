@@ -92,7 +92,7 @@ private:
 	MBool handle_packet(MPChar pBuffer);
 
 
-	tsFilter*	add_filter(MInt32 pid);
+	tsFilter*	add_filter(MInt32 type,MInt32 pid);
 	tsFilter*	get_filter(MInt32 pid);
 	MVoid	Release();
 

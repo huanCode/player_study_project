@@ -67,6 +67,9 @@ MBool ParseHls::ReadHeader(MPChar strUrl)
 			{
 				return MFalse;
 			}
+			m_dataRead->Close();
+			m_pTs->SetDataRead(m_dataRead);
+			m_pTs->ReadHeader(playlist->segmentList.GetLastNode()->url);
 
 			return MTrue;
 		}

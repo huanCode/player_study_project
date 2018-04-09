@@ -5,7 +5,13 @@
 /*PSI*/
 #define PAT_PID                 0x0000
 #define SDT_PID                 0x0011		//17
-#define PMT_PID					0x1000		//4096
+
+#define TYPE_PAT				1
+#define TYPE_SDT				2
+#define TYPE_PMT				3
+#define TYPE_PES				4
+
+//#define PMT_PID					0x1000		//4096
 #define EMPTY_PID               0x1FFF
 
 /* table ids */

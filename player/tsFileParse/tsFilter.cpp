@@ -55,12 +55,13 @@ MVoid tsSection::write_section_data(TsStream* p_tsStream, const MPChar p_buf, MU
 
 	if (m_section_length != -1 && m_section_index >= m_section_length)
 	{
-		/*说明已经全部组合成*/
+		/*说明已经全部组合成*/ 
 		MBool crc_valid = MFalse;
 		m_end_of_section_reached = MTrue;
 		/*省略crc验证*/
 
-		parse(p_tsStream,m_section_buf, m_section_length);
+		parse(p_tsStream, m_section_buf, m_section_length);
+		
 	}
 }
 
@@ -155,12 +156,12 @@ MUInt32 tsSectionPat::parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buf
 			break;
 		}
 		pmt_pid &= 0x1fff;
-		if (pmt_pid != PMT_PID)
-		{
-			return -1;
-		}
+		//if (pmt_pid != PMT_PID)
+		//{
+		//	return -1;
+		//}
 
-		tsFilter* filter = p_tsStream->add_filter(pmt_pid);
+		tsFilter* filter = p_tsStream->add_filter(TYPE_PMT,pmt_pid);
 
 		//目前只支持一个pmt,so break
 		break;
@@ -249,7 +250,7 @@ MUInt32 tsSectionPmt::parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buf
 		tsFilter* filter = p_tsStream->get_filter(pid);
 		if (filter == MNull && is_pes_stream(stream_type))
 		{
-			filter = p_tsStream->add_filter(pid);
+			filter = p_tsStream->add_filter(TYPE_PES,pid);
 			if (filter == MNull)
 			{
 				return -1;
@@ -535,22 +536,24 @@ inline MInt64 tsSectionPes::ff_parse_pes_pts(const MUInt8 *buf) {
 
 
 
-tsFilter* FilterFactory::CreateFilter(MInt32 pid)
+tsFilter* FilterFactory::CreateFilter(MInt32 type,MInt32 pid)
 {
 	tsFilter* filter = MNull;
-	switch (pid)
+	switch (type)
 	{
-	case SDT_PID:
+	case TYPE_SDT:
 		filter = new tsSectionSdt();
 		break;
-	case PAT_TID:
+	case TYPE_PAT:
 		filter = new tsSectionPat();
 		break;
-	case PMT_PID:
+	case TYPE_PMT:
 		filter = new tsSectionPmt();
 		break;
-	default:
+	case TYPE_PES:
 		filter = new tsSectionPes();
+		break;
+	default:
 		break;
 	}
 	if (filter)

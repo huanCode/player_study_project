@@ -211,7 +211,7 @@ private:
 class FilterFactory
 {
 public:
-	static tsFilter* CreateFilter(MInt32 pid);
+	static tsFilter* CreateFilter(MInt32 type, MInt32 pid);
 
 };
 
