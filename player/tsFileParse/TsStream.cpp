@@ -357,6 +357,7 @@ MBool TsStream::handle_packet(MPChar pBuffer)
 	ts_packet_header tsHeader;
 	parse_ts_packet_header(pBuffer, tsHeader);
 	MPChar	pData = pBuffer + TS_PACKET_HEADER_SIZE;
+	MPChar  pBufferEnd = pBuffer + Packet_Size;
 	if (tsHeader.sync_byte != TS_PACKET_SYNC_BYTE || tsHeader.transport_error)
 	{
 		return MFalse;
@@ -367,23 +368,28 @@ MBool TsStream::handle_packet(MPChar pBuffer)
 		return MTrue;
 	}
 
-	MUInt16 adaptation_length = get8(pData);
-	if (tsHeader.has_adaptation)
+	MUInt16 adaptation_length = 0;
+	if (tsHeader.bStart_payload)
 	{
-		//adaptation_length = get8(pData);
-		if (adaptation_length > 1)
+		adaptation_length = pData[0];
+		if (tsHeader.has_adaptation)
 		{
-			//bool is_discontinuity = get8(pData) & 0x80;
-			//if (is_discontinuity)
-			//{
-			//	int i = 0;
-			//}
-			//printf("is_discontinuity = %d =====================\n", is_discontinuity);
-		}
+			//adaptation_length = get8(pData);
+			if (adaptation_length > 1)
+			{
+				//bool is_discontinuity = get8(pData) & 0x80;
+				//if (is_discontinuity)
+				//{
+				//	int i = 0;
+				//}
+				//printf("is_discontinuity = %d =====================\n", is_discontinuity);
+			}
 
-		pData += adaptation_length;
-		//printf("has_adaptation ,adaptation_length = %d\n", adaptation_length);
+			//pData += adaptation_length;
+			//printf("has_adaptation ,adaptation_length = %d\n", adaptation_length);
+		}
 	}
+
 
 	
 
@@ -392,7 +398,7 @@ MBool TsStream::handle_packet(MPChar pBuffer)
 
 
 	
-	MInt32 remainderSize = PACKET_SIZE - adaptation_length - 1 - TS_PACKET_HEADER_SIZE;
+	//MInt32 remainderSize = PACKET_SIZE - adaptation_length - 1 - TS_PACKET_HEADER_SIZE;
 
 	tsFilter* filter = get_filter(tsHeader.pid);
 	if (!filter)
@@ -418,7 +424,9 @@ MBool TsStream::handle_packet(MPChar pBuffer)
 				return MFalse;
 			}
 			tsSection* filterTmp = (tsSection*)filter;
-			filterTmp->write_section_data(this, point_field + 1, remainderSize, MTrue);
+			point_field++;
+			MUInt32 len = (pBufferEnd - point_field);
+			filterTmp->write_section_data(this, point_field, len, MTrue);
 		}
 		else
 		{
@@ -429,7 +437,13 @@ MBool TsStream::handle_packet(MPChar pBuffer)
 	else
 	{
 		m_isStart = tsHeader.bStart_payload;
-		filter->parse(this, pData, remainderSize);
+		pData = pData + adaptation_length;
+		if (m_isStart)
+		{
+			pData++;
+		}
+		MUInt32 len = (pBufferEnd - pData);
+		filter->parse(this, pData, len);
 	}
 
 	return MTrue;

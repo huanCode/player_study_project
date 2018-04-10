@@ -36,7 +36,7 @@ int main()
 	SourceParse sourse;
 	sourse.Open("http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8");	//Ç¶Ì×
 
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 300; i++)
 	{
 		sourse.ReadFrame();
 	}

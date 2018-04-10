@@ -333,6 +333,10 @@ MUInt32 tsSectionPes::parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buf
 		//start = MTrue;
 
 		//memset(&m_buffer, 0, 512000);
+		if (m_state == MPEGTS_PAYLOAD)
+		{
+		}
+
 		m_state = MPEGTS_HEADER;
 
 	}
@@ -351,7 +355,7 @@ MUInt32 tsSectionPes::parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buf
 			memcpy(m_header + m_header_size, pBuffer, length);
 			m_header_size += length;
 			p_buffer_size -= length;
-
+			pBuffer += length;
 			if (m_header_size == PES_START_SIZE)
 			{
 				//-----------------------------------------------------------------------------
@@ -427,13 +431,13 @@ skip:
 
 			memcpy(m_header + m_header_size, pBuffer, length);
 			m_header_size += length;
-			pBuffer -= length;
+			pBuffer += length;
 			p_buffer_size -= length;
 			if (m_header_size == PES_HEADER_SIZE) {
 				m_pes_header_size = m_header[8] + 9;
 				m_state = MPEGTS_PESHEADER_FILL;
 			}
-			break;
+			//break;
 
 		}
 		else if (m_state == MPEGTS_PESHEADER_FILL)
@@ -508,7 +512,7 @@ skip:
 
 			p_buffer_size = 0;
 
-			p_tsStream->m_stopParse = MTrue;
+			//p_tsStream->m_stopParse = MTrue;
 			break;
 		}
 		else if (m_state == MPEGTS_SKIP)
