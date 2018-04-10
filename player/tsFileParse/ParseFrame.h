@@ -14,6 +14,8 @@ public:
 
 	MBool FindParse(MPChar pbuf,MInt32 iBufSize);
 	MBool	ReadHeader(MPChar strUrl);
+
+	MBool ReadFrame();
 	MVoid	SetDataRead(IDataRead* obj);
 private:
 	IParse*	m_parse;

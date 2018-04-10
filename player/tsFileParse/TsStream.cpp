@@ -367,26 +367,31 @@ MBool TsStream::handle_packet(MPChar pBuffer)
 		return MTrue;
 	}
 
-	MUInt16 adaptation_length = 0;
+	MUInt16 adaptation_length = get8(pData);
 	if (tsHeader.has_adaptation)
 	{
-		adaptation_length = get8(pData) + 1;
+		//adaptation_length = get8(pData);
 		if (adaptation_length > 1)
 		{
-			bool is_discontinuity = get8(pData) & 0x80;
-			if (is_discontinuity)
-			{
-				int i = 0;
-			}
+			//bool is_discontinuity = get8(pData) & 0x80;
+			//if (is_discontinuity)
+			//{
+			//	int i = 0;
+			//}
 			//printf("is_discontinuity = %d =====================\n", is_discontinuity);
 		}
+
+		pData += adaptation_length;
 		//printf("has_adaptation ,adaptation_length = %d\n", adaptation_length);
 	}
+
+	
+
 	//printf("continuity_counter = %d\n", tsHeader.continuity_counter);
 
 
 
-	pData += adaptation_length + 1;
+	
 	MInt32 remainderSize = PACKET_SIZE - adaptation_length - 1 - TS_PACKET_HEADER_SIZE;
 
 	tsFilter* filter = get_filter(tsHeader.pid);
@@ -464,14 +469,9 @@ MBool TsStream::ReadHeader(MPChar strUrl)
 
 MBool	TsStream::ReadPacket()
 {
-
-
 	if (!handle_packets()) {
 		return MFalse;
 	}
-
-
-
 
 	return MFalse;
 }

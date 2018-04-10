@@ -333,7 +333,7 @@ MUInt32 tsSectionPes::parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buf
 		//start = MTrue;
 
 		//memset(&m_buffer, 0, 512000);
-
+		m_state = MPEGTS_HEADER;
 
 	}
 

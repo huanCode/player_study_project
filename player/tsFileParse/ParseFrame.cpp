@@ -28,3 +28,12 @@ MBool	ParseFrame::ReadHeader(MPChar strUrl)
 {
 	return m_parse->ReadHeader(strUrl);
 }
+
+MBool ParseFrame::ReadFrame()
+{
+	if (m_parse)
+	{
+		return m_parse->ReadPacket();
+	}
+	return MFalse;
+}

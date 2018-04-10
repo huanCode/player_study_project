@@ -51,8 +51,6 @@ MBool SourceParse::Open(MPChar strUrl)
 
 MBool SourceParse::ReadFrame()
 {
+	return m_parseFrame.ReadFrame();
 
-
-
-	return MFalse;
 }

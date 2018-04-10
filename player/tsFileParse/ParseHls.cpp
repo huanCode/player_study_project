@@ -83,6 +83,10 @@ MBool ParseHls::ReadHeader(MPChar strUrl)
 
 MBool ParseHls::ReadPacket()
 {
+	if (m_pTs)
+	{
+		m_pTs->ReadPacket();
+	}
 	return MFalse;
 }
 

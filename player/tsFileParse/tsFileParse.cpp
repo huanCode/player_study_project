@@ -36,6 +36,11 @@ int main()
 	SourceParse sourse;
 	sourse.Open("http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8");	//Ç¶Ì×
 
+	for (int i = 0; i < 10; i++)
+	{
+		sourse.ReadFrame();
+	}
+
 
 	//TsStream ts;
 	//ts.mpegts_read_header();
