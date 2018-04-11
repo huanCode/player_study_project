@@ -43,6 +43,10 @@ MBool ParseHls::ReadHeader(MPChar strUrl)
 			return MFalse;
 		}
 	}
+	else
+	{
+		playlist = m_playlistList.GetLastNode();
+	}
 	m_bTsReady = MTrue;
 	if (playlist->segmentList.GetSize() > 0)
 	{
@@ -236,39 +240,56 @@ MBool ParseHls::ParseM3u8(MPChar strUrl, Playlist* playlist)
 			else if (ToolString::av_strstart(line, "#EXT-X-TARGETDURATION:", &ptr)) {
 				//  #EXT-X-TARGETDURATION:指定最大的媒体段时间长度(秒), 
 				//  #EXTINF:指定的时间长度必须小于或等于这个最大值。
-				playlist = createPlaylist(playlist);
 				if (playlist == MNull)
 				{
-					// return MFalse;
-					goto Exit;
+					playlist = createPlaylist(playlist);
+					if (playlist == MNull)
+					{
+						//return MFalse;
+						goto Exit;
+					}
+					m_playlistList.AddNode(playlist);
 				}
 
 			}
 			else if (ToolString::av_strstart(line, "#EXT-X-MEDIA-SEQUENCE:", &ptr)) {
 				//暂时忽略
-				playlist = createPlaylist(playlist);
 				if (playlist == MNull)
 				{
-					//return MFalse;
-					goto Exit;
+					playlist = createPlaylist(playlist);
+					if (playlist == MNull)
+					{
+						//return MFalse;
+						goto Exit;
+					}
+					m_playlistList.AddNode(playlist);
 				}
+
 			}
 			else if (ToolString::av_strstart(line, "#EXT-X-PLAYLIST-TYPE:", &ptr)) {
 				//暂时忽略
-				playlist = createPlaylist(playlist);
 				if (playlist == MNull)
 				{
-					//return MFalse;
-					goto Exit;
+					playlist = createPlaylist(playlist);
+					if (playlist == MNull)
+					{
+						//return MFalse;
+						goto Exit;
+					}
+					m_playlistList.AddNode(playlist);
 				}
 			}
 			else if (ToolString::av_strstart(line, "#EXT-X-MAP:", &ptr)) {
 				//暂时忽略
-				playlist = createPlaylist(playlist);
 				if (playlist == MNull)
 				{
-					//return MFalse;
-					goto Exit;
+					playlist = createPlaylist(playlist);
+					if (playlist == MNull)
+					{
+						//return MFalse;
+						goto Exit;
+					}
+					m_playlistList.AddNode(playlist);
 				}
 			}
 			else if (ToolString::av_strstart(line, "#EXT-X-ENDLIST", &ptr)) {

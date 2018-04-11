@@ -368,10 +368,18 @@ MBool TsStream::handle_packet(MPChar pBuffer)
 		return MTrue;
 	}
 
-	MUInt16 adaptation_length = 0;
+	
+	MUInt8 adaptation_length = 0;
 	if (tsHeader.bStart_payload)
 	{
-		adaptation_length = pData[0];
+
+
+		//a = pBuffer[4];
+		adaptation_length = pBuffer[4];
+
+		MUInt8 a[6] = { 0 };
+		MMemCpy(a, pBuffer, 6);
+		int vvv = 0;
 		if (tsHeader.has_adaptation)
 		{
 			//adaptation_length = get8(pData);
