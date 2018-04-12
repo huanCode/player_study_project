@@ -63,6 +63,18 @@ private:
 		MUInt8 last_sec_num;
 	} SectionHeader;
 
+	typedef struct _AVPKT
+	{
+		_AVPKT()
+		{
+			bufferPkt = 0;
+			bufferPktSize = 0;
+		}
+
+		MBool CopyBuffer(MPChar pBuffer, MInt32 bufferSize);
+		MPChar			bufferPkt;
+		MInt32			bufferPktSize;
+	}AVPkt;
 
 
 	enum MpegTSState {
@@ -139,6 +151,8 @@ private:
 	MInt32		m_trackNum;		//有几条流
 
 	MBool		m_stopParse;
+
+	AVPkt			m_avpkt;
 public:
 
 

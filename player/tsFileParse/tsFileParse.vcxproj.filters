@@ -31,6 +31,9 @@
     <Filter Include="ParseFrame\hls">
       <UniqueIdentifier>{75220b5a-86b0-4180-a486-f0b4c13b98ec}</UniqueIdentifier>
     </Filter>
+    <Filter Include="H264">
+      <UniqueIdentifier>{2b43daba-72a2-44c7-b378-661ddc9873d0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -102,6 +105,9 @@
     <ClInclude Include="ParseHls.h">
       <Filter>ParseFrame\hls</Filter>
     </ClInclude>
+    <ClInclude Include="H264Parse.h">
+      <Filter>H264</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -142,6 +148,9 @@
     </ClCompile>
     <ClCompile Include="ParseHls.cpp">
       <Filter>ParseFrame\hls</Filter>
+    </ClCompile>
+    <ClCompile Include="H264Parse.cpp">
+      <Filter>H264</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

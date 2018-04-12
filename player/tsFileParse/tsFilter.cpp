@@ -321,20 +321,14 @@ MUInt32 tsSectionPes::parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buf
 	MBool b = p_tsStream->m_isStart;
 	if (p_tsStream->m_isStart)
 	{
-		//表示上一帧读取完成
-		//printf("PES  size = %d --------------------------------------\n", m_packet.size);
-		//if (!m_fileWrite.Write(m_buffer, m_packet.size))
-		//{
-		//	int i = 1;
-		//}
 
-		//m_packet.size = 0;
-		//m_pes_state = MPEGTS_HEADER;
-		//start = MTrue;
-
-		//memset(&m_buffer, 0, 512000);
-		if (m_state == MPEGTS_PAYLOAD)
+		//表示上一帧视频已经读取完成
+		if (m_state == MPEGTS_PAYLOAD && m_buffer_size > 0)
 		{
+			if (!p_tsStream->m_avpkt.CopyBuffer(m_buffer, m_buffer_size))
+			{
+				return MFalse;
+			}
 		}
 
 		m_state = MPEGTS_HEADER;

@@ -161,6 +161,8 @@ public:
 	{
 		m_curIndex = iIndex;
 	};
+
+
 	MBool mpegts_find_stream_type(MInt32 stream_type, const StreamType *types);
 private:
 	inline MInt64 ff_parse_pes_pts(const MUInt8 *buffer);
@@ -196,7 +198,7 @@ private:
 
 	MUInt32			m_stream_id;
 	MUInt32			m_total_size;
-	MPByte			m_buffer;
+	MPChar			m_buffer;
 	MInt32			m_buffer_size;
 	MInt32			m_pes_header_size;
 
@@ -205,6 +207,9 @@ private:
 	MInt32			m_stream_type;
 
 	MInt32			m_curIndex;
+
+
+
 };
 
 

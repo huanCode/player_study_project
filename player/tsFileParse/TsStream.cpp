@@ -317,6 +317,25 @@ IParse* TsStream::read_probe(MPChar p_buffer, MUInt32 p_size)
 //}
 
 
+MBool TsStream::_AVPKT::CopyBuffer(MPChar pBuffer, MInt32 bufferSize)
+{
+	if (pBuffer == MNull || bufferSize <= 0)
+	{
+		return MFalse;
+	}
+
+
+	bufferPkt = (MPChar)MMemAlloc(MNull, bufferSize);
+	if (bufferPkt == MNull)
+	{
+		return MFalse;
+	}
+
+	MMemCpy(bufferPkt, pBuffer, bufferSize);
+	bufferPktSize = bufferSize;
+
+}
+
 
 
 MBool TsStream::handle_packets(MInt32 nb_packets)
