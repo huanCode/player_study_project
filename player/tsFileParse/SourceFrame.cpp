@@ -73,10 +73,10 @@ MBool SourceFrame::Read(MChar** pBuf, MDWord dwSize, MInt32& out_readSize)
 	MInt32 readSize = 0;
 	while (dwSize)
 	{
-		readSize = m_baseIo->IoRead(buffer,dwSize);
+		readSize = m_baseIo->IoRead(buffer + out_readSize,dwSize);
 		if (readSize == dwSize)
 		{
-			out_readSize = readSize;
+			out_readSize += readSize;
 			return MTrue;
 		}
 		else if (readSize < dwSize && readSize > 0)

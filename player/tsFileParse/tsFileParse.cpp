@@ -36,7 +36,7 @@ int main()
 	SourceParse sourse;
 	sourse.Open("http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8");	//Ç¶Ì×
 
-	for (int i = 0; i < 300; i++)
+	for (int i = 0; i < 3000; i++)
 	{
 		sourse.ReadFrame();
 	}

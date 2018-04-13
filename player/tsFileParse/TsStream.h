@@ -100,7 +100,7 @@ private:
 	MBool	Init();
 
 
-	MBool handle_packets(MInt32 nb_packets = 100);
+	MBool handle_packets(MInt32 nb_packets = 1000);
 	MBool handle_packet(MPChar pBuffer);
 
 
@@ -150,7 +150,7 @@ private:
 
 	MInt32		m_trackNum;		//有几条流
 
-	MBool		m_stopParse;
+	MInt32		m_stopParse;
 
 	AVPkt			m_avpkt;
 public:

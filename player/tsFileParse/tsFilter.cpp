@@ -3,6 +3,9 @@
 #include "common.h"
 #include "TsStreamDef.h"
 #include "TsStream.h"
+#include "ammem.h"
+
+#include<assert.h>
 #define SECTION_HEADER_SIZE_8_BYTE		8
 
 
@@ -236,7 +239,7 @@ MUInt32 tsSectionPmt::parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buf
 	MInt32 stream_type = 0;
 	MInt32 pid = 0;
 
-	p_tsStream->m_stopParse = MTrue;
+	p_tsStream->m_stopParse = 3;
 	MInt32 iIndex = 0;
 	while (true)
 	{
@@ -321,16 +324,30 @@ MUInt32 tsSectionPes::parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buf
 	MBool b = p_tsStream->m_isStart;
 	if (p_tsStream->m_isStart)
 	{
+		if (m_mediaType == AV_MEDIA_TYPE_VIDEO)
+		{
+			int i = 0;
+		}
 
 		//表示上一帧视频已经读取完成
 		if (m_state == MPEGTS_PAYLOAD && m_buffer_size > 0)
 		{
 			if (!p_tsStream->m_avpkt.CopyBuffer(m_buffer, m_buffer_size))
 			{
-				return MFalse;
+
+				return -1;
 			}
+			p_tsStream->m_stopParse = 1;
+
 		}
 
+		m_pts = -1;
+		m_dts = -1;
+		m_buffer_size = 0;
+		m_pes_header_size = 0;
+		m_total_size = 0;
+		m_header_size = 0;
+		MMemSet(m_header, 0,MAX_PES_HEADER_SIZE);
 		m_state = MPEGTS_HEADER;
 
 	}
@@ -338,17 +355,18 @@ MUInt32 tsSectionPes::parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buf
 	MUInt16 length = 0;
 	MInt32	code = 0;
 	MPChar pBuffer = p_buffer;
-	while (p_buffer_size > 0)
+	MInt32 tBuf_size = p_buffer_size;
+	while (tBuf_size > 0)
 	{
 		if (m_state == MPEGTS_HEADER)
 		{
 			length = PES_START_SIZE - m_header_size;
-			if (length > p_buffer_size)
-				length = p_buffer_size;
+			if (length > tBuf_size)
+				length = tBuf_size;
 
 			memcpy(m_header + m_header_size, pBuffer, length);
 			m_header_size += length;
-			p_buffer_size -= length;
+			tBuf_size -= length;
 			pBuffer += length;
 			if (m_header_size == PES_START_SIZE)
 			{
@@ -367,25 +385,46 @@ MUInt32 tsSectionPes::parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buf
 					m_stream_id = m_header[3];
 					if (code == 0x1be)
 					{
-						//goto skip
+						goto skip;
 					}
+					//video的大小一般是返回0,表示大小未知，那么只能自定义设个大值
+					//audio都是能获取大小的
 					m_total_size = AV_RB16(m_header + 4);	//get pes size
 					if (m_total_size == 0)
 					{
 						//m_total_size  ,说明pes的大小是未知的
 						m_total_size = MAX_PES_PAYLOAD;
 					}
-					else if(m_total_size > 0)
-					{
-						return -1;
-					}
 					
-					m_buffer = new MByte[m_total_size + AV_INPUT_BUFFER_PADDING_SIZE];
-					memset(m_buffer, 0, m_total_size + AV_INPUT_BUFFER_PADDING_SIZE);
-					if (!m_buffer)
+					if (m_total_size == MAX_PES_PAYLOAD)
 					{
-						return -1;
+						//视频处理方法
+						if (m_buffer == MNull)
+						{
+							m_buffer = new MChar[m_total_size + AV_INPUT_BUFFER_PADDING_SIZE];
+							if (!m_buffer)
+							{
+								return -1;
+							}
+						}
+						memset(m_buffer, 0, m_total_size + AV_INPUT_BUFFER_PADDING_SIZE);
 					}
+					else
+					{
+						//audio处理方式
+						if (m_buffer)
+						{
+							delete m_buffer;
+							m_buffer = MNull;
+						}
+						m_buffer = new MChar[m_total_size + AV_INPUT_BUFFER_PADDING_SIZE];
+						if (!m_buffer)
+						{
+							return -1;
+						}
+						memset(m_buffer, 0, m_total_size + AV_INPUT_BUFFER_PADDING_SIZE);
+					}
+	
 
 					if (code != 0x1bc && code != 0x1bf && /* program_stream_map, private_stream_2 */
 						code != 0x1f0 && code != 0x1f1 && /* ECM, EMM */
@@ -420,13 +459,13 @@ skip:
 				return -1;
 			}
 
-			if (length > p_buffer_size)
-				length = p_buffer_size;
+			if (length > tBuf_size)
+				length = tBuf_size;
 
 			memcpy(m_header + m_header_size, pBuffer, length);
 			m_header_size += length;
 			pBuffer += length;
-			p_buffer_size -= length;
+			tBuf_size -= length;
 			if (m_header_size == PES_HEADER_SIZE) {
 				m_pes_header_size = m_header[8] + 9;
 				m_state = MPEGTS_PESHEADER_FILL;
@@ -443,15 +482,15 @@ skip:
 				return -1;
 			}
 
-			if (length > p_buffer_size)
+			if (length > tBuf_size)
 			{
-				length = p_buffer_size;
+				length = tBuf_size;
 			}
 			memcpy(m_header + m_header_size, pBuffer, length);
 			
 			m_header_size += length;
 			pBuffer += length;
-			p_buffer_size -= length;
+			tBuf_size -= length;
 
 			if (m_header_size == m_pes_header_size)
 			{
@@ -475,7 +514,7 @@ skip:
 				}
 				m_state = MPEGTS_PAYLOAD;
 				m_header_size = 0;
-				m_buffer_size = 0;
+				//m_buffer_size = 0;
 				if (m_stream_type == 0x12 && p_buffer_size > 0) {
 					return -1;
 				}
@@ -492,17 +531,41 @@ skip:
 		{
 			if (m_buffer)
 			{
-				if (m_buffer_size > 0 && m_buffer_size + p_buffer_size > m_total_size)
+				MInt32 copySize = 0;
+				if (m_header_size > 0 && p_buffer_size > m_total_size)
 				{
+					return -1;
 				}
-				else if (m_buffer_size == 0 && p_buffer_size > m_total_size)
+				else if (m_header_size == 0 && tBuf_size > m_total_size)
 				{
-					p_buffer_size = m_total_size;
+					//比如音频数据可能就是小于还剩余的buffer大小,多余的用0xff填充
+					copySize = m_total_size;
+				}
+				else
+				{
+					copySize = tBuf_size;
 				}
 
-				memcpy(m_buffer + m_buffer_size, pBuffer, p_buffer_size);
-				m_buffer_size += p_buffer_size;
+
+				//主要是视频帧数据，通过这些小buffer拼接起来
+				memcpy(m_buffer + m_buffer_size, pBuffer, copySize);
+				m_buffer_size += copySize;
+
+
+
+				if (!p_tsStream->m_stopParse && m_total_size < MAX_PES_PAYLOAD && m_pes_header_size + tBuf_size == m_total_size + PES_START_SIZE)
+				{
+					p_tsStream->m_stopParse = 2;
+					if (!p_tsStream->m_avpkt.CopyBuffer(m_buffer, m_buffer_size))
+					{
+
+						return -1;
+					}
+
+				}
 			}
+
+
 
 			p_buffer_size = 0;
 

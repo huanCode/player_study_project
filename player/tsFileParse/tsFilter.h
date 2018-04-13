@@ -166,28 +166,12 @@ public:
 	MBool mpegts_find_stream_type(MInt32 stream_type, const StreamType *types);
 private:
 	inline MInt64 ff_parse_pes_pts(const MUInt8 *buffer);
-	//typedef struct PESContext {
-	//	int pid;
-	//	int pcr_pid; /**< if -1 then all packets containing PCR are considered */
-	//	int stream_type;
-	//	MpegTSContext *ts;
-	//	AVFormatContext *stream;
-	//	AVStream *st;
-	//	AVStream *sub_st; /**< stream for the embedded AC3 stream in HDMV TrueHD */
-	//	enum MpegTSState state;
-	//	/* used to get the format */
-	//	int data_index;
-	//	int flags; /**< copied to the AVPacket flags */
-	//	int total_size;
-	//	int pes_header_size;
-	//	int extended_stream_id;
-	//	uint8_t stream_id;
-	//	int64_t pts, dts;
-	//	int64_t ts_packet_pos; /**< position of first TS packet of this PES packet */
-	//	uint8_t header[MAX_PES_HEADER_SIZE];
-	//	AVBufferRef *buffer;
-	//	SLConfigDescr sl;
-	//} PESContext;
+	MVoid resetPesInfo()
+	{
+		m_pts = -1;
+		m_dts = -1;
+		m_buffer_size = 0;
+	}
 private:
 	AV_MediaType	m_mediaType;
 	AV_CodecID		m_mediaCodecID;

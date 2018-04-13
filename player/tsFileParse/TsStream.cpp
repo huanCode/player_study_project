@@ -50,7 +50,7 @@ TsStream::TsStream()
 	m_packetBuffer = MNull;
 	m_trackNum = 0;
 
-	m_stopParse = MFalse;
+	m_stopParse = 0;
 
 }
 
@@ -341,11 +341,12 @@ MBool TsStream::_AVPKT::CopyBuffer(MPChar pBuffer, MInt32 bufferSize)
 MBool TsStream::handle_packets(MInt32 nb_packets)
 {
 
-	m_stopParse = MFalse;
+	m_stopParse = 0;
 	MInt32 packet_num = 0;
 
 	MInt32 iReadSize = 0;
 	MBool ret = MFalse;
+	MInt32 total = 0;
 	for (;;) {
 		packet_num++;
 		if (nb_packets != 0 && packet_num >= nb_packets) {
@@ -354,16 +355,39 @@ MBool TsStream::handle_packets(MInt32 nb_packets)
 		}
 		if (m_stopParse > 0)
 		{
+			int temp = 0;
+			if (m_stopParse == 1)
+			{
+				//video
+				temp = 1;
+			}
+
+			if (m_stopParse == 2)
+			{
+				//audio
+				temp = 1;
+			}
+
+			if (m_stopParse == 3)
+			{
+				//read hearder end
+				temp = 1;
+			}
+
 			ret = MTrue;
 			break;
 		}
-			
+
+		if (packet_num == 116)
+		{
+			int a = 0;
+		}
 
 		ret = m_dataRead->Read(&m_packetBuffer,TsStream::Packet_Size, iReadSize);
 		if (!ret || TsStream::Packet_Size != iReadSize)
 			break;
 
-		
+		total += iReadSize;
 		if (!handle_packet(m_packetBuffer))
 			break;
 	}
@@ -388,35 +412,26 @@ MBool TsStream::handle_packet(MPChar pBuffer)
 	}
 
 	
+
 	MUInt8 adaptation_length = 0;
-	if (tsHeader.bStart_payload)
+	if (tsHeader.has_adaptation)
 	{
-
-
-		//a = pBuffer[4];
 		adaptation_length = pBuffer[4];
-
-		MUInt8 a[6] = { 0 };
-		MMemCpy(a, pBuffer, 6);
-		int vvv = 0;
-		if (tsHeader.has_adaptation)
+		adaptation_length++;//算上pBuffer[4]这个字节
+		//adaptation_length = get8(pData);
+		if (adaptation_length > 1)
 		{
-			//adaptation_length = get8(pData);
-			if (adaptation_length > 1)
-			{
-				//bool is_discontinuity = get8(pData) & 0x80;
-				//if (is_discontinuity)
-				//{
-				//	int i = 0;
-				//}
-				//printf("is_discontinuity = %d =====================\n", is_discontinuity);
-			}
-
-			//pData += adaptation_length;
-			//printf("has_adaptation ,adaptation_length = %d\n", adaptation_length);
+			//bool is_discontinuity = get8(pData) & 0x80;
+			//if (is_discontinuity)
+			//{
+			//	int i = 0;
+			//}
+			//printf("is_discontinuity = %d =====================\n", is_discontinuity);
 		}
-	}
 
+		//pData += adaptation_length;
+		//printf("has_adaptation ,adaptation_length = %d\n", adaptation_length);
+	}
 
 	
 
@@ -465,10 +480,7 @@ MBool TsStream::handle_packet(MPChar pBuffer)
 	{
 		m_isStart = tsHeader.bStart_payload;
 		pData = pData + adaptation_length;
-		if (m_isStart)
-		{
-			pData++;
-		}
+
 		MUInt32 len = (pBufferEnd - pData);
 		filter->parse(this, pData, len);
 	}
@@ -514,7 +526,12 @@ MBool	TsStream::ReadPacket()
 		return MFalse;
 	}
 
-	return MFalse;
+	if (m_stopParse)
+	{
+
+	}
+
+	return MTrue;
 }
 
 
