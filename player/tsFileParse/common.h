@@ -1,4 +1,4 @@
-#include "amcomdef.h"
+#include "TsStreamDef.h"
 inline MUInt16 to_UInt16(MPChar p);
 inline MUInt8 to_UInt8(MPChar p);
 
@@ -15,4 +15,5 @@ typedef struct _avPacketInfo
 	MUInt32	dwTimeSpan;
 	MUInt32 dwExtraInfoSize;    //the size of extra info in front of the media data 
 	MBool	bIsSync;			//only for video frame
+	AV_MediaType	mediaType;	//audio/video
 }AVPacketInfo;

@@ -4,6 +4,7 @@
 #include "TsStreamDef.h"
 //#include "tsFilter.h"
 #include "IParse.h"
+#include "H264Parse.h"
 #define PACKET_SIZE	188
 #define FILTER_NUM	6
 #define PROBE_BUFFER_SIZE	204 * 10
@@ -69,11 +70,15 @@ private:
 		{
 			bufferPkt = 0;
 			bufferPktSize = 0;
+			mediaType = AV_MEDIA_TYPE_UNKNOWN;
+			bIsSync = 0;
 		}
 
-		MBool CopyBuffer(MPChar pBuffer, MInt32 bufferSize);
+		MBool CopyBuffer(MPChar pBuffer, MInt32 bufferSize, AV_MediaType& type);
 		MPChar			bufferPkt;
 		MInt32			bufferPktSize;
+		MBool			bIsSync;			//only for video frame
+		AV_MediaType	mediaType;	//audio/video
 	}AVPkt;
 
 
@@ -153,6 +158,8 @@ private:
 	MInt32		m_stopParse;
 
 	AVPkt			m_avpkt;
+
+	mv3File file;
 public:
 
 
