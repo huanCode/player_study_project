@@ -62,6 +62,14 @@ MVoid SourceFrame::Close()
 }
 
 
+MVoid SourceFrame::GetConfig(MInt32 dwCfgType, MVoid** pdwValue)
+{
+	if (m_baseIo)
+	{
+		m_baseIo->IoGetConfig(dwCfgType, pdwValue);
+	}
+}
+
 MBool SourceFrame::Read(MChar** pBuf, MDWord dwSize, MInt32& out_readSize)
 {
 	if (pBuf == MNull || dwSize <=0)

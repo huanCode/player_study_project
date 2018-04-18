@@ -52,7 +52,7 @@ TsStream::TsStream()
 
 	m_stopParse = 0;
 	file.Open("tmp.h264", mv3File::stream_write);
-
+	audioFile.Open("audio.pcm", mv3File::stream_write);
 }
 
 
@@ -386,8 +386,18 @@ MBool TsStream::handle_packets(MInt32 nb_packets)
 		}
 
 		ret = m_dataRead->Read(&m_packetBuffer,TsStream::Packet_Size, iReadSize);
-		if (!ret || TsStream::Packet_Size != iReadSize)
-			break;
+		if (!ret)
+		{
+			if (TsStream::Packet_Size != iReadSize)
+			{
+				return MFalse;
+			}
+			else if(iReadSize == 0)
+			{
+
+			}
+		}
+			
 
 		total += iReadSize;
 		if (!handle_packet(m_packetBuffer))
@@ -545,19 +555,19 @@ MBool	TsStream::ReadPacket()
 		{
 			m_avpkt.bIsSync = MTrue;
 		}
-		file.Write((MByte*)m_avpkt.bufferPkt, m_avpkt.bufferPktSize);
-		
-		if (a == 5000)
-		{
-			file.Close();
-		}
+		//file.Write((MByte*)m_avpkt.bufferPkt, m_avpkt.bufferPktSize);
+		//
+		//if (a == 5000)
+		//{
+		//	file.Close();
+		//}
 		a++;
 		
 		
 	}
 	else if (m_avpkt.mediaType == AV_MEDIA_TYPE_AUDIO)
 	{
-
+		//audioFile.Write((MByte*)m_avpkt.bufferPkt, m_avpkt.bufferPktSize);
 	}
 
 	return MTrue;

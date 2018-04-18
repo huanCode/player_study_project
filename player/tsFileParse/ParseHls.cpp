@@ -180,8 +180,16 @@ MBool ParseHls::ParseM3u8(MPChar strUrl, Playlist* playlist)
 		return MFalse;
 	}
 
-	MBool ret = MFalse;
+	MPChar strRealUrl = MNull;
+	MVoid* tmp = strRealUrl;
+	m_dataRead->GetConfig(GET_CFG_HTTP_LOCATION_URL, &tmp);
+	strRealUrl = (MPChar)tmp;
+	if (!strRealUrl)
+	{
+		strRealUrl = strUrl;
+	}
 
+	MBool ret = MFalse;
 	MInt32 iBufferSize = MAX_URL_SIZE;
 	while (true)
 	{
@@ -311,7 +319,7 @@ MBool ParseHls::ParseM3u8(MPChar strUrl, Playlist* playlist)
 
 				if (is_variant)
 				{
-					MInt32 strNameSize = sizeof(line) + sizeof(strUrl) + 1;
+					MInt32 strNameSize = sizeof(line) + sizeof(strRealUrl) + 1;
 					playlist->strUrl = (MPChar)MMemAlloc(MNull, strNameSize);
 					ToolString::ff_make_absolute_url(playlist->strUrl, strNameSize, "http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8", line);
 					//MMemCpy(playlist->strName, line, sizeof(line));
@@ -341,7 +349,7 @@ MBool ParseHls::ParseM3u8(MPChar strUrl, Playlist* playlist)
 					}
 
 					seg->duration = duration;
-					ToolString::ff_make_absolute_url(tmp_strUrl, sizeof(tmp_strUrl), strUrl, line);
+					ToolString::ff_make_absolute_url(tmp_strUrl, sizeof(tmp_strUrl), strRealUrl, line);
 
 					seg->url = ToolString::av_strdup(tmp_strUrl);
 					if (!seg->url) {

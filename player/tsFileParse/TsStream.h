@@ -160,6 +160,7 @@ private:
 	AVPkt			m_avpkt;
 
 	mv3File file;
+	mv3File audioFile;
 public:
 
 

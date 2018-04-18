@@ -25,6 +25,7 @@ public:
 	
 	MBool Open(MPChar strUrl);
 	MBool Read(MChar**, MDWord dwSize,MInt32& out_readSize);
+	MVoid GetConfig(MInt32 dwCfgType, MVoid** pdwValue);
 	//MInt32 IoReadLine(MChar** ppBuffer);
 	MBool isFinish(){return m_isFinish;};
 	MVoid Close();

@@ -34,9 +34,9 @@ int main()
 	//int* ii = ll.GetNodePtrByIndex(4);
 
 	SourceParse sourse;
-	sourse.Open("http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8");	//Ç¶Ì×
+	sourse.Open("http://hlsglsb.wasu.tv/1480682957527_561859.m3u8?action=hls&Contentid=CP23010020161201084109");	//Ç¶Ì×
 
-	for (int i = 0; i < 3000; i++)
+	for (int i = 0; i < 30000; i++)
 	{
 		sourse.ReadFrame();
 	}

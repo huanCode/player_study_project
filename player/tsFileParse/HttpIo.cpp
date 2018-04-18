@@ -18,6 +18,9 @@ MBool HttpIo::IoOpen(MPChar strUrl)
 		MInt32 ret = Http_Connect(m_hHttp);
 		if (ret == 0)
 		{
+
+
+
 			return MTrue;
 		}
 
@@ -39,6 +42,32 @@ MVoid	HttpIo::IoClose()
 		m_hHttp = MNull;
 	}
 }
+
+MPChar HttpIo::GetLocationUrl()
+{
+	MPChar strUrl = MNull;
+	if (m_hHttp)
+	{
+		MRESULT hr = Http_GetLocationUrl(m_hHttp, strUrl);
+	}
+	
+	return strUrl;
+}
+
+MVoid  HttpIo::IoGetConfig(MInt32 dwCfgType, MVoid** pdwValue)
+{
+	switch (dwCfgType)
+	{
+	case GET_CFG_HTTP_LOCATION_URL:
+		//MPChar strUrl = MNull;
+		//strUrl = GetLocationUrl();
+		*pdwValue = GetLocationUrl();
+		break;
+	default:
+		break;
+	}
+}
+
 
 MInt32 HttpIo::IoRead(MPChar pBuf, MDWord dwSize, MInt64 llOffset)
 {

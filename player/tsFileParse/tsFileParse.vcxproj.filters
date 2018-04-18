@@ -108,6 +108,12 @@
     <ClInclude Include="H264Parse.h">
       <Filter>H264</Filter>
     </ClInclude>
+    <ClInclude Include="TsStreamDef.h">
+      <Filter>ParseFrame\ts</Filter>
+    </ClInclude>
+    <ClInclude Include="AllConfig.h">
+      <Filter>tool</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
