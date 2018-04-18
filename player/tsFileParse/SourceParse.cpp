@@ -49,8 +49,8 @@ MBool SourceParse::Open(MPChar strUrl)
 
 
 
-MBool SourceParse::ReadFrame()
+MBool SourceParse::ReadFrame(AVPkt** pkt)
 {
-	return m_parseFrame.ReadFrame();
+	return m_parseFrame.ReadFrame(pkt);
 
 }

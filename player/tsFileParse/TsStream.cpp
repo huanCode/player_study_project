@@ -318,25 +318,25 @@ IParse* TsStream::read_probe(MPChar p_buffer, MUInt32 p_size)
 //}
 
 
-MBool TsStream::_AVPKT::CopyBuffer(MPChar pBuffer, MInt32 bufferSize, AV_MediaType& type)
-{
-	if (pBuffer == MNull || bufferSize <= 0)
-	{
-		return MFalse;
-	}
-
-
-	bufferPkt = (MPChar)MMemAlloc(MNull, bufferSize);
-	if (bufferPkt == MNull)
-	{
-		return MFalse;
-	}
-
-	MMemCpy(bufferPkt, pBuffer, bufferSize);
-	bufferPktSize = bufferSize;
-	mediaType = type;
-
-}
+//MBool TsStream::_AVPKT::CopyBuffer(MPChar pBuffer, MInt32 bufferSize, AV_MediaType& type)
+//{
+//	if (pBuffer == MNull || bufferSize <= 0)
+//	{
+//		return MFalse;
+//	}
+//
+//
+//	bufferPkt = (MPChar)MMemAlloc(MNull, bufferSize);
+//	if (bufferPkt == MNull)
+//	{
+//		return MFalse;
+//	}
+//
+//	MMemCpy(bufferPkt, pBuffer, bufferSize);
+//	bufferPktSize = bufferSize;
+//	mediaType = type;
+//
+//}
 
 
 
@@ -394,7 +394,7 @@ MBool TsStream::handle_packets(MInt32 nb_packets)
 			}
 			else if(iReadSize == 0)
 			{
-
+				m_avpkt.isGetPacket = MFalse;
 			}
 		}
 			
@@ -532,7 +532,7 @@ MBool TsStream::ReadHeader(MPChar strUrl)
 
 
 
-MBool	TsStream::ReadPacket()
+MBool	TsStream::ReadPacket(AVPkt** pkt)
 {
 	static int a = 1;
 	if (!handle_packets()) {
@@ -546,15 +546,15 @@ MBool	TsStream::ReadPacket()
 	if (m_avpkt.mediaType == AV_MEDIA_TYPE_VIDEO)
 	{
 		MDWord slicetype = 0;
-		slicetype =  H264Parse::GetSliceType((MByte*)m_avpkt.bufferPkt,m_avpkt.bufferPktSize);
+		//slicetype =  H264Parse::GetSliceType((MByte*)m_avpkt.bufferPkt,m_avpkt.bufferPktSize);
 
-		if (slicetype == AMC_H264_UTL_ERR_PARAM)
-			return MFalse;
+		//if (slicetype == AMC_H264_UTL_ERR_PARAM)
+		//	return MFalse;
 
-		if (slicetype == I_SLICE || slicetype == IDR_SLICE)
-		{
-			m_avpkt.bIsSync = MTrue;
-		}
+		//if (slicetype == I_SLICE || slicetype == IDR_SLICE)
+		//{
+		//	m_avpkt.bIsSync = MTrue;
+		//}
 		//file.Write((MByte*)m_avpkt.bufferPkt, m_avpkt.bufferPktSize);
 		//
 		//if (a == 5000)
@@ -569,6 +569,11 @@ MBool	TsStream::ReadPacket()
 	{
 		//audioFile.Write((MByte*)m_avpkt.bufferPkt, m_avpkt.bufferPktSize);
 	}
+
+	AVPkt* pktTmp = new AVPkt();
+	m_avpkt.Copy(pktTmp);
+	m_avpkt.Init();
+	*pkt = pktTmp;
 
 	return MTrue;
 }

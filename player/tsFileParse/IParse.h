@@ -3,6 +3,7 @@
 #define _IPARSE_H
 #include "amcomdef.h"
 #include "IDataRead.h"
+#include "common.h"
 class IParse
 {
 public:
@@ -11,7 +12,7 @@ public:
 		m_dataRead = MNull;
 	}
 	virtual MBool	ReadHeader(MPChar strUrl) = 0;
-	virtual MBool	ReadPacket() = 0;
+	virtual MBool	ReadPacket(AVPkt** pkt) = 0;
 	MVoid	SetDataRead(IDataRead* obj)
 	{
 		m_dataRead = obj;

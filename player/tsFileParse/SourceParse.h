@@ -4,12 +4,13 @@
 #include "amcomdef.h"
 #include "SourceFrame.h"
 #include "ParseFrame.h"
+#include "common.h"
 class SourceParse
 {
 public:
 	SourceParse();
 	MBool Open(MPChar strUrl);
-	MBool ReadFrame();
+	MBool ReadFrame(AVPkt** pkt);
 
 
 private:

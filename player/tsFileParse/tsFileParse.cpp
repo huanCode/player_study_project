@@ -35,12 +35,13 @@ int main()
 
 	SourceParse sourse;
 	sourse.Open("http://hlsglsb.wasu.tv/1480682957527_561859.m3u8?action=hls&Contentid=CP23010020161201084109");	//Ç¶Ì×
-
-	for (int i = 0; i < 30000; i++)
+	AVPkt* pkt = MNull;
+	while (1)
 	{
-		sourse.ReadFrame();
+		sourse.ReadFrame(&pkt);
+		delete pkt;
 	}
-
+	
 
 	//TsStream ts;
 	//ts.mpegts_read_header();

@@ -85,11 +85,15 @@ MBool ParseHls::ReadHeader(MPChar strUrl)
 	return MTrue;
 }
 
-MBool ParseHls::ReadPacket()
+MBool ParseHls::ReadPacket(AVPkt** pkt)
 {
 	if (m_pTs)
 	{
-		m_pTs->ReadPacket();
+		if (m_pTs->ReadPacket(pkt) && !(*pkt)->isGetPacket)
+		{
+			//表示这个切片已经读完了
+		}
+		
 	}
 	return MFalse;
 }
@@ -182,7 +186,7 @@ MBool ParseHls::ParseM3u8(MPChar strUrl, Playlist* playlist)
 
 	MPChar strRealUrl = MNull;
 	MVoid* tmp = strRealUrl;
-	m_dataRead->GetConfig(GET_CFG_HTTP_LOCATION_URL, &tmp);
+	m_dataRead->GetConfig(0, &tmp);
 	strRealUrl = (MPChar)tmp;
 	if (!strRealUrl)
 	{

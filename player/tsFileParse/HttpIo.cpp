@@ -58,7 +58,7 @@ MVoid  HttpIo::IoGetConfig(MInt32 dwCfgType, MVoid** pdwValue)
 {
 	switch (dwCfgType)
 	{
-	case GET_CFG_HTTP_LOCATION_URL:
+	case 0:
 		//MPChar strUrl = MNull;
 		//strUrl = GetLocationUrl();
 		*pdwValue = GetLocationUrl();

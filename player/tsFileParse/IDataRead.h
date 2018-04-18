@@ -2,7 +2,7 @@
 #ifndef _IDATAREAD_H
 #define _IDATAREAD_H
 #include "amcomdef.h"
-#include "AllConfig.h"
+//#include "AllConfig.h"
 class IDataRead
 {
 public:

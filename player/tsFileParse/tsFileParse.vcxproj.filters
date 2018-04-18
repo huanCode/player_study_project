@@ -105,9 +105,6 @@
     <ClInclude Include="ParseHls.h">
       <Filter>ParseFrame\hls</Filter>
     </ClInclude>
-    <ClInclude Include="H264Parse.h">
-      <Filter>H264</Filter>
-    </ClInclude>
     <ClInclude Include="TsStreamDef.h">
       <Filter>ParseFrame\ts</Filter>
     </ClInclude>
@@ -154,9 +151,6 @@
     </ClCompile>
     <ClCompile Include="ParseHls.cpp">
       <Filter>ParseFrame\hls</Filter>
-    </ClCompile>
-    <ClCompile Include="H264Parse.cpp">
-      <Filter>H264</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

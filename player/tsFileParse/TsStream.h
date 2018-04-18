@@ -4,7 +4,8 @@
 #include "TsStreamDef.h"
 //#include "tsFilter.h"
 #include "IParse.h"
-#include "H264Parse.h"
+#include "common.h"
+//#include "H264Parse.h"
 #define PACKET_SIZE	188
 #define FILTER_NUM	6
 #define PROBE_BUFFER_SIZE	204 * 10
@@ -64,22 +65,7 @@ private:
 		MUInt8 last_sec_num;
 	} SectionHeader;
 
-	typedef struct _AVPKT
-	{
-		_AVPKT()
-		{
-			bufferPkt = 0;
-			bufferPktSize = 0;
-			mediaType = AV_MEDIA_TYPE_UNKNOWN;
-			bIsSync = 0;
-		}
 
-		MBool CopyBuffer(MPChar pBuffer, MInt32 bufferSize, AV_MediaType& type);
-		MPChar			bufferPkt;
-		MInt32			bufferPktSize;
-		MBool			bIsSync;			//only for video frame
-		AV_MediaType	mediaType;	//audio/video
-	}AVPkt;
 
 
 	enum MpegTSState {
@@ -98,7 +84,7 @@ public:
 
 
 	MBool	ReadHeader(MPChar strUrl);
-	MBool	ReadPacket();
+	MBool	ReadPacket(AVPkt** pkt);
 
 
 private:

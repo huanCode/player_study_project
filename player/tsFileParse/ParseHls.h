@@ -51,7 +51,7 @@ public:
 
 
 	MBool	ReadHeader(MPChar strUrl);
-	MBool	ReadPacket();
+	MBool	ReadPacket(AVPkt** pkt);
 
 
 	static IParse* hls_probe(MPChar p_buffer, MUInt32 p_size);

@@ -29,11 +29,11 @@ MBool	ParseFrame::ReadHeader(MPChar strUrl)
 	return m_parse->ReadHeader(strUrl);
 }
 
-MBool ParseFrame::ReadFrame()
+MBool ParseFrame::ReadFrame(AVPkt** pkt)
 {
 	if (m_parse)
 	{
-		return m_parse->ReadPacket();
+		return m_parse->ReadPacket(pkt);
 	}
 	return MFalse;
 }
