@@ -5,7 +5,7 @@
 //#include "tsFilter.h"
 #include "IParse.h"
 #include "common.h"
-//#include "H264Parse.h"
+#include "H264Parse.h"
 #define PACKET_SIZE	188
 #define FILTER_NUM	6
 #define PROBE_BUFFER_SIZE	204 * 10
@@ -85,7 +85,7 @@ public:
 
 	MBool	ReadHeader(MPChar strUrl);
 	MBool	ReadPacket(AVPkt** pkt);
-
+	MVoid	Close();
 
 private:
 	MBool	Init();
@@ -147,6 +147,9 @@ private:
 
 	mv3File file;
 	mv3File audioFile;
+
+	MInt32	m_width;
+	MInt32	m_height;
 public:
 
 

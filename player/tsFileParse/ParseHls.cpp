@@ -5,6 +5,7 @@
 #include "amstring.h"
 #include "ammem.h"
 #include "TsStream.h"
+#include "AllConfig.h"
 #define MAX_URL_SIZE 4096
 #define AV_TIME_BASE            1000000
 
@@ -20,6 +21,8 @@ ParseHls::ParseHls()
 {
 	m_curIndex = 0;
 	m_pTs = MNull;
+	m_curSementIndex = 0;
+	m_curPlaylist = MNull;
 }
 
 MBool ParseHls::ReadHeader(MPChar strUrl)
@@ -33,24 +36,72 @@ MBool ParseHls::ReadHeader(MPChar strUrl)
 	}
 
 	//判断上面解析的m3u8是否为嵌套,是嵌套则去解析新的
-	Playlist* playlist = MNull;
+
 	if (m_playlistList.GetSize() > 1 || m_playlistList.GetLastNode()->segmentList.GetSize() == 0)
 	{
 		
-		playlist = m_playlistList.GetLastNode();
-		if (!ParseM3u8(playlist->strUrl, playlist))
+		m_curPlaylist = m_playlistList.GetLastNode();
+		if (!ParseM3u8(m_curPlaylist->strUrl, m_curPlaylist))
 		{
 			return MFalse;
 		}
 	}
 	else
 	{
-		playlist = m_playlistList.GetLastNode();
+		m_curPlaylist = m_playlistList.GetLastNode();
 	}
 	m_bTsReady = MTrue;
-	if (playlist->segmentList.GetSize() > 0)
+
+	//if (m_curPlaylist->segmentList.GetSize() > 0)
+	//{
+	//	if (m_dataRead->Open(m_curPlaylist->segmentList.GetLastNode()->url))
+	//	{
+	//		MPChar tmpBuffer = (MPChar)MMemAlloc(MNull, PROBE_BUFFER_SIZE);
+	//		if (tmpBuffer == MNull)
+	//		{
+	//			return MFalse;
+	//		}
+
+	//		MMemSet(tmpBuffer, 0, PROBE_BUFFER_SIZE);
+	//		MInt32 iReadSize = 0;
+	//		m_dataRead->Read(&tmpBuffer, PROBE_BUFFER_SIZE, iReadSize);
+	//		if (iReadSize != PROBE_BUFFER_SIZE)
+	//		{
+	//			return MFalse;
+	//		}
+
+	//		m_pTs = TsStream::read_probe(tmpBuffer, PROBE_BUFFER_SIZE);
+	//		if (m_pTs == MNull)
+	//		{
+	//			return MFalse;
+	//		}
+	//		m_dataRead->Close();
+	//		m_pTs->SetDataRead(m_dataRead);
+	//		m_pTs->ReadHeader(m_curPlaylist->segmentList.GetLastNode()->url);
+	//		m_curSementIndex++;
+	//		return MTrue;
+	//	}
+	//	
+	//}
+
+
+
+	return switchSegment();
+}
+
+MBool ParseHls::switchSegment()
+{
+	if (m_pTs)
 	{
-		if (m_dataRead->Open(playlist->segmentList.GetLastNode()->url))
+		m_pTs->Close();
+		delete m_pTs;
+		m_pTs = MNull;
+	}
+
+
+	if (m_curPlaylist->segmentList.GetSize() > m_curSementIndex)
+	{
+		if (m_dataRead->Open(m_curPlaylist->segmentList.GetNodePtrByIndex(m_curSementIndex+1)->url))
 		{
 			MPChar tmpBuffer = (MPChar)MMemAlloc(MNull, PROBE_BUFFER_SIZE);
 			if (tmpBuffer == MNull)
@@ -73,16 +124,14 @@ MBool ParseHls::ReadHeader(MPChar strUrl)
 			}
 			m_dataRead->Close();
 			m_pTs->SetDataRead(m_dataRead);
-			m_pTs->ReadHeader(playlist->segmentList.GetLastNode()->url);
-
+			m_pTs->ReadHeader(m_curPlaylist->segmentList.GetNodePtrByIndex(m_curSementIndex+1)->url);
+			m_curSementIndex++;
 			return MTrue;
 		}
-		
+
 	}
 
-
-
-	return MTrue;
+	return MFalse;
 }
 
 MBool ParseHls::ReadPacket(AVPkt** pkt)
@@ -92,11 +141,23 @@ MBool ParseHls::ReadPacket(AVPkt** pkt)
 		if (m_pTs->ReadPacket(pkt) && !(*pkt)->isGetPacket)
 		{
 			//表示这个切片已经读完了
+			
+			if (switchSegment())
+			{
+				return m_pTs->ReadPacket(pkt);
+			}
 		}
 		
 	}
 	return MFalse;
 }
+
+MVoid ParseHls::Close()
+{
+
+}
+
+
 
 void ParseHls::ff_parse_key_val_cb(void* srcData, MPChar key, MInt32 keyLen, MPChar value)
 {
@@ -186,7 +247,7 @@ MBool ParseHls::ParseM3u8(MPChar strUrl, Playlist* playlist)
 
 	MPChar strRealUrl = MNull;
 	MVoid* tmp = strRealUrl;
-	m_dataRead->GetConfig(0, &tmp);
+	m_dataRead->GetConfig(GET_CFG_HTTP_LOCATION_URL, &tmp);
 	strRealUrl = (MPChar)tmp;
 	if (!strRealUrl)
 	{

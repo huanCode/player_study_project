@@ -47,6 +47,7 @@ public:
 
 public:
 	static MDWord GetSliceType(MByte* pBitstream, MDWord dwBitstreamLen);
+	static MBool GetWidthAndHeight(MByte* pBitstream, MDWord dwBitstreamLen, MInt32& w, MInt32& h);
 
 };
 

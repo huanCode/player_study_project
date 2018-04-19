@@ -51,6 +51,12 @@ TsStream::TsStream()
 	m_trackNum = 0;
 
 	m_stopParse = 0;
+
+	m_width = 0;
+	m_height = 0;
+
+
+
 	file.Open("tmp.h264", mv3File::stream_write);
 	audioFile.Open("audio.pcm", mv3File::stream_write);
 }
@@ -380,7 +386,7 @@ MBool TsStream::handle_packets(MInt32 nb_packets)
 			break;
 		}
 
-		if (packet_num == 116)
+		if (packet_num == 13)
 		{
 			int a = 0;
 		}
@@ -388,13 +394,15 @@ MBool TsStream::handle_packets(MInt32 nb_packets)
 		ret = m_dataRead->Read(&m_packetBuffer,TsStream::Packet_Size, iReadSize);
 		if (!ret)
 		{
-			if (TsStream::Packet_Size != iReadSize)
-			{
-				return MFalse;
-			}
-			else if(iReadSize == 0)
+			if ( iReadSize == 0)
 			{
 				m_avpkt.isGetPacket = MFalse;
+				return MTrue;
+			}
+			else if(TsStream::Packet_Size != iReadSize)
+			{
+				return MFalse;
+				
 			}
 		}
 			
@@ -541,34 +549,40 @@ MBool	TsStream::ReadPacket(AVPkt** pkt)
 
 	if (m_stopParse)
 	{
+		MInt32 w = 0;
+		MInt32 h = 0;
+		if (m_avpkt.mediaType == AV_MEDIA_TYPE_VIDEO)
+		{
+			MDWord slicetype = 0;
+			slicetype = H264Parse::GetSliceType((MByte*)m_avpkt.bufferPkt, m_avpkt.bufferPktSize);
 
-	}
-	if (m_avpkt.mediaType == AV_MEDIA_TYPE_VIDEO)
-	{
-		MDWord slicetype = 0;
-		//slicetype =  H264Parse::GetSliceType((MByte*)m_avpkt.bufferPkt,m_avpkt.bufferPktSize);
+			if (slicetype == AMC_H264_UTL_ERR_PARAM)
+				return MFalse;
 
-		//if (slicetype == AMC_H264_UTL_ERR_PARAM)
-		//	return MFalse;
+			if (slicetype == I_SLICE || slicetype == IDR_SLICE)
+			{
+				m_avpkt.bIsSync = MTrue;
+			}
 
-		//if (slicetype == I_SLICE || slicetype == IDR_SLICE)
-		//{
-		//	m_avpkt.bIsSync = MTrue;
-		//}
-		//file.Write((MByte*)m_avpkt.bufferPkt, m_avpkt.bufferPktSize);
-		//
-		//if (a == 5000)
-		//{
-		//	file.Close();
-		//}
-		a++;
-		
-		
+			H264Parse::GetWidthAndHeight((MByte*)m_avpkt.bufferPkt, m_avpkt.bufferPktSize, w, h);
+			file.Write((MByte*)m_avpkt.bufferPkt, m_avpkt.bufferPktSize);
+			
+	/*		if (a == 5000)
+			{
+				file.Close();
+			}*/
+
+
+
+		}
+		else if (m_avpkt.mediaType == AV_MEDIA_TYPE_AUDIO)
+		{
+			//audioFile.Write((MByte*)m_avpkt.bufferPkt, m_avpkt.bufferPktSize);
+			int a = 1;
+		}
 	}
-	else if (m_avpkt.mediaType == AV_MEDIA_TYPE_AUDIO)
-	{
-		//audioFile.Write((MByte*)m_avpkt.bufferPkt, m_avpkt.bufferPktSize);
-	}
+
+
 
 	AVPkt* pktTmp = new AVPkt();
 	m_avpkt.Copy(pktTmp);
@@ -579,6 +593,15 @@ MBool	TsStream::ReadPacket(AVPkt** pkt)
 }
 
 
+
+MVoid TsStream::Close()
+{
+	if (m_dataRead)
+	{
+		m_dataRead->Close();
+		m_dataRead = MNull;
+	}
+}
 
 MVoid TsStream::parse_ts_packet_header(MPChar buffer, ts_packet_header &tsHeader)
 {

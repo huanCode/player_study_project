@@ -32,7 +32,11 @@ typedef struct _AVPKT
 
 	~_AVPKT()
 	{
-		MMemFree(MNull, bufferPkt);
+		if (bufferPkt)
+		{
+			MMemFree(MNull, bufferPkt);
+		}
+		
 	}
 
 	MBool CopyBuffer(MPChar pBuffer, MInt32 bufferSize, AV_MediaType& type)

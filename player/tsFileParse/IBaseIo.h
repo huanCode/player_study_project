@@ -2,7 +2,7 @@
 #ifndef _IBASEIO_H
 #define _IBASEIO_H
 #include "amcomdef.h"
-//#include "AllConfig.h"
+#include "AllConfig.h"
 class IBaseIo
 {
 public:

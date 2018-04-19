@@ -36,10 +36,20 @@ int main()
 	SourceParse sourse;
 	sourse.Open("http://hlsglsb.wasu.tv/1480682957527_561859.m3u8?action=hls&Contentid=CP23010020161201084109");	//Ç¶Ì×
 	AVPkt* pkt = MNull;
+	MInt32 i = 0;
 	while (1)
 	{
+		if (i == 307)
+		{
+			int a = 1;
+		}
 		sourse.ReadFrame(&pkt);
-		delete pkt;
+		i++;
+		if (pkt)
+		{
+			delete pkt;
+		}
+		
 	}
 	
 
