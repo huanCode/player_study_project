@@ -77,9 +77,9 @@ enum AV_MediaType {
 };
 
 enum AV_CodecID {
-	AV_CODEC_ID_NONE,
-	AV_CODEC_ID_AAC,
-	AV_CODEC_ID_H264
+	_AV_CODEC_ID_NONE,
+	_AV_CODEC_ID_AAC,
+	_AV_CODEC_ID_H264
 };
 
 typedef struct StreamType {
@@ -89,8 +89,8 @@ typedef struct StreamType {
 } StreamType;
 
 static const StreamType ISO_types[] = {
-	{ 0x0f, AV_MEDIA_TYPE_AUDIO, AV_CODEC_ID_AAC },
-	{ 0x1b, AV_MEDIA_TYPE_VIDEO, AV_CODEC_ID_H264 },
+	{ 0x0f, AV_MEDIA_TYPE_AUDIO, _AV_CODEC_ID_AAC },
+	{ 0x1b, AV_MEDIA_TYPE_VIDEO, _AV_CODEC_ID_H264 },
 	{ 0 }
 };
 

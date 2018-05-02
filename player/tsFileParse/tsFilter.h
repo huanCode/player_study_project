@@ -138,7 +138,7 @@ public:
 		m_type = MPEGTS_PES;
 		m_description = "pes";
 		m_mediaType = AV_MediaType::AV_MEDIA_TYPE_UNKNOWN;
-		m_mediaCodecID = AV_CodecID::AV_CODEC_ID_NONE;
+		m_mediaCodecID = AV_CodecID::_AV_CODEC_ID_NONE;
 		m_state = MpegTSState::MPEGTS_SKIP;
 		m_header_size = 0;
 		m_stream_id = 0;
