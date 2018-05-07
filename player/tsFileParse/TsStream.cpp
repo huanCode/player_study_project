@@ -567,10 +567,7 @@ MBool	TsStream::ReadPacket(AVPkt** pkt)
 			H264Parse::GetWidthAndHeight((MByte*)m_avpkt.bufferPkt, m_avpkt.bufferPktSize, w, h);
 			file.Write((MByte*)m_avpkt.bufferPkt, m_avpkt.bufferPktSize);
 			
-	/*		if (a == 5000)
-			{
-				file.Close();
-			}*/
+			file.Close();
 
 
 
