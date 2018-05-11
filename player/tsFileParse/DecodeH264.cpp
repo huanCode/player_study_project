@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "DecodeH264.h"
 
 DecodeH264::DecodeH264()
@@ -42,7 +43,7 @@ MBool	DecodeH264::Open()
 }
 
 
-MBool	DecodeH264::Close()
+MVoid	DecodeH264::Close()
 {
 	if (m_pCodecCtx)
 	{
@@ -52,12 +53,12 @@ MBool	DecodeH264::Close()
 
 }
 
-MBool	DecodeH264::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize)
+AVFrame*	DecodeH264::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize)
 {
 
 	if (!m_pCodecCtx || !srcBuffer)
 	{
-		return MFalse;
+		return MNull;
 	}
 
 	int ret = 0;
@@ -65,19 +66,18 @@ MBool	DecodeH264::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize)
 	{
 		m_packet.data = (uint8_t *)srcBuffer;
 		m_packet.size = srcBufferSize;
-
 		ret = avcodec_send_packet(m_pCodecCtx, &m_packet);
 		if (ret < 0) {
-			return MFalse;
+			return MNull;
 		}
 
 		while (ret >= 0) {
 			ret = avcodec_receive_frame(m_pCodecCtx, m_pFrame);
 			if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
-				return MTrue;
+				return m_pFrame;
 			}
 			else if (ret < 0) {
-				return MFalse;
+				return MNull;
 			}
 
 			if (ret >= 0) {
@@ -108,11 +108,11 @@ MBool	DecodeH264::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize)
 
 				//fclose(fp_out);
 
-				return MFalse;
+				return m_pFrame;
 			}
 		}
 	}
 
 
-	return MFalse;
+	return MNull;
 }

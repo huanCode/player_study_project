@@ -7,9 +7,9 @@ class IDecode
 {
 public:
 	virtual MBool	Open() = 0;
-	virtual MBool	Close() = 0;
+	virtual MVoid	Close() = 0;
 
-	virtual MBool	DecodeFrame(MPChar srcBuffer,MInt32 srcBufferSize) = 0;
+	virtual AVFrame*	DecodeFrame(MPChar srcBuffer,MInt32 srcBufferSize) = 0;
 
 
 };

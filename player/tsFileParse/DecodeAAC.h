@@ -1,27 +1,35 @@
 #pragma once
-#ifndef _DECODEH264_H
-#define _DECODEH264_H
+#ifndef _DECODEAAC_H
+#define _DECODEAAC_H
 #include "amcomdef.h"
 #include "IDecode.h"
+#include "AudioScale.h"
 extern "C"
 {
 #include "libavcodec/avcodec.h"
 };
-class DecodeH264:public IDecode
+
+
+
+
+
+class DecodeAAC :public IDecode
 {
 public:
-	DecodeH264();
+	DecodeAAC();
 	MBool	Open();
 	MVoid	Close();
 
 	AVFrame*	DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize);
+	
 private:
 	AVCodecContext *m_pCodecCtx;
 	AVPacket	m_packet;
 	AVFrame		*m_pFrame;
+	AudioInfo	m_in_audio;
+	AudioInfo	m_out_audio;
+
+	AudioScale	*m_pAudioScale;
 
 };
-
-
-
-#endif // !_DECODEH264_H
+#endif // !_DECODEAAC_H

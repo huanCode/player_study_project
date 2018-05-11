@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "VideoPlayWindow.h"
 
 VideoPlayWindow::VideoPlayWindow()
@@ -44,7 +45,7 @@ MBool VideoPlayWindow::Open()
 	//YV12: Y + V + U  (3 planes)
 	pixformat = SDL_PIXELFORMAT_IYUV;
 
-	SDL_Texture* sdlTexture = SDL_CreateTexture(m_sdlRenderer, pixformat, SDL_TEXTUREACCESS_STREAMING, pixel_w, pixel_h);
+	SDL_Texture* sdlTexture = SDL_CreateTexture(m_sdlRenderer, pixformat, SDL_TEXTUREACCESS_STREAMING, m_videoWidth, m_videoHeight);
 
 	m_sdlRect.x = 0;
 	m_sdlRect.y = 0;
@@ -68,4 +69,6 @@ MBool VideoPlayWindow::Display(MPChar pBuffer)
 	SDL_RenderClear(m_sdlRenderer);
 	SDL_RenderCopy(m_sdlRenderer, m_sdlTexture, NULL, &m_sdlRect);
 	SDL_RenderPresent(m_sdlRenderer);
+
+	return MTrue;
 }

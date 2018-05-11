@@ -34,6 +34,18 @@
     <Filter Include="H264">
       <UniqueIdentifier>{2b43daba-72a2-44c7-b378-661ddc9873d0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="decode">
+      <UniqueIdentifier>{51d1c927-4e99-4ae8-8bbe-42d57f59ea5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="play">
+      <UniqueIdentifier>{1c27399e-6e2b-4875-8267-9aa0f39fab08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="play\videoPlay">
+      <UniqueIdentifier>{0d454d4d-ec69-4a29-bb75-58817357f57b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="play\audioPlay">
+      <UniqueIdentifier>{2c0142f9-60e0-40de-b46c-938aa111aced}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -114,6 +126,30 @@
     <ClInclude Include="H264Parse.h">
       <Filter>H264</Filter>
     </ClInclude>
+    <ClInclude Include="IDecode.h">
+      <Filter>decode</Filter>
+    </ClInclude>
+    <ClInclude Include="DecodeH264.h">
+      <Filter>decode</Filter>
+    </ClInclude>
+    <ClInclude Include="IVideoPlay.h">
+      <Filter>play\videoPlay</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoPlayWindow.h">
+      <Filter>play\videoPlay</Filter>
+    </ClInclude>
+    <ClInclude Include="DecodeAAC.h">
+      <Filter>decode</Filter>
+    </ClInclude>
+    <ClInclude Include="IAudioPlay.h">
+      <Filter>play\audioPlay</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioPlayAAC.h">
+      <Filter>play\audioPlay</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioScale.h">
+      <Filter>decode</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -157,6 +193,21 @@
     </ClCompile>
     <ClCompile Include="H264Parse.cpp">
       <Filter>H264</Filter>
+    </ClCompile>
+    <ClCompile Include="DecodeH264.cpp">
+      <Filter>decode</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoPlayWindow.cpp">
+      <Filter>play\videoPlay</Filter>
+    </ClCompile>
+    <ClCompile Include="DecodeAAC.cpp">
+      <Filter>decode</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioPlayAAC.cpp">
+      <Filter>play\audioPlay</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioScale.cpp">
+      <Filter>decode</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
