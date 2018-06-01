@@ -147,7 +147,7 @@ private:
 
 	mv3File file;
 	mv3File audioFile;
-
+	MInt32	m_audioCount;
 	MInt32	m_width;
 	MInt32	m_height;
 public:

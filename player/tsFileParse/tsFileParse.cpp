@@ -8,6 +8,7 @@
 #include "ToolList.h"
 #include "ToolString.h"
 #include "SourceParse.h"
+#include "AudioPlayAAC.h"
 #include "DecodeAAC.h"
 
 extern "C"
@@ -27,7 +28,7 @@ inline MUInt8 to_UInt8(MByte* p)
 	return *((MByte*)p);
 }
 
-int main()
+int main(int      argc, char    *argv[])
 {
 
 	char* strUrl = "http://172.17.228.76/tms.content?url=udp://127.0.0.1:1111";
@@ -56,6 +57,9 @@ int main()
 	nb_samples = FFALIGN(nb_samples, 32);
 	//MInt32 tt = av_rescale_rnd(1024,48000,44100,AV_ROUND_UP);
 	DecodeAAC aac;
+
+	AudioPlayAAC audioPlay;
+	audioPlay.Open();
 	if (!aac.Open())
 	{
 		return -1;
@@ -75,7 +79,8 @@ int main()
 		}
 		else if (pkt->mediaType == AV_MEDIA_TYPE_AUDIO)
 		{
-			aac.DecodeFrame(pkt->bufferPkt,pkt->bufferPktSize);
+			AVFrame* frame = (AVFrame*)aac.DecodeFrame(pkt->bufferPkt,pkt->bufferPktSize);
+			audioPlay.Display((MPChar)frame->data[0], frame->linesize[0]);
 		}
 
 

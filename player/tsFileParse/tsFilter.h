@@ -151,6 +151,7 @@ public:
 		m_stream_type = 0;
 		m_buffer_size = 0;
 		m_curIndex = -1;
+		m_count = 0;
 	}
 	MUInt32 parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buffer_size);
 	MVoid	SetPid(MInt32 p_pid) {
@@ -191,6 +192,7 @@ private:
 	MInt32			m_stream_type;
 
 	MInt32			m_curIndex;
+	MInt32			m_count;
 
 
 

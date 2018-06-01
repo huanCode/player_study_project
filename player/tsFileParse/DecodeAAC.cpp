@@ -15,6 +15,8 @@ DecodeAAC::DecodeAAC()
 	m_out_audio.channels = 2;
 	m_out_audio.nb_samples = 1024;
 	m_out_audio.sample_fmt = AV_SAMPLE_FMT_S16;
+	//audioFile.Open("audioDecode.pcm", mv3File::stream_write);
+	m_count = 0;
 }
 
 MBool	DecodeAAC::Open()
@@ -60,7 +62,7 @@ MVoid	DecodeAAC::Close()
 
 }
 
-AVFrame*	DecodeAAC::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize)
+MVoid*	DecodeAAC::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize)
 {
 	if (!m_pCodecCtx || !srcBuffer)
 	{
@@ -91,6 +93,20 @@ AVFrame*	DecodeAAC::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize)
 			
 			if (ret >= 0) {
 
+
+				//if (m_count < 300)
+				//{
+				//	audioFile.Write((MByte*)m_pFrame->data, 8192);
+				//	
+				//}
+				//else if(m_count == 300)
+				//{
+				//	audioFile.Close();
+				//}
+				//m_count++;
+
+
+
 				m_in_audio.channels = m_pCodecCtx->channels;
 				m_in_audio.nb_samples = m_pCodecCtx->frame_size;
 				m_in_audio.sample_fmt = m_pCodecCtx->sample_fmt;
@@ -105,6 +121,14 @@ AVFrame*	DecodeAAC::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize)
 						{
 							return MFalse;
 						}
+
+						m_pAudioScale->SetInAudioIndo(m_in_audio);
+						m_pAudioScale->SetOutAudioIndo(m_out_audio);
+						if (!m_pAudioScale->Open())
+						{
+							return MFalse;
+						}
+						
 					}
 
 					return m_pAudioScale->Scale(m_pFrame);

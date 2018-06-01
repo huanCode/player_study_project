@@ -565,6 +565,8 @@ skip:
 
 						return -1;
 					}
+					m_buffer_size = 0;
+					m_count++;
 
 				}
 			}

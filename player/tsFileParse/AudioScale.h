@@ -2,6 +2,7 @@
 #ifndef _AUDIOSCALE_H
 #define _AUDIOSCALE_H
 #include "amcomdef.h"
+#include "mv3File.h"
 extern "C"
 {
 #include "libavcodec/avcodec.h"
@@ -10,6 +11,7 @@ extern "C"
 #include <libavutil/opt.h>
 #include <libavutil/channel_layout.h>
 #include "libswresample/swresample.h"
+#include <SDL/SDL.h>
 };
 
 typedef struct _AudioInfo
@@ -35,6 +37,9 @@ private:
 	AudioInfo	m_out_audio;
 
 	AVFrame		*m_pFrame;
+	mv3File		audioFile;
+	MInt32		m_count;
 
+	uint8_t			*out_buffer;
 };
 #endif // !_AUDIOSCALE_H

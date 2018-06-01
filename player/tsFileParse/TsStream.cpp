@@ -55,10 +55,10 @@ TsStream::TsStream()
 	m_width = 0;
 	m_height = 0;
 
-
+	m_audioCount = 0;
 
 	file.Open("tmp.h264", mv3File::stream_write);
-	audioFile.Open("audio.pcm", mv3File::stream_write);
+	audioFile.Open("audio.aac", mv3File::stream_write);
 }
 
 
@@ -565,16 +565,25 @@ MBool	TsStream::ReadPacket(AVPkt** pkt)
 			}
 
 			H264Parse::GetWidthAndHeight((MByte*)m_avpkt.bufferPkt, m_avpkt.bufferPktSize, w, h);
-			file.Write((MByte*)m_avpkt.bufferPkt, m_avpkt.bufferPktSize);
-			
-			file.Close();
+			//file.Write((MByte*)m_avpkt.bufferPkt, m_avpkt.bufferPktSize);
+			//
+			//file.Close();
 
 
 
 		}
 		else if (m_avpkt.mediaType == AV_MEDIA_TYPE_AUDIO)
 		{
-			//audioFile.Write((MByte*)m_avpkt.bufferPkt, m_avpkt.bufferPktSize);
+			if (m_audioCount < 400)
+			{
+				audioFile.Write((MByte*)m_avpkt.bufferPkt, m_avpkt.bufferPktSize);
+			}
+			
+			if (m_audioCount == 400)
+			{
+				audioFile.Close();
+			}
+			m_audioCount++;
 			int a = 1;
 		}
 	}

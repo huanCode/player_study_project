@@ -4,6 +4,7 @@
 #include "amcomdef.h"
 #include "IDecode.h"
 #include "AudioScale.h"
+
 extern "C"
 {
 #include "libavcodec/avcodec.h"
@@ -20,7 +21,7 @@ public:
 	MBool	Open();
 	MVoid	Close();
 
-	AVFrame*	DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize);
+	MVoid*	DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize);
 	
 private:
 	AVCodecContext *m_pCodecCtx;
@@ -30,6 +31,7 @@ private:
 	AudioInfo	m_out_audio;
 
 	AudioScale	*m_pAudioScale;
-
+	mv3File		audioFile;
+	MInt32		m_count;
 };
 #endif // !_DECODEAAC_H

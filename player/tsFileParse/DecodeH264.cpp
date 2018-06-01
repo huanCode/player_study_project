@@ -53,7 +53,7 @@ MVoid	DecodeH264::Close()
 
 }
 
-AVFrame*	DecodeH264::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize)
+MVoid*	DecodeH264::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize)
 {
 
 	if (!m_pCodecCtx || !srcBuffer)

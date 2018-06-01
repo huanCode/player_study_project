@@ -1,9 +1,12 @@
+#include "stdafx.h"
 #include "AudioScale.h"
-
+#include "AudioPlayAAC.h"
 AudioScale::AudioScale()
 {
 	m_pFrame = MNull;
 	au_convert_ctx = MNull;
+	audioFile.Open("audioScale.pcm", mv3File::stream_write);
+	m_count = 0;
 }
 
 MBool AudioScale::isEqual(AudioInfo& a, AudioInfo& b)
@@ -39,8 +42,8 @@ MBool AudioScale::Open()
 									m_out_audio.channels,
 									m_out_audio.nb_samples,
 									(AVSampleFormat)m_out_audio.sample_fmt, 1);
-
-		if (ret == 0)
+		//m_pFrame->data[0] = (uint8_t *)av_malloc(192000 * 2);
+		if (ret > 0)
 		{
 			m_pFrame->nb_samples = m_out_audio.nb_samples;
 			m_pFrame->channels = m_out_audio.channels;
@@ -58,6 +61,7 @@ MBool AudioScale::Open()
 
 	}
 
+	//out_buffer = (uint8_t *)av_malloc(192000 * 2);
 
 	au_convert_ctx = swr_alloc();
 	if (au_convert_ctx)
@@ -114,13 +118,25 @@ AVFrame* AudioScale::Scale(AVFrame *in_pFrame)
 
 	MInt32 nb_sample = swr_get_delay(au_convert_ctx, m_in_audio.sample_rate) + in_pFrame->nb_samples;
 	int dst_nb_samples = av_rescale_rnd(nb_sample, m_out_audio.sample_rate, m_in_audio.sample_rate, AV_ROUND_UP);
-	int ret = swr_convert(au_convert_ctx, m_pFrame->data, dst_nb_samples, (const uint8_t **)in_pFrame->data, in_pFrame->nb_samples);
+	int ret = swr_convert(au_convert_ctx, &m_pFrame->data[0], dst_nb_samples, (const uint8_t **)in_pFrame->data, in_pFrame->nb_samples);
 	if (ret < 0)
 	{
 		return MNull;
 	}
 	m_pFrame->nb_samples = ret;
 	av_samples_get_buffer_size(&m_pFrame->linesize[0], m_out_audio.channels, ret, (AVSampleFormat)m_out_audio.sample_fmt, 1);
+
+	if (m_count < 300)
+	{
+		audioFile.Write((MByte*)m_pFrame->data[0], 4096);
+		
+	}
+	else if(m_count == 300)
+	{
+		audioFile.Close();
+	}
+	m_count++;
+
 
 	return m_pFrame;
 }

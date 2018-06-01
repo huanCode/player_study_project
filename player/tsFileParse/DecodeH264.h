@@ -14,7 +14,7 @@ public:
 	MBool	Open();
 	MVoid	Close();
 
-	AVFrame*	DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize);
+	MVoid*	DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize);
 private:
 	AVCodecContext *m_pCodecCtx;
 	AVPacket	m_packet;
