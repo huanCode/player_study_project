@@ -46,6 +46,9 @@
     <Filter Include="play\audioPlay">
       <UniqueIdentifier>{2c0142f9-60e0-40de-b46c-938aa111aced}</UniqueIdentifier>
     </Filter>
+    <Filter Include="playerState">
+      <UniqueIdentifier>{8f72900d-e714-478f-90df-c8e66e2904ca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -150,6 +153,33 @@
     <ClInclude Include="AudioScale.h">
       <Filter>decode</Filter>
     </ClInclude>
+    <ClInclude Include="playerState\Player.h">
+      <Filter>playerState</Filter>
+    </ClInclude>
+    <ClInclude Include="playerState\PlayerState.h">
+      <Filter>playerState</Filter>
+    </ClInclude>
+    <ClInclude Include="playerState\PlayerStateBuffering.h">
+      <Filter>playerState</Filter>
+    </ClInclude>
+    <ClInclude Include="playerState\PlayerStateContext.h">
+      <Filter>playerState</Filter>
+    </ClInclude>
+    <ClInclude Include="playerState\PlayerStatePauseing.h">
+      <Filter>playerState</Filter>
+    </ClInclude>
+    <ClInclude Include="playerState\PlayerStatePlaying.h">
+      <Filter>playerState</Filter>
+    </ClInclude>
+    <ClInclude Include="playerState\PlayerStatePrepare.h">
+      <Filter>playerState</Filter>
+    </ClInclude>
+    <ClInclude Include="playerState\PlayerStateSeeking.h">
+      <Filter>playerState</Filter>
+    </ClInclude>
+    <ClInclude Include="playerState\PlayerStateStoping.h">
+      <Filter>playerState</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -208,6 +238,33 @@
     </ClCompile>
     <ClCompile Include="AudioScale.cpp">
       <Filter>decode</Filter>
+    </ClCompile>
+    <ClCompile Include="playerState\Player.cpp">
+      <Filter>playerState</Filter>
+    </ClCompile>
+    <ClCompile Include="playerState\PlayerState.cpp">
+      <Filter>playerState</Filter>
+    </ClCompile>
+    <ClCompile Include="playerState\PlayerStateContext.cpp">
+      <Filter>playerState</Filter>
+    </ClCompile>
+    <ClCompile Include="playerState\PlayerStatePauseing.cpp">
+      <Filter>playerState</Filter>
+    </ClCompile>
+    <ClCompile Include="playerState\PlayerStatePlaying.cpp">
+      <Filter>playerState</Filter>
+    </ClCompile>
+    <ClCompile Include="playerState\PlayerStatePrepare.cpp">
+      <Filter>playerState</Filter>
+    </ClCompile>
+    <ClCompile Include="playerState\PlayerStateSeeking.cpp">
+      <Filter>playerState</Filter>
+    </ClCompile>
+    <ClCompile Include="playerState\PlayerStateStoping.cpp">
+      <Filter>playerState</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerStateBuffering.cpp">
+      <Filter>playerState</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
