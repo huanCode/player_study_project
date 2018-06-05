@@ -1,21 +1,23 @@
+#include "stdafx.h"
 #include "PlayerStatePlaying.h"
 
-MVoid PlayerStatePlaying::Play()
+MBool PlayerStatePlaying::Play()
 {
+	return m_pPlayer->PlayOneFrame();
 	//m_stateContext->SetState(State::Playing);
 }
 
-MVoid PlayerStatePlaying::Stop()
-{
-
-}
-
-MVoid PlayerStatePlaying::Pause()
-{
-
-}
-
-MVoid PlayerStatePlaying::Seek()
-{
-
-}
+//MVoid PlayerStatePlaying::Stop()
+//{
+//	m_stateContext->SetState(State::);
+//}
+//
+//MVoid PlayerStatePlaying::Pause()
+//{
+//
+//}
+//
+//MVoid PlayerStatePlaying::Seek()
+//{
+//
+//}

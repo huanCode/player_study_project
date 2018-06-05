@@ -1,23 +1,30 @@
+#include "stdafx.h"
 #include "PlayerStatePrepare.h"
 
 
-MVoid PlayerStatePrepare::Play()
+MBool PlayerStatePrepare::Play()
 {
 	//
-	m_stateContext->SetState(State::Buffering);
+	if (m_pPlayer->prepare())
+	{
+		m_stateContext->SetState(Buffering);
+		return MTrue;
+	}
+	
+	return MFalse;
 }
 
-MVoid PlayerStatePrepare::Stop()
-{
-
-}
-
-MVoid PlayerStatePrepare::Pause()
-{
-
-}
-
-MVoid PlayerStatePrepare::Seek()
-{
-
-}
+//MVoid PlayerStatePrepare::Stop()
+//{
+//
+//}
+//
+//MVoid PlayerStatePrepare::Pause()
+//{
+//
+//}
+//
+//MVoid PlayerStatePrepare::Seek()
+//{
+//
+//}

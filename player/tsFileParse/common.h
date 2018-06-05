@@ -39,7 +39,7 @@ typedef struct _AVPKT
 		
 	}
 
-	MBool CopyBuffer(MPChar pBuffer, MInt32 bufferSize, AV_MediaType& type)
+	MBool CopyBuffer(MPChar pBuffer, MInt32 bufferSize, AV_MediaType& type, AV_CodecID codeID,MInt64 iPts,MInt64 iDts)
 	{
 		if (pBuffer == MNull || bufferSize <= 0)
 		{
@@ -57,6 +57,9 @@ typedef struct _AVPKT
 		bufferPktSize = bufferSize;
 		mediaType = type;
 		isGetPacket = MTrue;
+		pts = iPts;
+		dts = iDts;
+		codeType = codeID;
 
 	}
 
@@ -67,6 +70,20 @@ typedef struct _AVPKT
 		pkt->bufferPktSize = bufferPktSize;
 		pkt->mediaType = mediaType;
 		pkt->isGetPacket = isGetPacket;
+		pkt->pts = pts;
+		pkt->dts = dts;
+		pkt->codeType = codeType;
+	}
+
+
+	MVoid DepthCopy(_AVPKT* pkt)
+	{
+		pkt->bIsSync = bIsSync;
+
+		pkt->CopyBuffer(bufferPkt, bufferPktSize, mediaType, codeType, pts,dts);
+
+
+
 	}
 
 	MVoid Init()
@@ -75,14 +92,21 @@ typedef struct _AVPKT
 		bufferPktSize = 0;
 		bIsSync = 0;
 		mediaType = AV_MEDIA_TYPE_UNKNOWN;
+		codeType = _AV_CODEC_ID_NONE;
 		isGetPacket = MFalse;
+		pts = -1;
+		dts = -1;
 	}
 
 	MPChar			bufferPkt;
 	MInt32			bufferPktSize;
 	MBool			bIsSync;			//only for video frame
 	AV_MediaType	mediaType;	//audio/video
+	AV_CodecID		codeType;
 	MBool			isGetPacket;
+	MInt64			pts;
+	MInt64			dts;
+
 }AVPkt;
 
 

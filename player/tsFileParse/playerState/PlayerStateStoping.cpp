@@ -1,9 +1,10 @@
+#include "stdafx.h"
 #include "PlayerStateStoping.h"
 
 
-MVoid PlayerStateStoping::Play()
+MBool PlayerStateStoping::Play()
 {
-
+	return MTrue;
 }
 
 MVoid PlayerStateStoping::Stop()
@@ -16,7 +17,7 @@ MVoid PlayerStateStoping::Pause()
 
 }
 
-MVoid PlayerStateStoping::Seek()
+MBool PlayerStateStoping::Seek()
 {
-
+	return MTrue;
 }

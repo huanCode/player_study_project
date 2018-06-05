@@ -180,6 +180,15 @@
     <ClInclude Include="playerState\PlayerStateStoping.h">
       <Filter>playerState</Filter>
     </ClInclude>
+    <ClInclude Include="include\amkernel.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\merror.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MKernel.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

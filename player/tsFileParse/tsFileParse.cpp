@@ -10,12 +10,13 @@
 #include "SourceParse.h"
 #include "AudioPlayAAC.h"
 #include "DecodeAAC.h"
-
+#include "DecodeH264.h"
+#include "Player.h"
 extern "C"
 {
 #include "libavcodec/avcodec.h"
 };
-
+#include <windows.h>
 
 inline MUInt16 to_UInt16(MByte* p)
 {
@@ -31,7 +32,23 @@ inline MUInt8 to_UInt8(MByte* p)
 int main(int      argc, char    *argv[])
 {
 
-	char* strUrl = "http://172.17.228.76/tms.content?url=udp://127.0.0.1:1111";
+
+	//Player player;
+	//player.Play(MNull);
+
+
+	//while (true)
+	//{
+	//	Sleep(1000);
+	//}
+
+
+	//return 0;
+
+
+
+
+	char* strUrl = "http://hlsglsb.wasu.tv/1480682957527_561859.m3u8?action=hls&Contentid=CP23010020161201084109";
 	strUrl = "http://38uni317.vod2.hongshiyun.net/target/hls/2017/01/13/660_3deb5b1a9a3f4f3d9c49f52f41a19a60_10_1280x720.m3u8";
 	SourceParse sourse;
 	sourse.Open(strUrl);	//Ç¶Ì×
@@ -58,13 +75,18 @@ int main(int      argc, char    *argv[])
 	//MInt32 tt = av_rescale_rnd(1024,48000,44100,AV_ROUND_UP);
 	DecodeAAC aac;
 
+	DecodeH264 video;
+
 	AudioPlayAAC audioPlay;
 	audioPlay.Open();
+	video.Open();
 	if (!aac.Open())
 	{
 		return -1;
 	}
 	int ret = 0;
+
+	AVFrame* frame = MNull;
 	while (1)
 	{
 		if (i == 307)
@@ -75,11 +97,11 @@ int main(int      argc, char    *argv[])
 
 		if (pkt->mediaType == AV_MEDIA_TYPE_VIDEO)
 		{
-
+			frame = (AVFrame*)video.DecodeFrame(pkt->bufferPkt, pkt->bufferPktSize, pkt->pts, pkt->dts);
 		}
 		else if (pkt->mediaType == AV_MEDIA_TYPE_AUDIO)
 		{
-			AVFrame* frame = (AVFrame*)aac.DecodeFrame(pkt->bufferPkt,pkt->bufferPktSize);
+			frame = (AVFrame*)aac.DecodeFrame(pkt->bufferPkt,pkt->bufferPktSize, pkt->pts, pkt->dts);
 			audioPlay.Display((MPChar)frame->data[0], frame->linesize[0]);
 		}
 

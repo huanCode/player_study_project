@@ -1,9 +1,15 @@
+#include "stdafx.h"
 #include "PlayerStateBuffering.h"
 
 
-MVoid PlayerStateBuffering::Play()
+MBool PlayerStateBuffering::Play()
 {
-	m_stateContext->SetState(State::Playing);
+	if (m_pPlayer->buffer())
+	{
+		m_stateContext->SetState(State::Playing);
+	}
+
+	return MTrue;
 }
 
 MVoid PlayerStateBuffering::Stop()
@@ -16,7 +22,7 @@ MVoid PlayerStateBuffering::Pause()
 
 }
 
-MVoid PlayerStateBuffering::Seek()
+MBool PlayerStateBuffering::Seek()
 {
-
+	return MTrue;
 }

@@ -336,7 +336,7 @@ MUInt32 tsSectionPes::parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buf
 		//表示上一帧视频已经读取完成
 		if (m_state == MPEGTS_PAYLOAD && m_buffer_size > 0)
 		{
-			if (!p_tsStream->m_avpkt.CopyBuffer(m_buffer, m_buffer_size, m_mediaType))
+			if (!p_tsStream->m_avpkt.CopyBuffer(m_buffer, m_buffer_size, m_mediaType, m_mediaCodecID,m_pts,m_dts))
 			{
 
 				return -1;
@@ -500,7 +500,7 @@ skip:
 			{
 				
 				MUInt32 pts_dts_flags = m_header[7];
-				MUInt8* pes_head_data = m_header + m_header_size;
+				MUInt8* pes_head_data = m_header + 9;
 				if ((pts_dts_flags & 0xc0) == 0x80) {
 					m_dts = m_pts = ff_parse_pes_pts(pes_head_data);
 					pes_head_data += 5;
@@ -560,7 +560,7 @@ skip:
 				if (!p_tsStream->m_stopParse && m_total_size < MAX_PES_PAYLOAD && m_pes_header_size + m_buffer_size == m_total_size + PES_START_SIZE)
 				{
 					p_tsStream->m_stopParse = 2;
-					if (!p_tsStream->m_avpkt.CopyBuffer(m_buffer, m_buffer_size, m_mediaType))
+					if (!p_tsStream->m_avpkt.CopyBuffer(m_buffer, m_buffer_size, m_mediaType, m_mediaCodecID, m_pts, m_dts))
 					{
 
 						return -1;

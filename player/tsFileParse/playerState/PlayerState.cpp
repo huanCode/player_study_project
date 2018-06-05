@@ -1,8 +1,10 @@
+#include "stdafx.h"
 #include "PlayerState.h"
 
 PlayerState::PlayerState()
 {
-
+	m_pPlayer = MNull;
+	m_stateContext = MNull;
 }
 
 MVoid PlayerState::SetContext(PlayerStateContext *pContext)
@@ -10,9 +12,15 @@ MVoid PlayerState::SetContext(PlayerStateContext *pContext)
 	m_stateContext = pContext;
 }
 
-MVoid PlayerState::Play()
+MVoid PlayerState::SetPlayer(Player* pPlayer)
+{
+	m_pPlayer = pPlayer;
+}
+
+MBool PlayerState::Play()
 {
 	//m_stateContext->SetState(State::Playing);
+	return MTrue;
 }
 
 MVoid PlayerState::Stop()
@@ -27,8 +35,10 @@ MVoid PlayerState::Pause()
 	m_stateContext->GetCurrentState()->Pause();
 }
 
-MVoid PlayerState::Seek()
+MBool PlayerState::Seek()
 {
 	m_stateContext->SetState(State::Seeking);
-	m_stateContext->GetCurrentState()->Seek();
+	return m_stateContext->GetCurrentState()->Seek();
+
+
 }

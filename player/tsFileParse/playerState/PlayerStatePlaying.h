@@ -4,10 +4,10 @@
 class PlayerStatePlaying :public PlayerState
 {
 public:
-	virtual MVoid Play();
-	virtual MVoid Stop();
-	virtual MVoid Pause();
-	virtual MVoid Seek();
+	virtual MBool Play();
+	//virtual MVoid Stop();
+	//virtual MVoid Pause();
+	//virtual MVoid Seek();
 
 };
 

@@ -53,7 +53,7 @@ MVoid	DecodeH264::Close()
 
 }
 
-MVoid*	DecodeH264::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize)
+MVoid*	DecodeH264::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize,MInt64 pts, MInt64 dts)
 {
 
 	if (!m_pCodecCtx || !srcBuffer)
@@ -66,6 +66,8 @@ MVoid*	DecodeH264::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize)
 	{
 		m_packet.data = (uint8_t *)srcBuffer;
 		m_packet.size = srcBufferSize;
+		m_packet.pts = pts;
+		m_packet.dts = dts;
 		ret = avcodec_send_packet(m_pCodecCtx, &m_packet);
 		if (ret < 0) {
 			return MNull;

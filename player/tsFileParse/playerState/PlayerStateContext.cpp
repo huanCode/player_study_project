@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "PlayerStateContext.h"
 #include "PlayerStatePrepare.h"
 #include "PlayerStateBuffering.h"
@@ -6,12 +7,13 @@
 #include "PlayerStatePauseing.h"
 #include "PlayerStateSeeking.h"
 
-#define CREATE_STATE(object,class_name) 	if (!object) \
+#define CREATE_STATE(object,class_name,pPlayer) 	if (!object) \
 						{	\
 							object = new class_name();	\
 							if (!object)	\
 								return MFalse; \
 							object->SetContext(this); \
+							object->SetPlayer(pPlayer); \
 						}	\
 
 PlayerStateContext::PlayerStateContext()
@@ -24,8 +26,12 @@ PlayerStateContext::PlayerStateContext()
 	m_pCurrentObject			= MNull;
 }
 
-MBool PlayerStateContext::Init()
+MBool PlayerStateContext::Init(Player* pPlayer)
 {
+	if (!pPlayer)
+	{
+		return MFalse;
+	}
 	//if (!m_pPlayerStatePrepare)
 	//{
 	//	m_pPlayerStatePrepare = new PlayerStatePrepare();
@@ -34,48 +40,48 @@ MBool PlayerStateContext::Init()
 	//		return MFalse;
 	//	}
 	//}
-	CREATE_STATE(m_pPlayerStatePrepare, PlayerStatePrepare)
-		CREATE_STATE(m_pPlayerStateBuffering, PlayerStateBuffering)
-		CREATE_STATE(m_pPlayerStatePlaying, PlayerStatePlaying)
-		CREATE_STATE(m_pPlayerStateStoping, PlayerStateStoping)
-		CREATE_STATE(m_pPlayerStatePauseing, PlayerStatePauseing)
-		CREATE_STATE(m_pPlayerStateSeeking, PlayerStateSeeking)
+	CREATE_STATE(m_pPlayerStatePrepare, PlayerStatePrepare, pPlayer)
+		CREATE_STATE(m_pPlayerStateBuffering, PlayerStateBuffering, pPlayer)
+		CREATE_STATE(m_pPlayerStatePlaying, PlayerStatePlaying, pPlayer)
+		CREATE_STATE(m_pPlayerStateStoping, PlayerStateStoping, pPlayer)
+		CREATE_STATE(m_pPlayerStatePauseing, PlayerStatePauseing, pPlayer)
+		CREATE_STATE(m_pPlayerStateSeeking, PlayerStateSeeking, pPlayer)
 	m_pCurrentObject = m_pPlayerStatePrepare;
 	return MTrue;
 }
 
 MVoid PlayerStateContext::SetState(State state)
 {
-	if (state == Prepare)
+	if (state == State::Prepare)
 	{
 		m_pCurrentObject = m_pPlayerStatePrepare;
 	}
-	else if (state == Buffering)
+	else if (state == State::Buffering)
 	{
 		m_pCurrentObject = m_pPlayerStateBuffering;
 	}
-	else if (state == Playing)
+	else if (state == State::Playing)
 	{
 		m_pCurrentObject = m_pPlayerStatePlaying;
 	}
-	else if (state == Stoping)
+	else if (state == State::Stoping)
 	{
 		m_pCurrentObject = m_pPlayerStateStoping;
 	}
-	else if (state == Pauseing)
+	else if (state == State::Pauseing)
 	{
 		m_pCurrentObject = m_pPlayerStatePauseing;
 	}
-	else if (state == Seeking)
+	else if (state == State::Seeking)
 	{
 		m_pCurrentObject = m_pPlayerStatePrepare;
 	}
 	
 }
 
-MVoid PlayerStateContext::Play()
+MBool PlayerStateContext::Play()
 {
-	m_pCurrentObject->Play();
+	return m_pCurrentObject->Play();
 }
 
 MVoid PlayerStateContext::Stop()
@@ -88,8 +94,8 @@ MVoid PlayerStateContext::Pause()
 
 }
 
-MVoid PlayerStateContext::Seek()
+MBool PlayerStateContext::Seek()
 {
-
+	return MTrue;
 }
 

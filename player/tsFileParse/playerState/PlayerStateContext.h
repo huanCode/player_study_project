@@ -1,21 +1,34 @@
 #ifndef _PLAYERSTATECONTEXT_H_
 #define _PLAYERSTATECONTEXT_H_
 #include "amcomdef.h"
+
+enum State
+{
+	Prepare,
+	Buffering,
+	Playing,
+	Stoping,
+	Pauseing,
+	Seeking
+};
+
+
+class Player;
 class PlayerState;
 class PlayerStateContext
 {
 public:
 
 	PlayerStateContext();
-	MBool Init();
+	MBool Init(Player* pPlayer);
 	MVoid SetState(State state);
 	PlayerState* GetCurrentState() {
 		return  m_pCurrentObject;
 	};
-	MVoid Play();
+	MBool Play();
 	MVoid Stop();
 	MVoid Pause();
-	MVoid Seek();
+	MBool Seek();
 public:
 	PlayerState		*m_pPlayerStatePrepare;
 	PlayerState		*m_pPlayerStateBuffering;
