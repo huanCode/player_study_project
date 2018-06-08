@@ -53,13 +53,15 @@ MVoid	DecodeH264::Close()
 
 }
 
-MVoid*	DecodeH264::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize,MInt64 pts, MInt64 dts)
+Frame*	DecodeH264::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize,MInt64 pts, MInt64 dts)
 {
 
 	if (!m_pCodecCtx || !srcBuffer)
 	{
 		return MNull;
 	}
+
+	
 
 	int ret = 0;
 	while (1)
@@ -76,7 +78,8 @@ MVoid*	DecodeH264::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize,MInt64 pts
 		while (ret >= 0) {
 			ret = avcodec_receive_frame(m_pCodecCtx, m_pFrame);
 			if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
-				return m_pFrame;
+				return &m_pOneFrame;
+;
 			}
 			else if (ret < 0) {
 				return MNull;
@@ -110,7 +113,12 @@ MVoid*	DecodeH264::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize,MInt64 pts
 
 				//fclose(fp_out);
 
-				return m_pFrame;
+
+				m_pOneFrame.pBuffer = (MPChar)m_pFrame->data[0];
+				m_pOneFrame.iBufferSize = m_pFrame->linesize[0];
+				m_pOneFrame.pts = m_pFrame->pts;
+				m_pOneFrame.bSuccess = MTrue;
+				return &m_pOneFrame;
 			}
 		}
 	}

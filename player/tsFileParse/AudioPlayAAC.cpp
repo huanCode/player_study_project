@@ -57,7 +57,14 @@ MBool AudioPlayAAC::Open()
 		printf("can't open audio.\n");
 		return MFalse;
 	}
+	m_bRun = MFalse;
+	m_bPlay = MFalse;
 
+	MInt32 bufferSize = 2048;
+	audio_pos_tmp = (Uint8*)MMemAlloc(MNull, bufferSize);
+	audio_pos = (Uint8*)MMemAlloc(MNull, bufferSize);
+	MMemSet(audio_pos_tmp,0, bufferSize);
+	MMemSet(audio_pos, 0, bufferSize);
 	return MTrue;
 
 }
@@ -80,6 +87,9 @@ void  AudioPlayAAC::fill_audio(void *udata, Uint8 *stream, int len) {
 	{
 		return;
 	}
+	pHandle->audio_len = pHandle->audio_len_tmp;
+	pHandle->audio_pos = pHandle->audio_pos_tmp;
+
 	SDL_memset(stream, 0, len);
 	if (pHandle->audio_len == 0)		/*  Only  play  if  we  have  data  left  */
 		return;
@@ -88,19 +98,85 @@ void  AudioPlayAAC::fill_audio(void *udata, Uint8 *stream, int len) {
 	SDL_MixAudio(stream, pHandle->audio_pos, len, SDL_MIX_MAXVOLUME);
 	pHandle->audio_pos += len;
 	pHandle->audio_len -= len;
+
+	pHandle->m_bPlay = MFalse;
 }
 
+MDWord AudioPlayAAC::run(MVoid* lpPara)
+{
+	AudioPlayAAC* audioPlay = (AudioPlayAAC*)lpPara;
+	if (!audioPlay)
+	{
+		return 0;
+	}
+	audioPlay->decode();
+	return 0;
+
+}
+
+MVoid AudioPlayAAC::decode()
+{
+	m_bRun = MTrue;
+	if (!m_player)
+	{
+		return;
+	}
+
+	while (m_bRun)
+	{
+		if (!m_player->AudioDecode((MPChar)audio_pos_tmp, audio_len_tmp))
+		{
+			return;
+		}
+
+		while(audio_len)
+		{
+			SDL_Delay(1);
+		}
+
+		MMemCpy(audio_pos, audio_pos_tmp, audio_len_tmp);
+		audio_len = audio_len_tmp;
+		SDL_PauseAudio(0);
+	}
+}
+
+MBool AudioPlayAAC::Start()
+{
+	if (!m_bRun)
+	{
+		m_threadHandleRun = MThreadCreate(run, this);
+		if (!m_threadHandleRun)
+		{
+			return MFalse;
+		}
+		MThreadResume(m_threadHandleRun);
+
+	}
+
+	return MTrue;
+}
 
 
 MBool AudioPlayAAC::Display(MPChar pBuffer, MInt32 bufferSize)
 {
-	while(audio_len)
+	//while(audio_len)
+	//{
+	//	SDL_Delay(1);
+	//}
+	//audio_len = bufferSize;
+	//audio_pos = (Uint8 *)pBuffer;
+	while(m_bPlay)
 	{
 		SDL_Delay(1);
 	}
-	audio_len = bufferSize;
-	audio_pos = (Uint8 *)pBuffer;
+
+	audio_len_tmp = bufferSize;
+	audio_pos_tmp = (Uint8 *)pBuffer;
 	SDL_PauseAudio(0);
+
+	m_bPlay = MTrue;
+
+
 	return MTrue;
 }
 

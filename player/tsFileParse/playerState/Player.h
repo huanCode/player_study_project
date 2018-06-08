@@ -29,7 +29,7 @@ public:
 	virtual MVoid Stop();
 	virtual MVoid Pause();
 	virtual MVoid Seek();
-
+	MBool	AudioDecode(MPChar buffer,MInt32& bufferSize);
 public:
 	//以下函数主要在状态模式中调用
 	MBool prepare();
@@ -77,6 +77,14 @@ private:
 	MBool					m_bFirstFrameAudio;
 	MBool					m_bFirstFrameVideo;
 
+	Frame					*m_pFrameVideo;
+	Frame					*m_pFrameAudio;
+
+	MBool					m_bInitDecode;
+
+
+	MInt64					m_currentAudioTime;
+	MInt64					m_currentVideoTime;
 };
 
 

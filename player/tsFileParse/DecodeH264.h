@@ -14,11 +14,12 @@ public:
 	MBool	Open();
 	MVoid	Close();
 
-	MVoid*	DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize,MInt64 pts, MInt64 dts);
+	Frame*	DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize,MInt64 pts, MInt64 dts);
 private:
 	AVCodecContext *m_pCodecCtx;
 	AVPacket	m_packet;
 	AVFrame		*m_pFrame;
+	
 
 };
 

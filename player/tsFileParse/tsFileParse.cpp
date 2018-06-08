@@ -86,7 +86,7 @@ int main(int      argc, char    *argv[])
 	}
 	int ret = 0;
 
-	AVFrame* frame = MNull;
+	Frame* frame = MNull;
 	while (1)
 	{
 		if (i == 307)
@@ -97,12 +97,12 @@ int main(int      argc, char    *argv[])
 
 		if (pkt->mediaType == AV_MEDIA_TYPE_VIDEO)
 		{
-			frame = (AVFrame*)video.DecodeFrame(pkt->bufferPkt, pkt->bufferPktSize, pkt->pts, pkt->dts);
+			//frame = video.DecodeFrame(pkt->bufferPkt, pkt->bufferPktSize, pkt->pts, pkt->dts);
 		}
 		else if (pkt->mediaType == AV_MEDIA_TYPE_AUDIO)
 		{
-			frame = (AVFrame*)aac.DecodeFrame(pkt->bufferPkt,pkt->bufferPktSize, pkt->pts, pkt->dts);
-			audioPlay.Display((MPChar)frame->data[0], frame->linesize[0]);
+			frame = aac.DecodeFrame(pkt->bufferPkt,pkt->bufferPktSize, pkt->pts, pkt->dts);
+			audioPlay.Display((MPChar)frame->pBuffer, frame->iBufferSize);
 		}
 
 

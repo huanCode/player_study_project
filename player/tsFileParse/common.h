@@ -109,5 +109,22 @@ typedef struct _AVPKT
 
 }AVPkt;
 
+typedef struct _Frame
+{
+	MPChar	pBuffer;
+	MInt32  iBufferSize;
+	MInt64  pts;
+	MBool	bSuccess;
+
+	MVoid Init()
+	{
+		pBuffer = MNull;
+		iBufferSize = 0;
+		pts = 0;
+		bSuccess = MFalse;
+	}
+
+}Frame;
+
 
 #endif // !_COMMON_H

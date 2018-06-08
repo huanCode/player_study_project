@@ -17,6 +17,14 @@ Player::Player()
 
 	m_bFirstFrameAudio = MFalse;
 	m_bFirstFrameVideo = MFalse;
+
+
+	m_pFrameVideo = MNull;
+	m_pFrameAudio = MNull;
+
+	m_bInitDecode = MFalse;
+	m_currentAudioTime = 0;
+	m_currentVideoTime = 0;
 }
 
 MVoid Player::Start()
@@ -221,6 +229,23 @@ MBool Player::prepare()
 }
 
 
+MBool	 Player::AudioDecode(MPChar buffer, MInt32& bufferSize)
+{
+	AVPkt* pktFirst = m_arrayAudio.GetNodeAndDelByIndex(1);
+	m_pFrameAudio = m_pDecodeAudio->DecodeFrame(pktFirst->bufferPkt, pktFirst->bufferPktSize, pktFirst->pts, pktFirst->dts);
+	if (!m_pFrameAudio)
+	{
+		return MFalse;
+	}
+	
+	MMemCpy(buffer, m_pFrameAudio->pBuffer, m_pFrameAudio->iBufferSize);
+	bufferSize = m_pFrameAudio->iBufferSize;
+	m_bFirstFrameAudio = MFalse;
+	m_currentAudioTime = m_pFrameAudio->pts;
+	return MTrue;
+
+}
+
 MBool Player::PlayOneFrame()
 {
 	if (!m_arrayVideo.GetSize() || !m_arrayAudio.GetSize())
@@ -234,11 +259,23 @@ MBool Player::PlayOneFrame()
 		return MFalse;
 	}
 
+	//if (true)
+	//{
+
+	//}
+	m_videoPlay->Display(m_pFrameVideo->pBuffer);
+
+	MThreadSleep(m_threadHandleRun, 40);
 
 }
 
 MBool Player::initDecode()
 {
+	if (m_bInitDecode)
+	{
+		return MTrue;
+	}
+
 
 	if (!m_pDecodeVideo)
 	{
@@ -270,19 +307,66 @@ MBool Player::initDecode()
 	}
 
 
-	if (m_bFirstFrameAudio)
-	{
-		AVPkt* pktFirst = m_arrayVideo.GetFirstNode();
-	}
-
-
 	if (m_bFirstFrameVideo)
 	{
+		AVPkt* pktFirst = MNull;
+		MInt32 count = 20;
+		while (count-- && m_arrayVideo.GetSize())
+		{
+			pktFirst = m_arrayVideo.GetNodeAndDelByIndex(1);
+			m_pFrameVideo = m_pDecodeAudio->DecodeFrame(pktFirst->bufferPkt, pktFirst->bufferPktSize, pktFirst->pts, pktFirst->dts);
+			if (!m_pFrameAudio)
+			{
+				return MFalse;
+			}
+			else if (m_pFrameVideo->bSuccess)
+			{
+				
+				m_currentVideoTime = m_pFrameVideo->pts;
+				m_bFirstFrameVideo = MFalse;
+			}
+		}
+
+		
+		
+	}
+
+
+	if (m_bFirstFrameAudio)
+	{
+		//AVPkt* pktFirst = m_arrayAudio.GetNodeAndDelByIndex(1);
+		//m_pFrameAudio = m_pDecodeAudio->DecodeFrame(pktFirst->bufferPkt, pktFirst->bufferPktSize, pktFirst->pts, pktFirst->dts);
+		//if (!m_pFrameAudio)
+		//{
+		//	return MFalse;
+		//}
+
+		m_audioPlay->SetPlayer(this);
+		
+		if (!m_audioPlay->Start())
+		{
+			return MFalse;
+		}
+		MInt32 count = 20;
+		while (count--)
+		{
+			if (m_bFirstFrameAudio)
+			{
+				MThreadSleep(m_threadHandleRun, 2);
+			}
+			else
+			{
+				m_bInitDecode = MTrue;
+				return MTrue;
+			}
+			
+		}
 
 	}
 
 
-	return MTrue;
+
+	return MFalse;
 
 }
 

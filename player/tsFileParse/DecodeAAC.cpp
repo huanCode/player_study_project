@@ -62,7 +62,7 @@ MVoid	DecodeAAC::Close()
 
 }
 
-MVoid*	DecodeAAC::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize, MInt64 pts, MInt64 dts)
+Frame*	DecodeAAC::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize, MInt64 pts, MInt64 dts)
 {
 	if (!m_pCodecCtx || !srcBuffer)
 	{
@@ -106,7 +106,7 @@ MVoid*	DecodeAAC::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize, MInt64 pts
 				//}
 				//m_count++;
 
-
+				AVFrame* frame = MNull;
 
 				m_in_audio.channels = m_pCodecCtx->channels;
 				m_in_audio.nb_samples = m_pCodecCtx->frame_size;
@@ -120,23 +120,33 @@ MVoid*	DecodeAAC::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize, MInt64 pts
 						m_pAudioScale = new AudioScale();
 						if (!m_pAudioScale)
 						{
-							return MFalse;
+							return MNull;
 						}
 
 						m_pAudioScale->SetInAudioIndo(m_in_audio);
 						m_pAudioScale->SetOutAudioIndo(m_out_audio);
 						if (!m_pAudioScale->Open())
 						{
-							return MFalse;
+							return MNull;
 						}
 						
 					}
 
-					return m_pAudioScale->Scale(m_pFrame);
+					frame = m_pAudioScale->Scale(m_pFrame);
 				}
 				else
 				{
-					return m_pFrame;
+					frame = m_pFrame;
+				}
+
+				if (frame)
+				{
+
+					m_pOneFrame.pBuffer = (MPChar)frame->data[0];
+					m_pOneFrame.iBufferSize = frame->linesize[0];
+					m_pOneFrame.pts = frame->pts;
+					m_pOneFrame.bSuccess = MTrue;
+					return &m_pOneFrame;
 				}
 
 			}

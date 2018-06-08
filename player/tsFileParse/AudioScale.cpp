@@ -126,17 +126,17 @@ AVFrame* AudioScale::Scale(AVFrame *in_pFrame)
 	m_pFrame->nb_samples = ret;
 	av_samples_get_buffer_size(&m_pFrame->linesize[0], m_out_audio.channels, ret, (AVSampleFormat)m_out_audio.sample_fmt, 1);
 
-	if (m_count < 300)
-	{
-		audioFile.Write((MByte*)m_pFrame->data[0], 4096);
-		
-	}
-	else if(m_count == 300)
-	{
-		audioFile.Close();
-	}
-	m_count++;
-
+	//if (m_count < 300)
+	//{
+	//	audioFile.Write((MByte*)m_pFrame->data[0], 4096);
+	//	
+	//}
+	//else if(m_count == 300)
+	//{
+	//	audioFile.Close();
+	//}
+	//m_count++;
+	m_pFrame->pts = in_pFrame->pts;
 
 	return m_pFrame;
 }
