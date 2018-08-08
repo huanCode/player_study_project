@@ -12,6 +12,10 @@
 #include "DecodeAAC.h"
 #include "DecodeH264.h"
 #include "Player.h"
+#include "amc_aac_encoder.h"
+#include "SoundTouch.h"
+//#include "WavFile.h"
+using namespace soundtouch;
 extern "C"
 {
 #include "libavcodec/avcodec.h"
@@ -29,6 +33,22 @@ inline MUInt8 to_UInt8(MByte* p)
 	return *((MByte*)p);
 }
 
+#define BUFF_SIZE 4096
+
+
+void aacEndecodeSoundTouch()
+{
+
+
+	SoundTouch soundTouch;
+
+	
+
+	return;
+
+}
+
+
 int main(int      argc, char    *argv[])
 {
 
@@ -45,7 +65,8 @@ int main(int      argc, char    *argv[])
 
 	//return 0;
 
-
+	MHandle phAACEncoder;
+	AA_AACEnc_Open(&phAACEncoder);
 
 
 	char* strUrl = "http://hlsglsb.wasu.tv/1480682957527_561859.m3u8?action=hls&Contentid=CP23010020161201084109";
