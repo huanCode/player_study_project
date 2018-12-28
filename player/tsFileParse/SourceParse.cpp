@@ -7,6 +7,10 @@ SourceParse::SourceParse()
 {
 	m_pBuffer = MNull;
 	m_iBufferCanReadSize = 0;
+
+	m_hasAudio = MTrue;
+	m_hasVideo = MFalse;
+
 }
 
 MBool SourceParse::Open(MPChar strUrl)

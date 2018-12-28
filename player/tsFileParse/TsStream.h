@@ -11,7 +11,7 @@
 #define PROBE_BUFFER_SIZE	204 * 10
 using namespace std;
 class tsFilter;
-class TsStream:public IParse
+class TsStream :public IParse
 {
 public:
 	TsStream();
@@ -87,6 +87,16 @@ public:
 	MBool	ReadPacket(AVPkt** pkt);
 	MVoid	Close();
 
+	MBool	HasVideo()
+	{
+		return m_hasVideo;
+	}
+
+	MBool	HasAudio()
+	{
+		return m_hasAudio;
+	}
+
 private:
 	MBool	Init();
 
@@ -150,6 +160,9 @@ private:
 	MInt32	m_audioCount;
 	MInt32	m_width;
 	MInt32	m_height;
+
+	MBool	m_hasVideo;
+	MBool	m_hasAudio;
 public:
 
 

@@ -11,6 +11,13 @@ public:
 	SourceParse();
 	MBool Open(MPChar strUrl);
 	MBool ReadFrame(AVPkt** pkt);
+	MBool HasVideo() {
+		return m_parseFrame.HasVideo();
+	}
+
+	MBool HasAudio() {
+		return m_parseFrame.HasAudio();
+	}
 
 
 private:
@@ -18,6 +25,8 @@ private:
 	ParseFrame	m_parseFrame;
 	MPChar		m_pBuffer;
 	MInt32		m_iBufferCanReadSize;
+	MBool		m_hasVideo;
+	MBool		m_hasAudio;
 
 };
 

@@ -18,6 +18,27 @@ public:
 
 	MBool ReadFrame(AVPkt** pkt);
 	MVoid	SetDataRead(IDataRead* obj);
+
+	MBool	HasVideo()
+	{
+		if (m_parse)
+		{
+			m_parse->HasVideo();
+		}
+
+		return MFalse;
+	}
+
+	MBool	HasAudio()
+	{
+		if (m_parse)
+		{
+			m_parse->HasAudio();
+		}
+
+		return MFalse;
+	}
+
 private:
 	IParse*	m_parse;
 	//ToolList<read_probe>	m_probeList;

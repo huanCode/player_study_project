@@ -129,7 +129,7 @@ private:
 private:
 	MInt32	m_pcr_pid;
 };
-
+//能知道流类型:video、audio
 class tsSectionPes :public tsFilter
 {
 public:
@@ -152,6 +152,7 @@ public:
 		m_buffer_size = 0;
 		m_curIndex = -1;
 		m_count = 0;
+		m_flags = false;
 	}
 	MUInt32 parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buffer_size);
 	MVoid	SetPid(MInt32 p_pid) {
@@ -163,7 +164,7 @@ public:
 		m_curIndex = iIndex;
 	};
 
-
+	//获取流类型video、audio
 	MBool mpegts_find_stream_type(MInt32 stream_type, const StreamType *types);
 private:
 	inline MInt64 ff_parse_pes_pts(const MUInt8 *buffer);
@@ -193,6 +194,8 @@ private:
 
 	MInt32			m_curIndex;
 	MInt32			m_count;
+
+	MBool			m_flags;	//true : key frame
 
 
 

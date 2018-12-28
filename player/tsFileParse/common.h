@@ -39,7 +39,7 @@ typedef struct _AVPKT
 		
 	}
 
-	MBool CopyBuffer(MPChar pBuffer, MInt32 bufferSize, AV_MediaType& type, AV_CodecID codeID,MInt64 iPts,MInt64 iDts)
+	MBool CopyBuffer(MPChar pBuffer, MInt32 bufferSize, AV_MediaType& type, AV_CodecID codeID,MInt64 iPts,MInt64 iDts,MBool iFlags)
 	{
 		if (pBuffer == MNull || bufferSize <= 0)
 		{
@@ -60,6 +60,7 @@ typedef struct _AVPKT
 		pts = iPts;
 		dts = iDts;
 		codeType = codeID;
+		flags = iFlags;
 
 	}
 
@@ -73,6 +74,7 @@ typedef struct _AVPKT
 		pkt->pts = pts;
 		pkt->dts = dts;
 		pkt->codeType = codeType;
+		pkt->flags = flags;
 	}
 
 
@@ -80,7 +82,7 @@ typedef struct _AVPKT
 	{
 		pkt->bIsSync = bIsSync;
 
-		pkt->CopyBuffer(bufferPkt, bufferPktSize, mediaType, codeType, pts,dts);
+		pkt->CopyBuffer(bufferPkt, bufferPktSize, mediaType, codeType, pts,dts,flags);
 
 
 
@@ -106,6 +108,7 @@ typedef struct _AVPKT
 	MBool			isGetPacket;
 	MInt64			pts;
 	MInt64			dts;
+	MBool			flags;	//true:key frame
 
 }AVPkt;
 

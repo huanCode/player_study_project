@@ -189,12 +189,12 @@
     <ClInclude Include="include\MKernel.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="tool\mv3String.h">
+      <Filter>tool</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="tsFileParse.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="ToolString.cpp">
@@ -274,6 +274,12 @@
     </ClCompile>
     <ClCompile Include="PlayerStateBuffering.cpp">
       <Filter>playerState</Filter>
+    </ClCompile>
+    <ClCompile Include="Demo.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tool\mv3String.cpp">
+      <Filter>tool</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

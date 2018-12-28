@@ -83,7 +83,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -104,15 +104,15 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>./include;./tool</AdditionalIncludeDirectories>
+      <SDLCheck>false</SDLCheck>
+      <AdditionalIncludeDirectories>./include;./tool;./playerState;.;ffmpeg</AdditionalIncludeDirectories>
       <AdditionalOptions>/D _CRT_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mpbase.lib;mpkernel.lib;http_io.lib;mpnet.lib;mputility.lib;mphttpd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mpbase.lib;mpkernel.lib;http_io.lib;mpnet.lib;mputility.lib;mphttpd.lib;avcodec.lib;avutil.lib;swresample.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -194,6 +194,7 @@
     <ClInclude Include="ToolList.h" />
     <ClInclude Include="ToolString.h" />
     <ClInclude Include="tool\mv3File.h" />
+    <ClInclude Include="tool\mv3String.h" />
     <ClInclude Include="tsFilter.h" />
     <ClInclude Include="TsStream.h" />
     <ClInclude Include="TsStreamDef.h" />
@@ -229,7 +230,8 @@
     <ClCompile Include="ToolBuffer.cpp" />
     <ClCompile Include="ToolString.cpp" />
     <ClCompile Include="tool\mv3File.cpp" />
-    <ClCompile Include="tsFileParse.cpp" />
+    <ClCompile Include="Demo.cpp" />
+    <ClCompile Include="tool\mv3String.cpp" />
     <ClCompile Include="tsFilter.cpp" />
     <ClCompile Include="TsStream.cpp" />
     <ClCompile Include="VideoPlayWindow.cpp" />

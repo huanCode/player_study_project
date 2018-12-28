@@ -1,0 +1,40 @@
+SourceFrame	数据读取方式
+	Http
+	File
+	Rtmp
+
+ParseFrame	容器格式解析
+	FLV
+	ts
+	mp4
+	m3u8
+
+
+SourceParse	整合SourceFrame和ParseFrame,最后输出解析后frame
+
+Decodec		解码格式
+	video:H64
+	audio:aac
+
+Display		显示
+
+
+SourceFrame--->ParseFrame--->Decodec--->音视频同步---->Display
+
+
+IParse接口:格式解析接口
+	支持如下:
+	ParseHls:m3u8
+	ts	:TsStream
+
+
+
+PMT解析时能知道流类型
+
+
+
+
+基本信息:
+video	width、height、帧率
+
+	

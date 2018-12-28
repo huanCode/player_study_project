@@ -5,6 +5,7 @@
 #include "PlayerStateContext.h"
 #include "ToolList.h"
 #include "common.h"
+#include "mv3String.h"
 class SourceParse;
 class IDecode;
 class VideoPlayWindow;
@@ -29,7 +30,28 @@ public:
 	virtual MVoid Stop();
 	virtual MVoid Pause();
 	virtual MVoid Seek();
-	MBool	AudioDecode(MPChar buffer,MInt32& bufferSize);
+	MBool	AudioDecode(MPChar buffer, MInt32& bufferSize);
+
+
+	MBool	HasVideo()
+	{
+		if (m_pSourceParse)
+		{
+			m_pSourceParse->HasAudio();
+		}
+
+		return MFalse;
+	}
+
+	MBool	HasAudio()
+	{
+		if (m_pSourceParse)
+		{
+			m_pSourceParse->HasAudio();
+		}
+
+		return MFalse;
+	}
 public:
 	//以下函数主要在状态模式中调用
 	MBool prepare();
@@ -85,6 +107,8 @@ private:
 
 	MInt64					m_currentAudioTime;
 	MInt64					m_currentVideoTime;
+
+	MV3String				m_strURL;
 };
 
 

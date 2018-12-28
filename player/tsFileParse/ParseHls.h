@@ -55,6 +55,26 @@ public:
 	MBool	ReadPacket(AVPkt** pkt);
 	MVoid	Close();
 
+	MBool	HasVideo()
+	{
+		if (m_pTs)
+		{
+			m_pTs->HasVideo();
+		}
+
+		return MFalse;
+	}
+
+	MBool	HasAudio()
+	{
+		if (m_pTs)
+		{
+			m_pTs->HasAudio();
+		}
+
+		return MFalse;
+	}
+
 	static IParse* hls_probe(MPChar p_buffer, MUInt32 p_size);
 
 	MBool ParseM3u8(MPChar strUrl,Playlist* playlist = MNull);

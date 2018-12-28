@@ -43,6 +43,13 @@ MVoid Player::Close()
 
 MBool Player::Play(MPChar strUrl)
 {
+	if (!strUrl)
+	{
+		return MFalse;
+	}
+
+	m_strURL.StrCat(strUrl);
+
 	m_context.Init(this);
 
 	m_action = actionPlay;
@@ -101,7 +108,11 @@ MVoid Player::handle()
 		switch (m_action)
 		{
 		case actionPlay:
-			m_context.Play();
+			if (!m_context.Play())
+			{
+				return;
+			}
+			;
 			break;
 		case actionStop:
 			m_context.Stop();
@@ -110,7 +121,11 @@ MVoid Player::handle()
 			m_context.Pause();
 			break;
 		case actionSeek:
-			m_context.Seek();
+			if (!m_context.Seek())
+			{
+				return;
+			}
+			
 			break;
 		default:
 			m_bRun = MFalse;
@@ -175,6 +190,23 @@ MBool Player::prepare()
 {
 
 
+
+	if (!m_pSourceParse)
+	{
+		m_pSourceParse = new SourceParse();
+		if (!m_pSourceParse)
+		{
+			return MFalse;
+		}
+		//MPChar strUrl = "http://38uni317.vod2.hongshiyun.net/target/hls/2017/01/13/660_3deb5b1a9a3f4f3d9c49f52f41a19a60_10_1280x720.m3u8";
+		
+		if (!m_pSourceParse->Open(m_strURL.Get()))
+		{
+			return MFalse;
+		}
+	}
+
+
 	m_audioPlay = new AudioPlayAAC();
 	if (!m_audioPlay)
 	{
@@ -195,20 +227,8 @@ MBool Player::prepare()
 		return MFalse;
 	}
 
-	if (!m_pSourceParse)
-	{
-		m_pSourceParse = new SourceParse();
-		if (!m_pSourceParse)
-		{
-			return MFalse;
-		}
-		MPChar strUrl = "http://38uni317.vod2.hongshiyun.net/target/hls/2017/01/13/660_3deb5b1a9a3f4f3d9c49f52f41a19a60_10_1280x720.m3u8";
-		
-		if (!m_pSourceParse->Open(strUrl))
-		{
-			return MFalse;
-		}
-	}
+
+
 
 	if (!m_bRunRead)
 	{
@@ -321,7 +341,6 @@ MBool Player::initDecode()
 			}
 			else if (m_pFrameVideo->bSuccess)
 			{
-				
 				m_currentVideoTime = m_pFrameVideo->pts;
 				m_bFirstFrameVideo = MFalse;
 			}
