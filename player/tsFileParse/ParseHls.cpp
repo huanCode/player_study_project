@@ -149,7 +149,7 @@ MBool ParseHls::ReadPacket(AVPkt** pkt)
 		}
 		
 	}
-	return MFalse;
+	return MTrue;
 }
 
 MVoid ParseHls::Close()

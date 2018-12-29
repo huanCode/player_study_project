@@ -8,6 +8,27 @@ ParseFrame::ParseFrame()
 	m_parse = MNull;
 }
 
+MBool	ParseFrame::HasVideo()
+{
+	if (m_parse)
+	{
+		m_parse->HasVideo();
+	}
+
+	return MFalse;
+}
+
+MBool	ParseFrame::HasAudio()
+{
+	if (m_parse)
+	{
+		m_parse->HasAudio();
+	}
+
+	return MFalse;
+}
+
+
 MBool ParseFrame::FindParse(MPChar pbuf, MInt32 iBufSize)
 {
 	read_probe probeFuntion = MNull;

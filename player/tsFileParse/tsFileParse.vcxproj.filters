@@ -192,6 +192,15 @@
     <ClInclude Include="tool\mv3String.h">
       <Filter>tool</Filter>
     </ClInclude>
+    <ClInclude Include="ToolListLock.h">
+      <Filter>tool</Filter>
+    </ClInclude>
+    <ClInclude Include="DecodecAudioMgr.h">
+      <Filter>decode</Filter>
+    </ClInclude>
+    <ClInclude Include="DecodecMgr.h">
+      <Filter>decode</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -280,6 +289,15 @@
     </ClCompile>
     <ClCompile Include="tool\mv3String.cpp">
       <Filter>tool</Filter>
+    </ClCompile>
+    <ClCompile Include="ToolListLock.cpp">
+      <Filter>tool</Filter>
+    </ClCompile>
+    <ClCompile Include="DecodecAudioMgr.cpp">
+      <Filter>decode</Filter>
+    </ClCompile>
+    <ClCompile Include="DecodecMgr.cpp">
+      <Filter>decode</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

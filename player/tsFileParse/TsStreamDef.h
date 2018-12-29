@@ -88,6 +88,9 @@ typedef struct StreamType {
 	enum AV_CodecID codec_id;
 } StreamType;
 
+#define STREAMTYPE_NONE		0
+#define STREAMTYPE_VIDEO	0x1b
+#define STREAMTYPE_AUDIO	0x0f
 static const StreamType ISO_types[] = {
 	{ 0x0f, AV_MEDIA_TYPE_AUDIO, _AV_CODEC_ID_AAC },
 	{ 0x1b, AV_MEDIA_TYPE_VIDEO, _AV_CODEC_ID_H264 },

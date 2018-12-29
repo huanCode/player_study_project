@@ -264,15 +264,14 @@ MUInt32 tsSectionPmt::parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buf
 				return -1;
 			}
 
-			if (AV_MEDIA_TYPE_AUDIO == stream_type)
+			if (STREAMTYPE_AUDIO == stream_type)
 			{
 				p_tsStream->m_hasAudio = MTrue;
 			}
-			else if(AV_MEDIA_TYPE_VIDEO == stream_type)
+			else if(STREAMTYPE_VIDEO == stream_type)
 			{
 				p_tsStream->m_hasVideo = MTrue;
 			}
-
 
 			filterPes->SetIndex(iIndex++);
 			
@@ -524,10 +523,22 @@ skip:
 					m_dts = ff_parse_pes_pts(pes_head_data);
 					pes_head_data += 5;
 				}
+				else
+				{
+					return -1;
+				}
+
+				//PES_extension_flag = pts_dts_flags & 0x01
 				if (pts_dts_flags & 0x01)
 				{
+					unsigned int pes_ext, skip;
 					//À©Õ¹²¿·Ö
-					return -1;
+					pes_ext = *pes_head_data++;
+					/* Skip PES private data, program packet sequence counter and P-STD buffer */
+					skip = (pes_ext >> 4) & 0xb;
+					skip += skip & 0x9;
+					pes_head_data += skip;
+
 				}
 				m_state = MPEGTS_PAYLOAD;
 				m_header_size = 0;

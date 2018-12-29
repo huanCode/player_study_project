@@ -1,8 +1,8 @@
 #pragma once
 #ifndef _TOOLLIST_H
 #define _TOOLLIST_H
-
-
+#include "amcomdef.h"
+//#include "MKernel.h"
 
 
 template<class Node>
@@ -11,7 +11,7 @@ class ToolList
 public:
 	ToolList();
 	~ToolList();
-	MVoid AddNode(Node pNode);
+	MBool AddNode(Node pNode);
 	MVoid Clear();
 	MInt32 GetSize() {
 		return m_iSize;
@@ -46,6 +46,8 @@ private:
 	NodePtr		m_pHead;
 	NodePtr		m_pTail;
 	MInt32		m_iSize;
+
+	MHandle		m_pLock;
 };
 
 template<class Node>
@@ -54,19 +56,27 @@ ToolList<Node>::ToolList()
 	m_pHead = MNull;
 	m_pTail = MNull;
 	m_iSize = 0;
+	//m_pLock = MMutexCreate();
 }
 
 template<class Node>
 ToolList<Node>::~ToolList()
 {
 	Clear();
+	//MMutexDestroy(m_pLock);
 	//MVLOGD("[upload] ~~~~~~ mv3UploadInfoOperator::~mv3UploadInfoOperator\r\n");
 }
 
 template<class Node>
-MVoid ToolList<Node>::AddNode(Node pNode)
+MBool ToolList<Node>::AddNode(Node pNode)
 {
 	NodeMgr* unit = new NodeMgr();
+	if (!unit)
+	{
+		return MFalse;
+	}
+
+	//MMutexLock(m_pLock);
 	if (!m_pHead)
 	{
 		
@@ -82,6 +92,8 @@ MVoid ToolList<Node>::AddNode(Node pNode)
 		m_pTail = unit;
 	}
 	m_iSize++;
+	//MMutexUnlock(m_pLock);
+	return MTrue;
 
 }
 

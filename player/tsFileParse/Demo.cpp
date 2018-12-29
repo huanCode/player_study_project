@@ -70,7 +70,7 @@ int main(int      argc, char    *argv[])
 
 
 	//char* strUrl = "http://hlsglsb.wasu.tv/1480682957527_561859.m3u8?action=hls&Contentid=CP23010020161201084109";
-	//strUrl = "http://38uni317.vod2.hongshiyun.net/target/hls/2017/01/13/660_3deb5b1a9a3f4f3d9c49f52f41a19a60_10_1280x720.m3u8";
+	//strUrl = "http://nf6jwj7r.vod2.danghongyun.com/target/hls/2017/09/06/777_e9cac11a41a24c93b56d276270e910d1_17_1280x720.m3u8";
 	//SourceParse sourse;
 	//sourse.Open(strUrl);	//Ç¶Ì×
 	//AVPkt* pkt = MNull;

@@ -158,6 +158,8 @@
     <ClInclude Include="AudioScale.h" />
     <ClInclude Include="common.h" />
     <ClInclude Include="DecodeAAC.h" />
+    <ClInclude Include="DecodecAudioMgr.h" />
+    <ClInclude Include="DecodecMgr.h" />
     <ClInclude Include="DecodeH264.h" />
     <ClInclude Include="H264Parse.h" />
     <ClInclude Include="HttpIo.h" />
@@ -192,6 +194,7 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="ToolBuffer.h" />
     <ClInclude Include="ToolList.h" />
+    <ClInclude Include="ToolListLock.h" />
     <ClInclude Include="ToolString.h" />
     <ClInclude Include="tool\mv3File.h" />
     <ClInclude Include="tool\mv3String.h" />
@@ -205,6 +208,8 @@
     <ClCompile Include="AudioScale.cpp" />
     <ClCompile Include="common.cpp" />
     <ClCompile Include="DecodeAAC.cpp" />
+    <ClCompile Include="DecodecAudioMgr.cpp" />
+    <ClCompile Include="DecodecMgr.cpp" />
     <ClCompile Include="DecodeH264.cpp" />
     <ClCompile Include="H264Parse.cpp" />
     <ClCompile Include="HttpIo.cpp" />
@@ -228,6 +233,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ToolBuffer.cpp" />
+    <ClCompile Include="ToolListLock.cpp" />
     <ClCompile Include="ToolString.cpp" />
     <ClCompile Include="tool\mv3File.cpp" />
     <ClCompile Include="Demo.cpp" />

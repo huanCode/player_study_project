@@ -5,6 +5,9 @@
 inline MUInt16 to_UInt16(MPChar p);
 inline MUInt8 to_UInt8(MPChar p);
 
+
+#define RETURN_BOOL(ret) if(ret == MFalse){return ret;}
+
 MUInt8 get8(MChar*& p);
 MUInt16 get16(MChar*& p);
 
@@ -102,10 +105,10 @@ typedef struct _AVPKT
 
 	MPChar			bufferPkt;
 	MInt32			bufferPktSize;
-	MBool			bIsSync;			//only for video frame
+	MBool			bIsSync;			//only for video frame,True is key frame
 	AV_MediaType	mediaType;	//audio/video
 	AV_CodecID		codeType;
-	MBool			isGetPacket;
+	MBool			isGetPacket;	//false:表示ts切片已经读完,这个是通过读数据设置
 	MInt64			pts;
 	MInt64			dts;
 	MBool			flags;	//true:key frame

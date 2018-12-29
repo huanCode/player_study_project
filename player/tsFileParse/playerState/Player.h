@@ -7,7 +7,7 @@
 #include "common.h"
 #include "mv3String.h"
 class SourceParse;
-class IDecode;
+class DecodecVideoMgr;
 class VideoPlayWindow;
 class AudioPlayAAC;
 
@@ -33,25 +33,8 @@ public:
 	MBool	AudioDecode(MPChar buffer, MInt32& bufferSize);
 
 
-	MBool	HasVideo()
-	{
-		if (m_pSourceParse)
-		{
-			m_pSourceParse->HasAudio();
-		}
-
-		return MFalse;
-	}
-
-	MBool	HasAudio()
-	{
-		if (m_pSourceParse)
-		{
-			m_pSourceParse->HasAudio();
-		}
-
-		return MFalse;
-	}
+	MBool	HasVideo();
+	MBool	HasAudio();
 public:
 	//以下函数主要在状态模式中调用
 	MBool prepare();
@@ -59,7 +42,7 @@ public:
 	MBool PlayOneFrame();
 private:
 	MBool initDecode();
-
+	MBool initDisplay();
 private:
 	static MDWord run(MVoid* lpPara);
 	static MDWord run_read(MVoid* lpPara);
@@ -70,8 +53,8 @@ private:
 	PlayerStateContext	m_context;
 	SourceParse		*m_pSourceParse;
 	//解码
-	IDecode		*m_pDecodeVideo;
-	IDecode		*m_pDecodeAudio;
+	DecodecVideoMgr		*m_pDecodeVideo;
+	DecodecVideoMgr		*m_pDecodeAudio;
 
 	//播放
 	AudioPlayAAC	*m_audioPlay;
