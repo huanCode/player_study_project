@@ -6,7 +6,7 @@ inline MUInt16 to_UInt16(MPChar p);
 inline MUInt8 to_UInt8(MPChar p);
 
 
-#define RETURN_BOOL(ret) if(ret == MFalse){return ret;}
+#define RETURN_FALSE(ret) if(!ret){return MFalse;}
 
 MUInt8 get8(MChar*& p);
 MUInt16 get16(MChar*& p);
@@ -24,6 +24,17 @@ typedef struct _avPacketInfo
 	AV_MediaType	mediaType;	//audio/video
 }AVPacketInfo;
 
+
+typedef struct _videoInfo
+{
+	_videoInfo()
+	{
+		width = 0;
+		height = 0;
+	}
+	MUInt32	width;
+	MUInt32	height;
+}VideoInfo;
 
 
 typedef struct _AVPKT

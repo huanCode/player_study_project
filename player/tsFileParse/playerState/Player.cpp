@@ -25,11 +25,45 @@ Player::Player()
 	m_bInitDecode = MFalse;
 	m_currentAudioTime = 0;
 	m_currentVideoTime = 0;
+
+	m_bFirstVideoKeyFrame = MFalse;
+	m_bFirstAudioKeyFrame = MFalse;
+
+	m_bHasVideo = MFalse;
+	m_bHasAudio = MFalse;
+
+	m_lastAudioTime = -1;
+	m_lastVideoTime = -1;
+
+	m_videoInfo.width = 1280;
+	m_videoInfo.height = 720;
+
 }
 
-MVoid Player::Start()
+MBool Player::Start(MPChar strUrl)
 {
+	if (!strUrl)
+	{
+		return MFalse;
+	}
 
+	m_strURL.StrCat(strUrl);
+
+
+	m_action = actionPlay;
+	m_context.Init(this);
+	if (!m_bRun)
+	{
+		m_threadHandleRun = MThreadCreate(run, this);
+		if (!m_threadHandleRun)
+		{
+			return MFalse;
+		}
+		MThreadResume(m_threadHandleRun);
+
+	}
+
+	return MTrue;
 }
 
 MVoid Player::Close()
@@ -61,31 +95,7 @@ MBool	Player::HasAudio()
 
 
 
-MBool Player::Play(MPChar strUrl)
-{
-	if (!strUrl)
-	{
-		return MFalse;
-	}
 
-	m_strURL.StrCat(strUrl);
-
-	m_context.Init(this);
-
-	m_action = actionPlay;
-	if (!m_bRun)
-	{
-		m_threadHandleRun = MThreadCreate(run, this);
-		if (!m_threadHandleRun)
-		{
-			return MFalse;
-		}
-		MThreadResume(m_threadHandleRun);
-
-	}
-
-	return MTrue;
-}
 
 MVoid Player::Stop()
 {
@@ -132,7 +142,7 @@ MVoid Player::handle()
 			{
 				return;
 			}
-			;
+			
 			break;
 		case actionStop:
 			m_context.Stop();
@@ -158,29 +168,20 @@ MVoid Player::thread_read()
 {
 	m_bRunRead = MTrue;
 
-	
-	MBool hasVideo = m_pSourceParse->HasVideo();
-	MBool hasAudio = m_pSourceParse->HasAudio();
+
 	MInt32 videoPercent = 0;
 	MInt32 audioPercent = 0;
-	AVPkt* pktFirst = MNull;
-	AVPkt* pktLast = MNull;
+	AVPkt* pktHead = MNull;
+	AVPkt* pktTail = MNull;
+	AVPkt* pkt = MNull;
 	while (m_bRunRead)
 	{
 
-
-
-
-
-		AVPkt* pkt = MNull;
-		
 		if (!m_pSourceParse->ReadFrame(&pkt))
 		{
 			m_bRunRead = MFalse;
 			return;
 		}
-
-
 		if (pkt->mediaType == AV_MEDIA_TYPE_VIDEO)
 		{
 			MMutexLock(m_hMutexVideo);
@@ -195,40 +196,31 @@ MVoid Player::thread_read()
 		}
 
 
-		if (hasVideo)
+		if (m_bHasVideo)
 		{
 			videoPercent = 0;
 			MMutexLock(m_hMutexVideo);
 			if (m_arrayVideo.GetSize() > 2)
 			{
-				pktFirst = m_arrayVideo.GetFirstNode();
-				pktLast = m_arrayVideo.GetLastNode();
+				pktHead = m_arrayVideo.GetHeadNode();
+				pktTail = m_arrayVideo.GetTailNode();
 
-				MInt64 duration = pktFirst->pts - pktLast->pts;
-				//MInt64 minDuration = duration > m_bufferTime ? m_bufferTime : duration;
+				MInt64 duration = pktTail->pts - pktHead->pts;
 				videoPercent = (duration * 100) / m_bufferTime;
-				//if (m_bufferPercent > 100)
-				//{
-				//	m_bufferPercent = 100;
-				//	MThreadSleep(m_threadHandleRead, 5);
-				//}
-
-
-
 			}
 			MMutexUnlock(m_hMutexVideo);
 		}
 
-		if (hasAudio)
+		if (m_bHasAudio)
 		{
 			audioPercent = 0;
 			MMutexLock(m_hMutexAudio);
 			if (m_arrayAudio.GetSize() > 2)
 			{
-				pktFirst = m_arrayAudio.GetFirstNode();
-				pktLast = m_arrayAudio.GetLastNode();
+				pktHead = m_arrayAudio.GetHeadNode();
+				pktTail = m_arrayAudio.GetTailNode();
 
-				MInt64 duration = pktFirst->pts - pktLast->pts;
+				MInt64 duration = pktTail->pts - pktHead->pts;
 				audioPercent = (duration * 100) / m_bufferTime;
 			}
 			MMutexUnlock(m_hMutexAudio);
@@ -247,52 +239,39 @@ MVoid Player::thread_read()
 MBool Player::prepare()
 {
 
-
 	//1、初始化数据读取
 	if (!m_pSourceParse)
 	{
 		m_pSourceParse = new SourceParse();
-		RETURN_BOOL(!m_pSourceParse)
-		RETURN_BOOL(m_pSourceParse->Open(m_strURL.Get()))
+		RETURN_FALSE(m_pSourceParse)
+		RETURN_FALSE(m_pSourceParse->Open(m_strURL.Get()))
 
 	}
 
 	//2、初始化解码
 	
 
-	RETURN_BOOL(initDecode())
+	RETURN_FALSE(initDecode())
 
 	//3、初始化播放
 	if (m_pSourceParse->HasAudio())
 	{
 		m_audioPlay = new AudioPlayAAC();
-		RETURN_BOOL(!m_audioPlay)
+		RETURN_FALSE(m_audioPlay)
+		RETURN_FALSE(m_audioPlay->Open())
 
-		if (!m_audioPlay->Open())
-		{
-			return MFalse;
-		}
 	}
 
 	if (m_pSourceParse->HasVideo())
 	{
 		m_videoPlay = new VideoPlayWindow();
-		if (!m_videoPlay)
-		{
-			return MFalse;
-		}
-		if (!m_videoPlay->Open())
-		{
-			return MFalse;
-		}
+		RETURN_FALSE(m_videoPlay)
+		m_videoPlay->SetVideoInfo(&m_videoInfo);
+		RETURN_FALSE(m_videoPlay->Open())
+
 	}
 
-
-
-
-
-
-
+	//创建读取数据线程
 	if (!m_bRunRead)
 	{
 		m_threadHandleRead = MThreadCreate(run_read, this);
@@ -304,27 +283,34 @@ MBool Player::prepare()
 
 	}
 
-
+	
 	m_hMutexVideo = MMutexCreate();
 	m_hMutexAudio = MMutexCreate();
 
+
+	m_bHasVideo = m_pSourceParse->HasVideo();
+	m_bHasAudio = m_pSourceParse->HasAudio();
 	return MTrue;
 }
 
 
 MBool	 Player::AudioDecode(MPChar buffer, MInt32& bufferSize)
 {
+	
 	AVPkt* pktFirst = m_arrayAudio.GetNodeAndDelByIndex(1);
+	m_avsync.SetCurrentAudioTime(pktFirst->pts);
 	m_pFrameAudio = m_pDecodeAudio->DecodeFrame(pktFirst->bufferPkt, pktFirst->bufferPktSize, pktFirst->pts, pktFirst->dts);
 	if (!m_pFrameAudio)
 	{
 		return MFalse;
 	}
 	
+
+
 	MMemCpy(buffer, m_pFrameAudio->pBuffer, m_pFrameAudio->iBufferSize);
 	bufferSize = m_pFrameAudio->iBufferSize;
 	m_bFirstFrameAudio = MFalse;
-	m_currentAudioTime = m_pFrameAudio->pts;
+	//m_currentAudioTime = m_pFrameAudio->pts;
 	return MTrue;
 
 }
@@ -337,18 +323,105 @@ MBool Player::PlayOneFrame()
 		return MTrue;
 	}
 
-	if (!initDecode())
+	AVPkt* videoParseFrame = MNull;
+	AVPkt* audioParseFrame = MNull;
+
+
+	//获取第一帧的pts
+	MInt64	audioBeginTime = 0;
+
+	if (!m_bFirstVideoKeyFrame && m_bHasVideo)
 	{
-		return MFalse;
+		AVPkt* tmp = MNull;
+		while (m_arrayVideo.GetSize())
+		{
+			if (m_arrayVideo.GetHeadNode()->bIsSync)
+			{
+				m_lastVideoTime = m_arrayVideo.GetHeadNode()->pts;
+				audioBeginTime  = m_arrayVideo.GetHeadNode()->pts;
+
+				m_avsync.SetFirstVideoTime(m_lastVideoTime);
+				m_bFirstVideoKeyFrame = MTrue;
+
+				break;
+			}
+			else
+			{
+				tmp = m_arrayVideo.GetNodeAndDelByIndex(1);
+				delete tmp;
+				tmp = MNull;
+
+			}
+		}
+
+		if (m_arrayVideo.GetSize()==0)
+		{
+			m_context.SetState(Buffering);
+			return MTrue;
+		}
 	}
 
-	//if (true)
-	//{
 
+	if (!m_bFirstAudioKeyFrame &&m_bHasAudio)
+	{
+		AVPkt* tmp = MNull;
+		while (m_arrayAudio.GetSize())
+		{
+			if (m_arrayAudio.GetHeadNode()->pts >= audioBeginTime)
+			{
+				m_currentAudioTime = m_arrayAudio.GetHeadNode()->pts;
+				m_bFirstAudioKeyFrame = MTrue;
+				break;
+			}
+			else
+			{
+				tmp = m_arrayAudio.GetNodeAndDelByIndex(1);
+				delete tmp;
+				tmp = MNull;
+
+			}
+		}
+
+		if (m_arrayAudio.GetSize() == 0)
+		{
+			m_context.SetState(Buffering);
+			return MTrue;
+		}
+	}
+
+
+	AVPkt*	pktVideo = m_arrayVideo.GetNodeAndDelByIndex(1);
+	m_pFrameVideo = m_pDecodeVideo->DecodeFrame(pktVideo->bufferPkt, pktVideo->bufferPktSize, pktVideo->pts, pktVideo->dts);
+	if (!m_pFrameVideo)
+	{
+		m_context.SetState(Stoping);
+		return MTrue;
+	}
+	else if (m_pFrameVideo && !m_pFrameVideo->bSuccess)
+	{
+		return MTrue;
+	}
+
+	//m_currentVideoTime = m_pFrameVideo->pts;
+
+	//if (m_currentVideoTime == m_lastVideoTime)
+	//{	
+	//	//表示解第一帧
+	//	if (!m_audioPlay->Start())
+	//	{
+	//		m_context.SetState(Stoping);
+	//		return MTrue;
+	//	}
+	//}
+
+
+	//if (m_avsync.Adjust(pktVideo->pts))
+	//{
+	//	m_videoPlay->Display(m_pFrameVideo->pBuffer);
 	//}
 	m_videoPlay->Display(m_pFrameVideo->pBuffer);
 
-	MThreadSleep(m_threadHandleRun, 40);
+	return MTrue;
 
 }
 
@@ -357,75 +430,19 @@ MBool Player::initDecode()
 
 	if (m_pSourceParse->HasVideo())
 	{
-		RETURN_BOOL(m_pDecodeVideo->Open(_AV_CODEC_ID_H264))
+		m_pDecodeVideo = new DecodecMgr();
+		RETURN_FALSE(m_pDecodeVideo)
+		RETURN_FALSE(m_pDecodeVideo->Open(_AV_CODEC_ID_H264))
 	}
 
 	if (m_pSourceParse->HasAudio())
 	{
-		RETURN_BOOL(m_pDecodeAudio->Open(_AV_CODEC_ID_AAC))
+		m_pDecodeAudio = new DecodecMgr();
+		RETURN_FALSE(m_pDecodeAudio)
+		RETURN_FALSE(m_pDecodeAudio->Open(_AV_CODEC_ID_AAC))
 	}
 
 	return MTrue;
-
-
-
-
-	//if (m_bFirstFrameVideo)
-	//{
-	//	AVPkt* pktFirst = MNull;
-	//	MInt32 count = 20;
-	//	while (count-- && m_arrayVideo.GetSize())
-	//	{
-	//		pktFirst = m_arrayVideo.GetNodeAndDelByIndex(1);
-	//		m_pFrameVideo = m_pDecodeAudio->DecodeFrame(pktFirst->bufferPkt, pktFirst->bufferPktSize, pktFirst->pts, pktFirst->dts);
-	//		if (!m_pFrameAudio)
-	//		{
-	//			return MFalse;
-	//		}
-	//		else if (m_pFrameVideo->bSuccess)
-	//		{
-	//			m_currentVideoTime = m_pFrameVideo->pts;
-	//			m_bFirstFrameVideo = MFalse;
-	//		}
-	//	}
-	//}
-
-
-	//if (m_bFirstFrameAudio)
-	//{
-		//AVPkt* pktFirst = m_arrayAudio.GetNodeAndDelByIndex(1);
-		//m_pFrameAudio = m_pDecodeAudio->DecodeFrame(pktFirst->bufferPkt, pktFirst->bufferPktSize, pktFirst->pts, pktFirst->dts);
-		//if (!m_pFrameAudio)
-		//{
-		//	return MFalse;
-		//}
-
-	//	m_audioPlay->SetPlayer(this);
-	//	
-	//	if (!m_audioPlay->Start())
-	//	{
-	//		return MFalse;
-	//	}
-	//	MInt32 count = 20;
-	//	while (count--)
-	//	{
-	//		if (m_bFirstFrameAudio)
-	//		{
-	//			MThreadSleep(m_threadHandleRun, 2);
-	//		}
-	//		else
-	//		{
-	//			m_bInitDecode = MTrue;
-	//			return MTrue;
-	//		}
-	//		
-	//	}
-
-	//}
-
-
-	return MFalse;
-
 }
 
 

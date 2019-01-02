@@ -39,6 +39,7 @@ MBool	DecodeH264::Open()
 		return MFalse;
 	}
 
+	av_init_packet(&m_packet);
 	return MTrue;
 }
 
@@ -49,6 +50,7 @@ MVoid	DecodeH264::Close()
 	{
 		avcodec_close(m_pCodecCtx);
 		av_free(m_pCodecCtx);
+		m_pCodecCtx = MNull;
 	}
 
 }
@@ -78,6 +80,7 @@ Frame*	DecodeH264::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize,MInt64 pts
 		while (ret >= 0) {
 			ret = avcodec_receive_frame(m_pCodecCtx, m_pFrame);
 			if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
+				m_pOneFrame.bSuccess = MFalse;
 				return &m_pOneFrame;
 ;
 			}

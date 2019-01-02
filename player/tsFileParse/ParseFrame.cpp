@@ -12,7 +12,7 @@ MBool	ParseFrame::HasVideo()
 {
 	if (m_parse)
 	{
-		m_parse->HasVideo();
+		return m_parse->HasVideo();
 	}
 
 	return MFalse;
@@ -22,7 +22,7 @@ MBool	ParseFrame::HasAudio()
 {
 	if (m_parse)
 	{
-		m_parse->HasAudio();
+		return m_parse->HasAudio();
 	}
 
 	return MFalse;

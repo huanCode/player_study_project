@@ -54,41 +54,67 @@ int main(int      argc, char    *argv[])
 
 
 	Player player;
-	player.Play("http://nf6jwj7r.vod2.danghongyun.com/target/hls/2017/09/06/777_e9cac11a41a24c93b56d276270e910d1_17_1280x720.m3u8");
+	player.Start("http://video.ewt360.com:8080/hls-vod/ewt360/files/20140704mp4/maoxianqin02.f4v.m3u8");
 	Sleep(200000);
 
-	//while (true)
-	//{
-	//	Sleep(1000);
-	//}
+	return 0;
 
 
-	//return 0;
-
-	//MHandle phAACEncoder;
-	//AA_AACEnc_Open(&phAACEncoder);
 
 
-	//char* strUrl = "http://hlsglsb.wasu.tv/1480682957527_561859.m3u8?action=hls&Contentid=CP23010020161201084109";
-	//strUrl = "http://nf6jwj7r.vod2.danghongyun.com/target/hls/2017/09/06/777_e9cac11a41a24c93b56d276270e910d1_17_1280x720.m3u8";
-	//SourceParse sourse;
-	//sourse.Open(strUrl);	//Ç¶Ì×
-	//AVPkt* pkt = MNull;
-	//MInt32 i = 0;
-	//while (1)
-	//{
-	//	if (i == 307)
-	//	{
-	//		int a = 1;
-	//	}
-	//	sourse.ReadFrame(&pkt);
-	//	i++;
-	//	if (pkt)
-	//	{
-	//		delete pkt;
-	//	}
-	//	
-	//}
+	char* strUrl = "http://hlsglsb.wasu.tv/1480682957527_561859.m3u8?action=hls&Contentid=CP23010020161201084109";
+	strUrl = "http://nf6jwj7r.vod2.danghongyun.com/target/hls/2017/09/06/777_e9cac11a41a24c93b56d276270e910d1_17_1280x720.m3u8";
+	SourceParse sourse;
+	sourse.Open(strUrl);	//Ç¶Ì×
+	AVPkt* pkt = MNull;
+	MInt32 i = 0;
+
+	AVPacket pkt_tmp;
+	AVCodecContext *m_pCodecCtx;
+	avcodec_register_all();
+	AVCodecID codec_id = AV_CODEC_ID_H264;
+	AVCodec *pCodec = avcodec_find_decoder(codec_id);
+	if (!pCodec) {
+		return 0;
+	}
+
+	m_pCodecCtx = avcodec_alloc_context3(pCodec);
+	if (!m_pCodecCtx) {
+
+		return 0;
+	}
+
+	if (avcodec_open2(m_pCodecCtx, pCodec, NULL) < 0) {
+		return 0;
+	}
+
+	av_init_packet(&pkt_tmp);
+
+	int ret = 0;
+	while (1)
+	{
+		if (i == 307)
+		{
+			int a = 1;
+		}
+		sourse.ReadFrame(&pkt);
+
+		if (pkt->mediaType == 0)
+		{
+			pkt_tmp.data = (uint8_t*)pkt->bufferPkt;
+			pkt_tmp.size = pkt->bufferPktSize;
+			ret = avcodec_send_packet(m_pCodecCtx, &pkt_tmp);
+
+		}
+
+
+		i++;
+		if (pkt)
+		{
+			delete pkt;
+		}
+		
+	}
 
 	//sourse.ReadFrame(&pkt);
 	//MInt32 nb_samples = 1024;
@@ -118,19 +144,15 @@ int main(int      argc, char    *argv[])
 
 	//	if (pkt->mediaType == AV_MEDIA_TYPE_VIDEO)
 	//	{
-	//		//frame = video.DecodeFrame(pkt->bufferPkt, pkt->bufferPktSize, pkt->pts, pkt->dts);
+	//		frame = video.DecodeFrame(pkt->bufferPkt, pkt->bufferPktSize, pkt->pts, pkt->dts);
 	//	}
 	//	else if (pkt->mediaType == AV_MEDIA_TYPE_AUDIO)
 	//	{
-	//		frame = aac.DecodeFrame(pkt->bufferPkt,pkt->bufferPktSize, pkt->pts, pkt->dts);
-	//		audioPlay.Display((MPChar)frame->pBuffer, frame->iBufferSize);
+	//		//frame = aac.DecodeFrame(pkt->bufferPkt,pkt->bufferPktSize, pkt->pts, pkt->dts);
+	//		//audioPlay.Display((MPChar)frame->pBuffer, frame->iBufferSize);
 	//	}
 
 
-	//	if (pkt)
-	//	{
-	//		delete pkt;
-	//	}
 	//}
 
 

@@ -37,10 +37,10 @@ MBool ParseHls::ReadHeader(MPChar strUrl)
 
 	//判断上面解析的m3u8是否为嵌套,是嵌套则去解析新的
 
-	if (m_playlistList.GetSize() > 1 || m_playlistList.GetLastNode()->segmentList.GetSize() == 0)
+	if (m_playlistList.GetSize() > 1 || m_playlistList.GetHeadNode()->segmentList.GetSize() == 0)
 	{
 		
-		m_curPlaylist = m_playlistList.GetLastNode();
+		m_curPlaylist = m_playlistList.GetHeadNode();
 		if (!ParseM3u8(m_curPlaylist->strUrl, m_curPlaylist))
 		{
 			return MFalse;
@@ -48,7 +48,7 @@ MBool ParseHls::ReadHeader(MPChar strUrl)
 	}
 	else
 	{
-		m_curPlaylist = m_playlistList.GetLastNode();
+		m_curPlaylist = m_playlistList.GetHeadNode();
 	}
 	m_bTsReady = MTrue;
 

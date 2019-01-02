@@ -1,13 +1,14 @@
 #ifndef _PLAYER_H_
 #define _PLAYER_H_
 #include "amcomdef.h"
-#include "MKernel.h"
+#include "amkernel.h"
 #include "PlayerStateContext.h"
 #include "ToolList.h"
 #include "common.h"
 #include "mv3String.h"
+#include "AVSync.h"
 class SourceParse;
-class DecodecVideoMgr;
+class DecodecMgr;
 class VideoPlayWindow;
 class AudioPlayAAC;
 
@@ -24,9 +25,9 @@ class Player
 {
 public:
 	Player();
-	MVoid	Start();
+	MBool	Start(MPChar strUrl);
 	MVoid	Close();
-	virtual MBool Play(MPChar strUrl);
+
 	virtual MVoid Stop();
 	virtual MVoid Pause();
 	virtual MVoid Seek();
@@ -53,8 +54,8 @@ private:
 	PlayerStateContext	m_context;
 	SourceParse		*m_pSourceParse;
 	//½âÂë
-	DecodecVideoMgr		*m_pDecodeVideo;
-	DecodecVideoMgr		*m_pDecodeAudio;
+	DecodecMgr		*m_pDecodeVideo;
+	DecodecMgr		*m_pDecodeAudio;
 
 	//²¥·Å
 	AudioPlayAAC	*m_audioPlay;
@@ -91,7 +92,22 @@ private:
 	MInt64					m_currentAudioTime;
 	MInt64					m_currentVideoTime;
 
+	MInt64					m_lastAudioTime;
+	MInt64					m_lastVideoTime;
+
 	MV3String				m_strURL;
+
+	MBool					m_bFirstVideoKeyFrame;
+	MBool					m_bFirstAudioKeyFrame;
+
+	MBool					m_bHasVideo;
+	MBool					m_bHasAudio;
+
+
+	AVSync					m_avsync;
+
+	VideoInfo				m_videoInfo;
+
 };
 
 

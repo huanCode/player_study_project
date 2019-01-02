@@ -59,7 +59,7 @@ public:
 	{
 		if (m_pTs)
 		{
-			m_pTs->HasVideo();
+			return m_pTs->HasVideo();
 		}
 
 		return MFalse;
@@ -69,7 +69,7 @@ public:
 	{
 		if (m_pTs)
 		{
-			m_pTs->HasAudio();
+			return m_pTs->HasAudio();
 		}
 
 		return MFalse;

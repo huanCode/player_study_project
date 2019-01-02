@@ -1,10 +1,10 @@
 #ifndef _DECODECMGR_H
 #define _DECODECMGR_H
 #include "IDecode.h"
-class DecodecVideoMgr
+class DecodecMgr
 {
 public:
-	DecodecVideoMgr();
+	DecodecMgr();
 	MBool Open(MInt32 iDecodeType);
 	MVoid Close();
 	Frame*	DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize, MInt64 pts, MInt64 dts);

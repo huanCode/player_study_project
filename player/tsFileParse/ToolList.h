@@ -19,9 +19,11 @@ public:
 
 	Node GetNodePtrByIndex(MInt32 index);
 	Node GetNodeAndDelByIndex(MInt32 index);
+
+	//MVoid GetNodeAndDelNodeByIndex(MInt32 index);
 	//PtrUploadInfo GetNodeAndDel(mv3Upload* pUpload);
-	Node GetLastNode();
-	Node GetFirstNode();
+	Node GetHeadNode();
+	Node GetTailNode();
 	MVoid 		DeleteLastNode();
 
 private:
@@ -98,13 +100,13 @@ MBool ToolList<Node>::AddNode(Node pNode)
 }
 
 template<class Node>
-Node ToolList<Node>::GetLastNode()
+Node ToolList<Node>::GetHeadNode()
 {
 	return m_pHead->data;
 }
 
 template<class Node>
-Node ToolList<Node>::GetFirstNode()
+Node ToolList<Node>::GetTailNode()
 {
 	return m_pTail->data;
 }
@@ -173,6 +175,13 @@ Node ToolList<Node>::GetNodePtrByIndex(MInt32 index)
 
 	return MNull;
 }
+
+//template<class Node>
+//MVoid ToolList<Node>::GetNodeAndDelNodeByIndex(MInt32 index)
+//{
+//	Node data = GetNodeAndDelByIndex(index);
+//}
+
 
 template<class Node>
 Node ToolList<Node>::GetNodeAndDelByIndex(MInt32 index)

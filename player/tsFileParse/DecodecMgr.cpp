@@ -2,14 +2,14 @@
 #include "TsStreamDef.h"
 #include "DecodeH264.h"
 #include "DecodeAAC.h"
-DecodecVideoMgr::DecodecVideoMgr()
+DecodecMgr::DecodecMgr()
 	:m_decode(MNull)
 {
 
 }
 
 
-MBool DecodecVideoMgr::Open(MInt32 iDecodeType)
+MBool DecodecMgr::Open(MInt32 iDecodeType)
 {
 	if (m_decode)
 	{
@@ -30,14 +30,19 @@ MBool DecodecVideoMgr::Open(MInt32 iDecodeType)
 		break;
 	}
 
+	if (m_decode)
+	{
+		return m_decode->Open();
+	}
 
 
-	return m_decode ? MTrue : MFalse;
+
+	return MFalse;
 
 }
 
 
-MVoid DecodecVideoMgr::Close()
+MVoid DecodecMgr::Close()
 {
 	if (m_decode)
 	{
@@ -47,7 +52,7 @@ MVoid DecodecVideoMgr::Close()
 
 
 
-Frame*	DecodecVideoMgr::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize, MInt64 pts, MInt64 dts)
+Frame*	DecodecMgr::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize, MInt64 pts, MInt64 dts)
 {
 	if (m_decode)
 	{

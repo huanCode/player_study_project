@@ -72,9 +72,6 @@
     <ClInclude Include="include\amstring.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="ToolList.h">
-      <Filter>tool</Filter>
-    </ClInclude>
     <ClInclude Include="include\ammem.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -201,6 +198,12 @@
     <ClInclude Include="DecodecMgr.h">
       <Filter>decode</Filter>
     </ClInclude>
+    <ClInclude Include="AVSync.h">
+      <Filter>tool</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolList.h">
+      <Filter>tool</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -298,6 +301,9 @@
     </ClCompile>
     <ClCompile Include="DecodecMgr.cpp">
       <Filter>decode</Filter>
+    </ClCompile>
+    <ClCompile Include="AVSync.cpp">
+      <Filter>tool</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

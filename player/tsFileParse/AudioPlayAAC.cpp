@@ -19,7 +19,7 @@ extern "C"
 #include <SDL/SDL.h>
 };
 
-
+#define DUFAULT_SAMPLE_RATE 44100;
 
 SDL_AudioSpec	m_wanted_spec;
 AudioPlayAAC::AudioPlayAAC()
@@ -41,7 +41,7 @@ MBool AudioPlayAAC::Open()
 
 	m_out_channel_layout = AV_CH_LAYOUT_STEREO;
 	m_out_sample_fmt = AV_SAMPLE_FMT_S16;
-	m_out_sample_rate = 44100;
+	m_out_sample_rate = DUFAULT_SAMPLE_RATE;
 	MInt32 out_channels = av_get_channel_layout_nb_channels(m_out_channel_layout);
 	//Out Buffer Size
 	int out_buffer_size = av_samples_get_buffer_size(NULL, out_channels, m_out_nb_samples, m_out_sample_fmt, 1);
@@ -112,6 +112,12 @@ MDWord AudioPlayAAC::run(MVoid* lpPara)
 	audioPlay->decode();
 	return 0;
 
+}
+
+MInt32 AudioPlayAAC::GetPerFrameDuration()
+{
+	MInt32 duration = (m_out_nb_samples * 1000) / DUFAULT_SAMPLE_RATE;
+	return duration;
 }
 
 MVoid AudioPlayAAC::decode()

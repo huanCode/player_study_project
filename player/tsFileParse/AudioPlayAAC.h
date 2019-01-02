@@ -2,7 +2,7 @@
 #ifndef _IAUDIOPLAYAAC_H
 #define _IAUDIOPLAYAAC_H
 #include "amcomdef.h"
-#include "MKernel.h"
+#include "amkernel.h"
 #include "Player.h"
 //#if _MSC_VER>=1900  
 //#include "stdio.h"   
@@ -23,12 +23,18 @@ extern "C"
 #include "libswresample/swresample.h"
 #include <SDL/SDL.h>
 };
+
+
 class AudioPlayAAC
 {
 public:
 	AudioPlayAAC();
 	virtual MBool Open();
 	virtual MVoid Close();
+
+	virtual MBool isStart() {
+		return m_bRun;
+	};
 	virtual MBool Display(MPChar pBuffer,MInt32 bufferSize);
 	MVoid SetPlayer(Player* player)
 	{
@@ -41,6 +47,7 @@ public:
 	MVoid	SetSampleSize(MInt32 frameSize);
 	static MDWord run(MVoid* lpPara);
 
+	MInt32 GetPerFrameDuration();
 	MVoid decode();
 private:
 	//SDL_AudioSpec	m_wanted_spec;

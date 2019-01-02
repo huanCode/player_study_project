@@ -2,6 +2,7 @@
 #ifndef _IVIDEOPLAYWINDOW_H
 #define _IVIDEOPLAYWINDOW_H
 #include "amcomdef.h"
+#include "common.h"
 extern "C"
 {
 #include "sdl/SDL.h"
@@ -14,7 +15,8 @@ public:
 	MVoid Close();
 
 	MBool Display(MPChar pBuffer);
-	
+	MVoid SetVideoInfo(VideoInfo* info);
+
 private:
 	SDL_Window		*m_screen;
 	SDL_Renderer	*m_sdlRenderer;
@@ -23,8 +25,9 @@ private:
 	MInt32		m_windowWidth;
 	MInt32		m_windowHeight;
 
-	MInt32		m_videoWidth;
-	MInt32		m_videoHeight;
+
+
+	VideoInfo	m_info;
 
 };
 

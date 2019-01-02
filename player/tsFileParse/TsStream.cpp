@@ -60,6 +60,10 @@ TsStream::TsStream()
 	m_hasVideo = MFalse;
 	m_hasAudio = MFalse;
 
+	m_bFirst = MTrue;
+	m_beginDts = 0;
+	m_beginPts = 0;
+
 	file.Open("tmp.h264", mv3File::stream_write);
 	audioFile.Open("audio.aac", mv3File::stream_write);
 }
