@@ -60,7 +60,7 @@ MBool AudioPlayAAC::Open()
 	m_bRun = MFalse;
 	m_bPlay = MFalse;
 
-	MInt32 bufferSize = 2048;
+	MInt32 bufferSize = 4096;
 	audio_pos_tmp = (Uint8*)MMemAlloc(MNull, bufferSize);
 	audio_pos = (Uint8*)MMemAlloc(MNull, bufferSize);
 	MMemSet(audio_pos_tmp,0, bufferSize);

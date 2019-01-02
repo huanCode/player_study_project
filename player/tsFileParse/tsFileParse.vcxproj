@@ -87,7 +87,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
+      <SDLCheck>false</SDLCheck>
       <AdditionalIncludeDirectories>tool;include;.;C:\github\ffmpeg_source_analysis_3.3;playerState</AdditionalIncludeDirectories>
       <AdditionalOptions>/D _CRT_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -95,7 +95,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>WS2_32.Lib;mpkernel.lib;mpbase.lib;mpsocketd.lib;mpnet.lib;mputility.lib;mphttpd.lib;http_io.lib;avcodec.lib;avutil.lib;swresample.lib;legacy_stdio_definitions.lib;SDL2main.lib;SDL2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>WS2_32.Lib;mpkernel.lib;mpbase.lib;mpsocketd.lib;mpnet.lib;mputility.lib;mphttpd.lib;http_io.lib;avcodec.lib;avutil.lib;swresample.lib;swscale.lib;legacy_stdio_definitions.lib;SDL2main.lib;SDL2.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

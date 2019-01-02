@@ -62,6 +62,11 @@ MVoid	DecodeAAC::Close()
 
 }
 
+MVoid DecodeAAC::SetInfo(MPVoid info)
+{
+
+}
+
 Frame*	DecodeAAC::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize, MInt64 pts, MInt64 dts)
 {
 	if (!m_pCodecCtx || !srcBuffer)

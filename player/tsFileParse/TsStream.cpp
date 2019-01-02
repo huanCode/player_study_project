@@ -45,7 +45,7 @@ TsStream::TsStream()
 	m_pes_header_size = 0;
 	memset(&m_packet,0,sizeof(Packet));
 	memset(&m_buffer, 0, 512000);
-	MBool ret = m_fileWrite.Open("bigbuckbunny_480x272.h265", mv3File::stream_write);
+	//MBool ret = m_fileWrite.Open("bigbuckbunny_480x272.h265", mv3File::stream_write);
 	m_isStart = MFalse;
 	m_packetBuffer = MNull;
 	m_trackNum = 0;
@@ -64,8 +64,13 @@ TsStream::TsStream()
 	m_beginDts = 0;
 	m_beginPts = 0;
 
-	file.Open("tmp.h264", mv3File::stream_write);
-	audioFile.Open("audio.aac", mv3File::stream_write);
+
+	for (MInt32 i = 0; i < FILTER_NUM; i++)
+	{
+		m_filter[i] = MNull;
+	}
+	//file.Open("tmp.h264", mv3File::stream_write);
+	//audioFile.Open("audio.aac", mv3File::stream_write);
 }
 
 
@@ -581,17 +586,17 @@ MBool	TsStream::ReadPacket(AVPkt** pkt)
 		}
 		else if (m_avpkt.mediaType == AV_MEDIA_TYPE_AUDIO)
 		{
-			if (m_audioCount < 400)
-			{
-				audioFile.Write((MByte*)m_avpkt.bufferPkt, m_avpkt.bufferPktSize);
-			}
-			
-			if (m_audioCount == 400)
-			{
-				audioFile.Close();
-			}
-			m_audioCount++;
-			int a = 1;
+			//if (m_audioCount < 400)
+			//{
+			//	//audioFile.Write((MByte*)m_avpkt.bufferPkt, m_avpkt.bufferPktSize);
+			//}
+			//
+			//if (m_audioCount == 400)
+			//{
+			//	audioFile.Close();
+			//}
+			//m_audioCount++;
+			//int a = 1;
 		}
 	}
 

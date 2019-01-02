@@ -52,6 +52,14 @@ MVoid DecodecMgr::Close()
 
 
 
+MVoid DecodecMgr::SetInfo(MPVoid info)
+{
+	if (m_decode)
+	{
+		m_decode->SetInfo(info);
+	}
+}
+
 Frame*	DecodecMgr::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize, MInt64 pts, MInt64 dts)
 {
 	if (m_decode)

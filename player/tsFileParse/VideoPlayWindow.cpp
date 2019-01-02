@@ -9,7 +9,7 @@ VideoPlayWindow::VideoPlayWindow()
 	m_windowWidth = 0;
 	m_windowHeight = 0;
 
-
+	
 }
 
 MVoid VideoPlayWindow::SetVideoInfo(VideoInfo* info)
@@ -54,7 +54,11 @@ MBool VideoPlayWindow::Open()
 	//YV12: Y + V + U  (3 planes)
 	pixformat = SDL_PIXELFORMAT_IYUV;
 
-	SDL_Texture* sdlTexture = SDL_CreateTexture(m_sdlRenderer, pixformat, SDL_TEXTUREACCESS_STREAMING, m_info.width, m_info.height);
+	m_sdlTexture = SDL_CreateTexture(m_sdlRenderer, pixformat, SDL_TEXTUREACCESS_STREAMING, m_info.width, m_info.height);
+	if (!m_sdlTexture)
+	{
+		return MFalse;
+	}
 
 	m_sdlRect.x = 0;
 	m_sdlRect.y = 0;

@@ -402,24 +402,25 @@ MBool Player::PlayOneFrame()
 		return MTrue;
 	}
 
-	//m_currentVideoTime = m_pFrameVideo->pts;
+	m_currentVideoTime = m_pFrameVideo->pts;
 
-	//if (m_currentVideoTime == m_lastVideoTime)
-	//{	
-	//	//表示解第一帧
-	//	if (!m_audioPlay->Start())
-	//	{
-	//		m_context.SetState(Stoping);
-	//		return MTrue;
-	//	}
-	//}
+	if (m_currentVideoTime == m_lastVideoTime)
+	{	
+		//表示解第一帧
+		if (!m_audioPlay->Start())
+		{
+			m_context.SetState(Stoping);
+			return MTrue;
+		}
+		m_audioPlay->SetPlayer(this);
+	}
 
 
 	//if (m_avsync.Adjust(pktVideo->pts))
 	//{
 	//	m_videoPlay->Display(m_pFrameVideo->pBuffer);
 	//}
-	m_videoPlay->Display(m_pFrameVideo->pBuffer);
+	//m_videoPlay->Display(m_pFrameVideo->pBuffer);
 
 	return MTrue;
 

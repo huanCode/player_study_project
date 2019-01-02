@@ -25,7 +25,7 @@ private:
 	MInt32		m_windowWidth;
 	MInt32		m_windowHeight;
 
-
+	
 
 	VideoInfo	m_info;
 

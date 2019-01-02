@@ -1,12 +1,19 @@
 #include "stdafx.h"
 #include "DecodeH264.h"
-
+#include "common.h"
 DecodeH264::DecodeH264()
 {
 
 	m_pCodecCtx = MNull;
 	m_pFrame = MNull;
 	av_init_packet(&m_packet);
+
+	m_img_convert_ctx = MNull;
+
+	m_bSwsInit = MTrue;
+	m_out_buffer = MNull;
+
+	m_pFrameYUV = MNull;
 }
 
 
@@ -53,6 +60,40 @@ MVoid	DecodeH264::Close()
 		m_pCodecCtx = MNull;
 	}
 
+	if (m_img_convert_ctx)
+	{
+		sws_freeContext(m_img_convert_ctx);
+		m_img_convert_ctx = MNull;
+	}
+
+	if (m_pFrameYUV)
+	{
+		av_frame_free(&m_pFrameYUV);
+	}
+
+	if (m_pFrame)
+	{
+		av_frame_free(&m_pFrame);
+	}
+
+	if (m_out_buffer)
+	{
+		MMemFree(MNull, m_out_buffer);
+		m_out_buffer = MNull;
+	}
+	
+
+}
+
+MVoid DecodeH264::SetInfo(MPVoid info)
+{
+	if (!info)
+	{
+		return;
+	}
+	VideoInfo* videoInfo = (VideoInfo*)info;
+	m_videoInfo.width = videoInfo->width;
+	m_videoInfo.height = videoInfo->height;
 }
 
 Frame*	DecodeH264::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize,MInt64 pts, MInt64 dts)
@@ -77,6 +118,13 @@ Frame*	DecodeH264::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize,MInt64 pts
 			return MNull;
 		}
 
+		if (m_bSwsInit)
+		{
+			if (!OpenSwsCtx())
+			{
+				return MNull;
+			}
+		}
 		while (ret >= 0) {
 			ret = avcodec_receive_frame(m_pCodecCtx, m_pFrame);
 			if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
@@ -117,8 +165,10 @@ Frame*	DecodeH264::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize,MInt64 pts
 				//fclose(fp_out);
 
 
-				m_pOneFrame.pBuffer = (MPChar)m_pFrame->data[0];
-				m_pOneFrame.iBufferSize = m_pFrame->linesize[0];
+				sws_scale(m_img_convert_ctx, (const uint8_t* const*)m_pFrame->data, m_pFrame->linesize, 0, m_pCodecCtx->height, m_pFrameYUV->data, m_pFrameYUV->linesize);
+
+				m_pOneFrame.pBuffer = (MPChar)m_pFrameYUV->data[0];
+				m_pOneFrame.iBufferSize = m_pFrameYUV->linesize[0];
 				m_pOneFrame.pts = m_pFrame->pts;
 				m_pOneFrame.bSuccess = MTrue;
 				return &m_pOneFrame;
@@ -128,4 +178,36 @@ Frame*	DecodeH264::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize,MInt64 pts
 
 
 	return MNull;
+}
+
+MBool DecodeH264::OpenSwsCtx()
+{
+
+	if (!m_img_convert_ctx)
+	{
+		m_img_convert_ctx = sws_getContext(m_pCodecCtx->width, m_pCodecCtx->height, m_pCodecCtx->pix_fmt,
+			m_pCodecCtx->width, m_pCodecCtx->height, AV_PIX_FMT_YUV420P, SWS_BICUBIC, NULL, NULL, NULL);
+		RETURN_FALSE(m_img_convert_ctx)
+	}
+
+	if (!m_pFrameYUV)
+	{
+		m_pFrameYUV = av_frame_alloc();
+		RETURN_FALSE(m_pFrameYUV)
+	}
+
+	if (!m_out_buffer)
+	{
+		//av_image_get_buffer_size
+		MInt32 bufferSize = avpicture_get_size(AV_PIX_FMT_YUV420P, m_pCodecCtx->width, m_pCodecCtx->height);
+		m_out_buffer = (uint8_t*)MMemAlloc(MNull, bufferSize);
+		RETURN_FALSE(m_out_buffer)
+		MMemSet(m_out_buffer, 0, bufferSize);
+	}
+
+	//
+	avpicture_fill((AVPicture *)m_pFrameYUV, m_out_buffer, AV_PIX_FMT_YUV420P, m_pCodecCtx->width, m_pCodecCtx->height);
+
+	m_bSwsInit = MFalse;
+	return MTrue;
 }
