@@ -23,6 +23,7 @@ PlayerStateContext::PlayerStateContext()
 	m_pPlayerStatePlaying		= MNull;
 	m_pPlayerStateStoping		= MNull;
 	m_pPlayerStatePauseing		= MNull;
+	m_pPlayerStateSeeking		= MNull;
 	m_pCurrentObject			= MNull;
 }
 
@@ -74,7 +75,7 @@ MVoid PlayerStateContext::SetState(State state)
 	}
 	else if (state == State::Seeking)
 	{
-		m_pCurrentObject = m_pPlayerStatePrepare;
+		m_pCurrentObject = m_pPlayerStateSeeking;
 	}
 	
 }
