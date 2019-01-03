@@ -342,7 +342,7 @@ MBool Player::PlayOneFrame()
 
 				m_avsync.SetFirstVideoTime(m_lastVideoTime);
 				m_bFirstVideoKeyFrame = MTrue;
-
+				m_time = MGetCurTimeStamp();
 				break;
 			}
 			else
@@ -392,6 +392,7 @@ MBool Player::PlayOneFrame()
 
 	AVPkt*	pktVideo = m_arrayVideo.GetNodeAndDelByIndex(1);
 	m_pFrameVideo = m_pDecodeVideo->DecodeFrame(pktVideo->bufferPkt, pktVideo->bufferPktSize, pktVideo->pts, pktVideo->dts);
+	printf("video pts = %d", pktVideo->pts);
 	if (!m_pFrameVideo)
 	{
 		m_context.SetState(Stoping);
@@ -416,10 +417,14 @@ MBool Player::PlayOneFrame()
 	}
 
 
-	//if (m_avsync.Adjust(pktVideo->pts))
-	//{
-	//	m_videoPlay->Display(m_pFrameVideo->pBuffer);
-	//}
+	if (m_avsync.Adjust(m_pFrameVideo->pts))
+	{
+		MInt64 CurTimeStampAudio = MGetCurTimeStamp();
+
+		MInt64 diffTime = CurTimeStampAudio - m_time;
+		m_time = MGetCurTimeStamp();
+		m_videoPlay->Display(m_pFrameVideo->pBuffer);
+	}
 	//m_videoPlay->Display(m_pFrameVideo->pBuffer);
 
 	return MTrue;

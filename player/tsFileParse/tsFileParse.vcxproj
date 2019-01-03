@@ -88,7 +88,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>tool;include;.;C:\github\ffmpeg_source_analysis_3.3;playerState</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>tool;include;.;playerState</AdditionalIncludeDirectories>
       <AdditionalOptions>/D _CRT_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>

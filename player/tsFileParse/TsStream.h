@@ -165,9 +165,7 @@ private:
 	MBool	m_hasAudio;
 
 
-	MInt64			m_beginDts;
-	MInt64			m_beginPts;
-	MBool			m_bFirst;
+
 public:
 
 

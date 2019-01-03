@@ -108,6 +108,8 @@ private:
 
 	VideoInfo				m_videoInfo;
 
+	MInt64					m_time;
+
 };
 
 

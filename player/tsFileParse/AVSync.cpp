@@ -57,7 +57,7 @@ MBool AVSync::Adjust(MInt64 currentVideoTime)
 
 
 	}
-
+	m_lastVideoTime = currentVideoTime;
 	MMutexUnlock(m_lock);
 
 	if (sleepTime)

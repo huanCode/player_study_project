@@ -32,9 +32,6 @@ AudioPlayAAC::AudioPlayAAC()
 
 MBool AudioPlayAAC::Open()
 {
-
-
-
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER)) {
 		return MFalse;
 	}
@@ -52,7 +49,7 @@ MBool AudioPlayAAC::Open()
 	m_wanted_spec.samples = m_out_nb_samples;
 	m_wanted_spec.callback = AudioPlayAAC::fill_audio;
 	m_wanted_spec.userdata = this;
-
+	m_wanted_spec.size = out_buffer_size;
 	if (SDL_OpenAudio(&m_wanted_spec, NULL)<0) {
 		printf("can't open audio.\n");
 		return MFalse;
@@ -60,7 +57,7 @@ MBool AudioPlayAAC::Open()
 	m_bRun = MFalse;
 	m_bPlay = MFalse;
 
-	MInt32 bufferSize = 4096;
+	MInt32 bufferSize = out_buffer_size; //channel * bytesPerSample * samples = 2channels * stereo * 1024 samples =2 * 2 * 1024
 	audio_pos_tmp = (Uint8*)MMemAlloc(MNull, bufferSize);
 	audio_pos = (Uint8*)MMemAlloc(MNull, bufferSize);
 	MMemSet(audio_pos_tmp,0, bufferSize);

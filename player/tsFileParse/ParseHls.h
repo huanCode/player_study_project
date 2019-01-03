@@ -119,6 +119,11 @@ private:
 
 	MInt32		m_curSementIndex;
 	Playlist*	m_curPlaylist;
+
+
+	MInt64			m_beginDts;
+	MInt64			m_beginPts;
+	MBool			m_bFirst;
 };
 
 

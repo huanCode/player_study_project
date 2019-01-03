@@ -27,6 +27,7 @@ class AudioScale
 public:
 	AudioScale();
 	MBool Open();
+	MVoid Close();
 	static MBool isEqual(AudioInfo& a, AudioInfo& b);
 	MVoid SetInAudioIndo(AudioInfo	audioInfo);
 	MVoid SetOutAudioIndo(AudioInfo	audioInfo);
@@ -40,6 +41,7 @@ private:
 	mv3File		audioFile;
 	MInt32		m_count;
 
-	uint8_t			*out_buffer;
+	MInt32		m_pcmBufferSize;
+	//uint8_t			*out_buffer;
 };
 #endif // !_AUDIOSCALE_H

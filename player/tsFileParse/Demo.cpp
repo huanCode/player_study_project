@@ -52,11 +52,13 @@ inline MUInt8 to_UInt8(MByte* p)
 int main(int      argc, char    *argv[])
 {
 
-
+	MPChar strURL = "http://video.ewt360.com:8080/hls-vod/ewt360/files/20140704mp4/maoxianqin02.f4v.m3u8";
+	strURL = "http://38uni317.vod2.danghongyun.com/target/hls/2017/09/29/660_f5a387260dd2432a975401febfffc63a_10_1280x720.m3u8";
 	Player player;
-	player.Start("http://video.ewt360.com:8080/hls-vod/ewt360/files/20140704mp4/maoxianqin02.f4v.m3u8");
-	Sleep(200000);
-
+	player.Start(strURL);
+	Sleep(10000);
+	player.Seek();
+	Sleep(100000);
 	return 0;
 
 

@@ -86,16 +86,16 @@ MBool PlayerStateContext::Play()
 
 MVoid PlayerStateContext::Stop()
 {
-
+	return m_pCurrentObject->Stop();
 }
 
 MVoid PlayerStateContext::Pause()
 {
-
+	return m_pCurrentObject->Pause();
 }
 
 MBool PlayerStateContext::Seek()
 {
-	return MTrue;
+	return m_pCurrentObject->Seek();
 }
 

@@ -60,11 +60,6 @@ TsStream::TsStream()
 	m_hasVideo = MFalse;
 	m_hasAudio = MFalse;
 
-	m_bFirst = MTrue;
-	m_beginDts = 0;
-	m_beginPts = 0;
-
-
 	for (MInt32 i = 0; i < FILTER_NUM; i++)
 	{
 		m_filter[i] = MNull;

@@ -23,6 +23,10 @@ ParseHls::ParseHls()
 	m_pTs = MNull;
 	m_curSementIndex = 0;
 	m_curPlaylist = MNull;
+
+	m_beginDts = 0;
+	m_beginPts = 0;
+	m_bFirst = MTrue;
 }
 
 MBool ParseHls::ReadHeader(MPChar strUrl)
@@ -138,15 +142,25 @@ MBool ParseHls::ReadPacket(AVPkt** pkt)
 {
 	if (m_pTs)
 	{
-		if (m_pTs->ReadPacket(pkt) && !(*pkt)->isGetPacket)
+		while(m_pTs->ReadPacket(pkt) && !(*pkt)->isGetPacket)
 		{
 			//表示这个切片已经读完了
 			
-			if (switchSegment())
+			if (!switchSegment())
 			{
-				return m_pTs->ReadPacket(pkt);
+				return MFalse;
 			}
 		}
+
+		if (m_bFirst)
+		{
+			m_bFirst = MFalse;
+			m_beginDts = (*pkt)->dts;
+			m_beginPts = (*pkt)->pts;
+		}
+
+		(*pkt)->dts = (((*pkt)->dts - m_beginDts) * 1000) / 90000;
+		(*pkt)->pts = (((*pkt)->pts - m_beginPts) * 1000) / 90000;
 		
 	}
 	return MTrue;
