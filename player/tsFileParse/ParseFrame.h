@@ -17,8 +17,8 @@ public:
 	MBool	ReadHeader(MPChar strUrl);
 
 	MBool ReadFrame(AVPkt** pkt);
-	MVoid	SetDataRead(IDataRead* obj);
-
+	MVoid SetDataRead(IDataRead* obj);
+	MBool Seek(MInt64 seekTimeStamp);
 	MBool	HasVideo();
 
 	MBool	HasAudio();

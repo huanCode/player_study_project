@@ -21,12 +21,14 @@ ParseHls::ParseHls()
 {
 	m_curIndex = 0;
 	m_pTs = MNull;
-	m_curSementIndex = 0;
+	m_curSementIndex = 1;
 	m_curPlaylist = MNull;
 
 	m_beginDts = 0;
 	m_beginPts = 0;
 	m_bFirst = MTrue;
+
+	m_duration = 0;
 }
 
 MBool ParseHls::ReadHeader(MPChar strUrl)
@@ -105,7 +107,7 @@ MBool ParseHls::switchSegment()
 
 	if (m_curPlaylist->segmentList.GetSize() > m_curSementIndex)
 	{
-		if (m_dataRead->Open(m_curPlaylist->segmentList.GetNodePtrByIndex(m_curSementIndex+1)->url))
+		if (m_dataRead->Open(m_curPlaylist->segmentList.GetNodePtrByIndex(m_curSementIndex)->url))
 		{
 			MPChar tmpBuffer = (MPChar)MMemAlloc(MNull, PROBE_BUFFER_SIZE);
 			if (tmpBuffer == MNull)
@@ -128,7 +130,7 @@ MBool ParseHls::switchSegment()
 			}
 			m_dataRead->Close();
 			m_pTs->SetDataRead(m_dataRead);
-			m_pTs->ReadHeader(m_curPlaylist->segmentList.GetNodePtrByIndex(m_curSementIndex+1)->url);
+			m_pTs->ReadHeader(m_curPlaylist->segmentList.GetNodePtrByIndex(m_curSementIndex)->url);
 			m_curSementIndex++;
 			return MTrue;
 		}
@@ -171,6 +173,22 @@ MVoid ParseHls::Close()
 
 }
 
+
+MBool   ParseHls::Seek(MInt64 seekTimeStamp)
+{
+	MInt32 size = m_curPlaylist->segmentList.GetSize();
+	MInt32 duration = 0;
+	for (MInt32 i = 1; i <= size; i++)
+	{
+		duration += m_curPlaylist->segmentList.GetNodePtrByIndex(i)->duration;
+		if (duration >= seekTimeStamp)
+		{
+			m_curSementIndex = i;
+		}
+	}
+
+	return MTrue;
+}
 
 
 void ParseHls::ff_parse_key_val_cb(void* srcData, MPChar key, MInt32 keyLen, MPChar value)
@@ -217,8 +235,6 @@ IParse* ParseHls::hls_probe(MPChar p_buffer, MUInt32 p_size)
 
 MBool ParseHls::ParseM3u8(MPChar strUrl, Playlist* playlist)
 {
-
-
 	if (m_dataRead == MNull)
 	{
 		return MFalse;
@@ -384,7 +400,7 @@ MBool ParseHls::ParseM3u8(MPChar strUrl, Playlist* playlist)
 			}
 			else if (ToolString::av_strstart(line, "#EXTINF:", &ptr)) {
 				is_segment = 1;
-				duration = MStoi64(ptr) * AV_TIME_BASE;
+				duration = MStoi64(ptr) /** AV_TIME_BASE*/;
 			}
 			else if (ToolString::av_strstart(line, "#EXT-X-BYTERANGE:", &ptr)) {
 				//ÔÝÊ±ºöÂÔ
@@ -428,6 +444,7 @@ MBool ParseHls::ParseM3u8(MPChar strUrl, Playlist* playlist)
 					}
 
 					seg->duration = duration;
+					m_duration += duration;
 					ToolString::ff_make_absolute_url(tmp_strUrl, sizeof(tmp_strUrl), strRealUrl, line);
 
 					seg->url = ToolString::av_strdup(tmp_strUrl);

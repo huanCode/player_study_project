@@ -58,3 +58,12 @@ MBool ParseFrame::ReadFrame(AVPkt** pkt)
 	}
 	return MFalse;
 }
+
+MBool ParseFrame::Seek(MInt64 seekTimeStamp)
+{
+	if (m_parse)
+	{
+		return m_parse->ReadPacket(pkt);
+	}
+	return MFalse;
+}

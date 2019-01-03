@@ -86,7 +86,7 @@ public:
 	MBool	ReadHeader(MPChar strUrl);
 	MBool	ReadPacket(AVPkt** pkt);
 	MVoid	Close();
-
+	MBool   Seek(MInt64 seekTimeStamp);
 	MBool	HasVideo()
 	{
 		return m_hasVideo;

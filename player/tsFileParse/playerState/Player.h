@@ -23,6 +23,14 @@ enum PlayerAction
 
 class Player
 {
+private:
+	//typedef struct _playAction
+	//{
+	//	PlayerAction m_action;
+	//	MUInt32	dwTimeStart;
+
+	//}PlayAction;
+
 public:
 	Player();
 	MBool	Start(MPChar strUrl);
@@ -30,7 +38,7 @@ public:
 
 	virtual MVoid Stop();
 	virtual MVoid Pause();
-	virtual MVoid Seek();
+	virtual MVoid Seek(MInt64 seekTime);
 	MBool	AudioDecode(MPChar buffer, MInt32& bufferSize);
 
 
@@ -41,6 +49,7 @@ public:
 	MBool prepare();
 	MBool buffer();
 	MBool PlayOneFrame();
+	MBool State_Seeking(MInt64 seekTime);
 private:
 	MBool initDecode();
 	MBool initDisplay();
@@ -109,6 +118,10 @@ private:
 	VideoInfo				m_videoInfo;
 
 	MInt64					m_time;
+
+	MInt64					m_seekTimeStamp;
+
+	MBool					m_bSeek;
 
 };
 

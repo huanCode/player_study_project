@@ -3,8 +3,13 @@
 
 MBool PlayerStatePlaying::Play()
 {
-	return m_pPlayer->PlayOneFrame();
-	//m_stateContext->SetState(State::Playing);
+	
+	if (!m_pPlayer->PlayOneFrame())
+	{
+		m_stateContext->SetState(State::Stoping);
+	}
+	
+	return MTrue;
 }
 
 //MVoid PlayerStatePlaying::Stop()

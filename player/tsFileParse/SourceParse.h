@@ -10,6 +10,7 @@ class SourceParse
 public:
 	SourceParse();
 	MBool Open(MPChar strUrl);
+	MBool Seek(MInt64 seekTimeStamp);
 	MBool ReadFrame(AVPkt** pkt);
 	MBool HasVideo() {
 		return m_parseFrame.HasVideo();

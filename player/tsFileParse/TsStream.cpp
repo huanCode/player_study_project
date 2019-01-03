@@ -616,6 +616,13 @@ MVoid TsStream::Close()
 	}
 }
 
+
+MBool   TsStream::Seek(MInt64 seekTimeStamp)
+{
+
+	return MTrue;
+}
+
 MVoid TsStream::parse_ts_packet_header(MPChar buffer, ts_packet_header &tsHeader)
 {
 	tsHeader.sync_byte = buffer[0];

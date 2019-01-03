@@ -4,6 +4,7 @@
 #include "AudioPlayAAC.h"
 #include "VideoPlayWindow.h"
 #include "DecodecMgr.h"
+#include <windows.h>
 #define BUFFER_TIME		5000  //5s
 //#define 
 
@@ -37,6 +38,11 @@ Player::Player()
 
 	m_videoInfo.width = 1280;
 	m_videoInfo.height = 720;
+
+
+	m_seekTimeStamp = 0;
+
+	m_bSeek = MFalse;
 
 }
 
@@ -107,9 +113,11 @@ MVoid Player::Pause()
 	m_action = actionPause;
 }
 
-MVoid Player::Seek()
+MVoid Player::Seek(MInt64 seekTime)
 {
 	m_action = actionSeek;
+
+	m_seekTimeStamp = seekTime;
 }
 
 
@@ -138,11 +146,7 @@ MVoid Player::handle()
 		switch (m_action)
 		{
 		case actionPlay:
-			if (!m_context.Play())
-			{
-				return;
-			}
-			
+			m_context.Play();
 			break;
 		case actionStop:
 			m_context.Stop();
@@ -151,11 +155,7 @@ MVoid Player::handle()
 			m_context.Pause();
 			break;
 		case actionSeek:
-			if (!m_context.Seek())
-			{
-				return;
-			}
-			
+			m_context.Seek();
 			break;
 		default:
 			m_bRun = MFalse;
@@ -176,11 +176,18 @@ MVoid Player::thread_read()
 	AVPkt* pkt = MNull;
 	while (m_bRunRead)
 	{
+		if (m_bSeek)
+		{
+			if (!m_pSourceParse->Seek(m_seekTimeStamp))
+			{
+				break;
+			}
+		}
+
 
 		if (!m_pSourceParse->ReadFrame(&pkt))
 		{
-			m_bRunRead = MFalse;
-			return;
+			break;
 		}
 		if (pkt->mediaType == AV_MEDIA_TYPE_VIDEO)
 		{
@@ -234,6 +241,9 @@ MVoid Player::thread_read()
 		}
 
 	}
+
+	m_bRunRead = MFalse;
+	m_context.SetState(Stoping);
 }
 
 MBool Player::prepare()
@@ -460,4 +470,80 @@ MBool Player::buffer()
 	}
 	MThreadSleep(m_threadHandleRun,5);
 	return MFalse;
+}
+
+MBool Player::State_Seeking(MInt64 seekTime)
+{
+	//1、先查找缓存区的
+	AVPkt* pktHead = MNull;
+	MInt64 baseTime = seekTime;
+
+	MBool isSeek = MFalse;
+	MBool isFlushAudio = MTrue;
+	if (m_bHasVideo)
+	{
+		MMutexLock(m_hMutexVideo);
+		
+		while(m_arrayVideo.GetSize())
+		{
+			pktHead = m_arrayVideo.GetHeadNode();
+			if (pktHead->bIsSync && pktHead->pts >= baseTime)
+			{
+				baseTime = pktHead->pts;
+				break;
+			}
+			else
+			{
+				delete pktHead;
+				pktHead = MNull;
+			}
+			
+		}
+
+		if (m_arrayVideo.GetSize() == 0)
+		{
+			isSeek = MTrue;
+		}
+		MMutexUnlock(m_hMutexVideo);
+	}
+
+	if (m_bHasAudio)
+	{
+		MMutexLock(m_hMutexAudio);
+		while (m_arrayAudio.GetSize())
+		{
+			pktHead = m_arrayAudio.GetHeadNode();
+			if (pktHead->bIsSync && pktHead->pts >= baseTime && !isFlushAudio)
+			{
+				baseTime = pktHead->pts;
+				break;
+			}
+			else
+			{
+				delete pktHead;
+				pktHead = MNull;
+			}
+
+		}
+		if (m_bHasVideo)
+		{
+			Sleep(5);
+		}
+		else
+		{
+			isSeek = MTrue;
+			m_context.SetState(Buffering);
+		}
+
+		MMutexUnlock(m_hMutexVideo);
+	}
+
+	if (isSeek)
+	{
+		m_bSeek = isSeek;
+		m_context.SetState(Buffering);
+	}
+
+	return MTrue;
+	//2、
 }
