@@ -1,6 +1,7 @@
 #include "AVSync.h"
 #include "amkernel.h"
 #include <windows.h>
+#include <stdio.h>
 AVSync::AVSync()
 {
 	m_lastAudioTime = -1;
@@ -37,12 +38,17 @@ MBool AVSync::Adjust(MInt64 currentVideoTime)
 
 	MDWord timeDirrerent = MGetCurTimeStamp() - m_CurTimeStampAudio;
 	MInt64 realCurrentAudioTime = m_currentAudioTime + timeDirrerent;	//当前音频正在播放的时间
-
+	//printf("currentVideoTime = %lld ,realCurrentAudioTime = %lld \r\n", currentVideoTime,realCurrentAudioTime);
 	if (currentVideoTime >= realCurrentAudioTime)
 	{
 		//video > audio 
+		
 		sleepTime = currentVideoTime - m_currentAudioTime;
-
+		//printf("sleep = %d \r\n", sleepTime);
+		if (sleepTime >= 100)
+		{
+			int a = 1;
+		}
 	}
 	else
 	{

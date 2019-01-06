@@ -58,7 +58,7 @@ int main(int      argc, char    *argv[])
 	player.Start(strURL);
 	//Sleep(10000);
 	//player.Seek();
-	Sleep(100000);
+	Sleep(10000000);
 	return 0;
 
 

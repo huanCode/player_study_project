@@ -95,7 +95,7 @@ MBool SourceFrame::Read(MChar** pBuf, MDWord dwSize, MInt32& out_readSize)
 		else if (readSize == -1)
 		{
 			//表明没有数据了,
-			return out_readSize?MTrue:MFalse;
+			return MTrue;
 		}
 		else if (readSize == 0)
 		{

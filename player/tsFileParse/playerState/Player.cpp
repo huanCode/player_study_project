@@ -5,7 +5,7 @@
 #include "VideoPlayWindow.h"
 #include "DecodecMgr.h"
 #include <windows.h>
-#define BUFFER_TIME		5000  //5s
+#define BUFFER_TIME		2000  //5s
 //#define 
 
 Player::Player()
@@ -202,43 +202,47 @@ MVoid Player::thread_read()
 			MMutexUnlock(m_hMutexAudio);
 		}
 
-
-		if (m_bHasVideo)
-		{
-			videoPercent = 0;
-			MMutexLock(m_hMutexVideo);
-			if (m_arrayVideo.GetSize() > 2)
+		
+		do{
+			if (m_bHasVideo)
 			{
-				pktHead = m_arrayVideo.GetHeadNode();
-				pktTail = m_arrayVideo.GetTailNode();
+				videoPercent = 0;
+				MMutexLock(m_hMutexVideo);
+				if (m_arrayVideo.GetSize() > 2)
+				{
+					pktHead = m_arrayVideo.GetHeadNode();
+					pktTail = m_arrayVideo.GetTailNode();
 
-				MInt64 duration = pktTail->pts - pktHead->pts;
-				videoPercent = (duration * 100) / m_bufferTime;
+					MInt64 duration = pktTail->pts - pktHead->pts;
+					videoPercent = (duration * 100) / m_bufferTime;
+				}
+				MMutexUnlock(m_hMutexVideo);
 			}
-			MMutexUnlock(m_hMutexVideo);
-		}
 
-		if (m_bHasAudio)
-		{
-			audioPercent = 0;
-			MMutexLock(m_hMutexAudio);
-			if (m_arrayAudio.GetSize() > 2)
+			if (m_bHasAudio)
 			{
-				pktHead = m_arrayAudio.GetHeadNode();
-				pktTail = m_arrayAudio.GetTailNode();
+				audioPercent = 0;
+				MMutexLock(m_hMutexAudio);
+				if (m_arrayAudio.GetSize() > 2)
+				{
+					pktHead = m_arrayAudio.GetHeadNode();
+					pktTail = m_arrayAudio.GetTailNode();
 
-				MInt64 duration = pktTail->pts - pktHead->pts;
-				audioPercent = (duration * 100) / m_bufferTime;
+					MInt64 duration = pktTail->pts - pktHead->pts;
+					audioPercent = (duration * 100) / m_bufferTime;
+				}
+				MMutexUnlock(m_hMutexAudio);
 			}
-			MMutexUnlock(m_hMutexAudio);
-		}
-		//选择比较大的
-		m_bufferPercent = videoPercent > audioPercent ? videoPercent : audioPercent;
-		if (m_bufferPercent > 100)
-		{
-			m_bufferPercent = 100;
-			MThreadSleep(m_threadHandleRead, 5);
-		}
+			//选择比较大的
+			m_bufferPercent = videoPercent > audioPercent ? videoPercent : audioPercent;
+			if (m_bufferPercent >= 100)
+			{
+				m_bufferPercent = 100;
+				MThreadSleep(m_threadHandleRead, 10);
+			}
+		} while (m_bufferPercent >= 100);
+
+
 
 	}
 
@@ -402,7 +406,7 @@ MBool Player::PlayOneFrame()
 
 	AVPkt*	pktVideo = m_arrayVideo.GetNodeAndDelByIndex(1);
 	m_pFrameVideo = m_pDecodeVideo->DecodeFrame(pktVideo->bufferPkt, pktVideo->bufferPktSize, pktVideo->pts, pktVideo->dts);
-	printf("video pts = %d", pktVideo->pts);
+	//printf("video pts = %d", pktVideo->pts);
 	if (!m_pFrameVideo)
 	{
 		m_context.SetState(Stoping);

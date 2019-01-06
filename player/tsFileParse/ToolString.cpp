@@ -3,56 +3,34 @@
 #include "amstring.h"
 #include "ammem.h"
 #include "common.h"
-MInt32 ToolString::Read_line(MChar*& srcBuffer, MInt32 iSrcLen, MPChar dstBuffer, MInt32 idstMaxLen/*, MBool& isLine*/)
+MInt32 ToolString::Read_line(MPChar bufferBegin, MPChar bufferEnd, MPChar dstBuffer, MInt32 idstMaxLen/*, MBool& isLine*/)
 {
 
-	int i = 0;
-	
-
-	MInt32 len = FFMIN(iSrcLen, idstMaxLen);
-
+	int size = 0;
 	char c = 0;
-	//while (len)
-	//{
-	//	c = *srcBuffer;
-	//	if (c == '\n' && c == '\r')
-	//	{
-	//		return i;
-	//	}
-	//}
-
-
-	do {
-		c = *srcBuffer;
-		srcBuffer++;
-		if (c && i < len - 1) {
-			dstBuffer[i] = c;
-			i++;
-		}
-			
-	} while (c != '\n' && c != '\r' && c);
-
-	//if (c != '\n' && c != '\r' && c)
-	//{
-	//	isLine = MFalse;
-	//}
-	//else
-	//{
-	//	isLine = MTrue;
-	//}
-
-	dstBuffer[i] = 0;
-	//
-
-	while (i > 0 && av_isspace(dstBuffer[i - 1]))
-		dstBuffer[--i] = '\0';
-
-	while (*srcBuffer == '\n' || *srcBuffer == '\r')
+	MPChar currentBuffer = bufferBegin;
+	while (bufferEnd > currentBuffer)
 	{
-		srcBuffer++;
+		c = *currentBuffer;
+		currentBuffer++;
+		if (c == '\n' || c == '\r' || c == '\0')
+		{
+			MMemCpy(dstBuffer, bufferBegin, size);
+			size++;
+			dstBuffer[size] = '\0';
+			return size;
+
+		}
+		else
+		{
+			size++;
+		}
+
 	}
 
-	return i;
+
+
+	return 0;
 }
 
 

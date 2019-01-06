@@ -61,5 +61,5 @@ MBool SourceParse::ReadFrame(AVPkt** pkt)
 
 MBool SourceParse::Seek(MInt64 seekTimeStamp)
 {
-
+	return m_parseFrame.Seek(seekTimeStamp);
 }

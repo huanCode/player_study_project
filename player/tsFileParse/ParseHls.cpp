@@ -6,7 +6,7 @@
 #include "ammem.h"
 #include "TsStream.h"
 #include "AllConfig.h"
-#define MAX_URL_SIZE 4096
+#define MAX_URL_SIZE 1024
 #define AV_TIME_BASE            1000000
 
 
@@ -105,8 +105,10 @@ MBool ParseHls::switchSegment()
 	}
 
 
-	if (m_curPlaylist->segmentList.GetSize() > m_curSementIndex)
+	if (m_curPlaylist->segmentList.GetSize() >= m_curSementIndex)
 	{
+		//m_curSementIndex = 70;
+		printf("tsIndex = %d  mtl = %s\r\n", m_curSementIndex, m_curPlaylist->segmentList.GetNodePtrByIndex(m_curSementIndex)->url);
 		if (m_dataRead->Open(m_curPlaylist->segmentList.GetNodePtrByIndex(m_curSementIndex)->url))
 		{
 			MPChar tmpBuffer = (MPChar)MMemAlloc(MNull, PROBE_BUFFER_SIZE);
@@ -142,9 +144,11 @@ MBool ParseHls::switchSegment()
 
 MBool ParseHls::ReadPacket(AVPkt** pkt)
 {
+	MBool ret = MFalse;
 	if (m_pTs)
 	{
-		while(m_pTs->ReadPacket(pkt) && !(*pkt)->isGetPacket)
+
+		while((ret = m_pTs->ReadPacket(pkt)) && !(*pkt)->isGetPacket)
 		{
 			//表示这个切片已经读完了
 			
@@ -154,18 +158,27 @@ MBool ParseHls::ReadPacket(AVPkt** pkt)
 			}
 		}
 
-		if (m_bFirst)
+		if (ret)
 		{
-			m_bFirst = MFalse;
-			m_beginDts = (*pkt)->dts;
-			m_beginPts = (*pkt)->pts;
+			if (m_bFirst)
+			{
+				m_bFirst = MFalse;
+				m_beginDts = (*pkt)->dts;
+				m_beginPts = (*pkt)->pts;
+			}
+
+			(*pkt)->dts = (((*pkt)->dts - m_beginDts) * 1000) / 90000;
+			(*pkt)->pts = (((*pkt)->pts - m_beginPts) * 1000) / 90000;
+			printf("video pts = %lld \r\n", (*pkt)->pts);
+		}
+		else
+		{
+			int i = 1;
 		}
 
-		(*pkt)->dts = (((*pkt)->dts - m_beginDts) * 1000) / 90000;
-		(*pkt)->pts = (((*pkt)->pts - m_beginPts) * 1000) / 90000;
 		
 	}
-	return MTrue;
+	return ret;
 }
 
 MVoid ParseHls::Close()
@@ -184,6 +197,7 @@ MBool   ParseHls::Seek(MInt64 seekTimeStamp)
 		if (duration >= seekTimeStamp)
 		{
 			m_curSementIndex = i;
+			return switchSegment();
 		}
 	}
 
@@ -240,15 +254,23 @@ MBool ParseHls::ParseM3u8(MPChar strUrl, Playlist* playlist)
 		return MFalse;
 	}
 
-	MInt32 max_buffer_size = 1024 * 8;
-	MChar buffer[1024*8] = { 0 };
+	MInt32 max_buffer_size = 1024;
+	MPChar bufferBegin = (MPChar)MMemAlloc(MNull, max_buffer_size);
+	if (!bufferBegin)
+	{
+		return MFalse;
+	}
+	MPChar bufferEnd = bufferBegin + max_buffer_size;
+	
+	MMemSet(bufferBegin, 0, max_buffer_size);
+
 	MChar line[MAX_URL_SIZE] = { 0 };
 	MChar tmp_strUrl[MAX_URL_SIZE] = {0};
 
 	MInt32 iCopySize = 0;
 	MInt32 iReadByte = 0;
 
-
+	
 
 	MPChar ptr = MNull;
 	MInt32 lineSize = 0;
@@ -259,19 +281,15 @@ MBool ParseHls::ParseM3u8(MPChar strUrl, Playlist* playlist)
 
 
 	MBool	isFirst = MTrue;
-	MPChar  bufferEnd = MNull;
+
 	MInt32	bufferSize = 0;
 
 	MInt64 duration = 0;
 
 	
-
-	MInt32 bufferReadSize = 0;
-	MPChar curBufferPos = MNull;
-
-
 	if (!m_dataRead->Open(strUrl))
 	{
+		MMemFree(MNull, bufferBegin);
 		return MFalse;
 	}
 
@@ -285,38 +303,53 @@ MBool ParseHls::ParseM3u8(MPChar strUrl, Playlist* playlist)
 	}
 
 	MBool ret = MFalse;
-	MInt32 iBufferSize = MAX_URL_SIZE;
-	while (true)
+	MInt32 iBufferEmptySize = 0;
+	MInt32 bufferReadSize = 0;
+
+	MPChar bufferUsedBegin = bufferBegin;
+	MPChar bufferUsedEnd = bufferBegin;
+	MBool  bLoop = MTrue;
+	while (bLoop)
 	{
 
-		curBufferPos = buffer;
-		iBufferSize = max_buffer_size;
+
+		
 		MBool retRead = MFalse;
 		do
 		{
-
-			retRead = m_dataRead->Read(&curBufferPos, iBufferSize, bufferReadSize);
-			curBufferPos += bufferReadSize;
-			iBufferSize -= bufferReadSize;
-				
-
-		} while (retRead && iBufferSize > 0);
-
-		if (!retRead && curBufferPos == buffer)
-		{
-			break;
-		}
-
-		bufferEnd = curBufferPos;
-		curBufferPos = buffer;
-		bufferReadSize = bufferEnd - buffer;
-		while (curBufferPos<bufferEnd)
-		{
-			lineSize = ToolString::Read_line(curBufferPos, bufferReadSize, line, MAX_URL_SIZE);
-			if (!lineSize)
+			iBufferEmptySize = bufferEnd - bufferUsedEnd;
+			retRead = m_dataRead->Read(&bufferUsedEnd, iBufferEmptySize, bufferReadSize);
+			if (!retRead)
 			{
 				goto Exit;
-				//return MTrue;
+
+			}
+			else if (bufferReadSize==0)
+			{
+				break;
+			}
+
+			bufferUsedEnd += bufferReadSize;
+			iBufferEmptySize -= bufferReadSize;
+
+		} while (bufferUsedEnd != bufferEnd);
+
+
+
+		while (bufferUsedBegin<= bufferUsedEnd)
+		{
+			lineSize = ToolString::Read_line(bufferUsedBegin, bufferUsedEnd, line, MAX_URL_SIZE);
+			if (lineSize == 0)
+			{
+				MInt32 size = bufferUsedEnd - bufferUsedBegin;
+				MMemCpy(bufferBegin, bufferUsedBegin, size);
+				bufferUsedBegin = bufferBegin;
+				bufferUsedEnd = bufferBegin + size;
+				break;
+			}
+			else
+			{
+				bufferUsedBegin += lineSize;
 			}
 
 
@@ -396,6 +429,7 @@ MBool ParseHls::ParseM3u8(MPChar strUrl, Playlist* playlist)
 				}
 			}
 			else if (ToolString::av_strstart(line, "#EXT-X-ENDLIST", &ptr)) {
+				bLoop = MFalse;
 				break;
 			}
 			else if (ToolString::av_strstart(line, "#EXTINF:", &ptr)) {
@@ -453,7 +487,12 @@ MBool ParseHls::ParseM3u8(MPChar strUrl, Playlist* playlist)
 						goto Exit;
 						//return MFalse;
 					}
-
+					//static int j = 0;
+					//if (j == 160)
+					//{
+					//	int a = 1;
+					//}
+					//j++;
 
 					is_segment = 0;
 					playlist->segmentList.AddNode(seg);
@@ -469,6 +508,7 @@ MBool ParseHls::ParseM3u8(MPChar strUrl, Playlist* playlist)
 
 	ret = MTrue;
 Exit:	
+	MMemFree(MNull, bufferBegin);
 	m_dataRead->Close();
 
 	return ret;
