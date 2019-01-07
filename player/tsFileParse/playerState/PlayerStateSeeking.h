@@ -11,7 +11,7 @@ public:
 	virtual MBool Play();
 	virtual MVoid Stop();
 	virtual MVoid Pause();
-	virtual MBool Seek();
+	virtual MBool Seek(MInt64 seekTimeStamp);
 
 
 	MVoid SetSeekTimeStamp(MInt64 seekTime)

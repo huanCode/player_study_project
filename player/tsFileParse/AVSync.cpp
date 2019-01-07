@@ -8,7 +8,7 @@ AVSync::AVSync()
 	m_currentAudioTime = -1;
 	m_lastVideoTime = -1;
 	m_lock = MMutexCreate();
-	m_CurTimeStampAudio = MGetCurTimeStamp();
+	m_CurTimeStampAudio = -1;
 
 	m_bPause = MFalse;
 }
@@ -26,8 +26,11 @@ MVoid AVSync::Pause()
 	//}
 
 	MMutexLock(m_lock);
-	MDWord timeDirrerent = MGetCurTimeStamp() - m_CurTimeStampAudio;
-	m_currentAudioTime += timeDirrerent;
+	if (m_CurTimeStampAudio != -1)
+	{
+		MDWord timeDirrerent = MGetCurTimeStamp() - m_CurTimeStampAudio;
+		m_currentAudioTime += timeDirrerent;
+	}
 	MMutexUnlock(m_lock);
 	m_bPause = MTrue;
 

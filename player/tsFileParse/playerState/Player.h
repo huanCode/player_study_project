@@ -15,6 +15,7 @@ class AudioPlayAAC;
 enum PlayerAction
 {
 	actionNone,
+	actionCommon,
 	actionPlay,
 	actionStop,
 	actionPause,
@@ -56,7 +57,7 @@ public:
 	MBool buffer();
 	MBool PlayOneFrame();
 	MBool State_Seeking(MInt64 seekTime);
-
+	MBool State_Pauseing();
 
 	//×´Ì¬×ª»»
 	MVoid Playing_to_Buffering();
@@ -71,7 +72,7 @@ private:
 	MVoid thread_read();
 
 
-	MVoid create_action(PlayerAction actionState);
+	MVoid create_action(PlayerAction actionState,MBool bClear = MFalse);
 private:
 
 	PlayerStateContext	m_context;
@@ -100,6 +101,7 @@ private:
 	MHandle					m_hMutexVideo;
 	MHandle					m_hMutexAudio;
 	PlayLock				m_lockAction;
+	PlayLock				m_lockSource;
 
 	MInt64					m_bufferTime;
 	MInt64					m_bufferPercent;

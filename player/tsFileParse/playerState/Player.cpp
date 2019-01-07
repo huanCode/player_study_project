@@ -47,12 +47,17 @@ Player::Player()
 }
 
 
-MVoid Player::create_action(PlayerAction actionState)
+MVoid Player::create_action(PlayerAction actionState,MBool bClear)
 {
 
 	PtrPlayActionData action = new PlayActionData();
 	action->m_action = actionState;
+
 	m_lockAction.Lock();
+	if (bClear)
+	{
+		m_arrayPlayActionData.Clear();
+	}
 	m_arrayPlayActionData.AddNode(action);
 	m_lockAction.Lock();
 
@@ -164,6 +169,7 @@ MVoid Player::handle()
 	PlayerAction	m_action = actionNone;
 
 	MInt64  seekTimeStamp = 0;
+	MBool ret = MFalse;
 	while (m_bRun)
 	{
 		m_lockAction.Lock();
@@ -178,26 +184,32 @@ MVoid Player::handle()
 
 		m_lockAction.UnInit();
 
-
-
-
 		switch (m_action)
 		{
+		case actionCommon:
+			ret = m_context.Handle();
+			break;
 		case actionPlay:
 			m_context.Play();
 			break;
 		case actionStop:
 			m_context.Stop();
+			m_bRun = MFalse;
 			break;
 		case actionPause:
 			m_context.Pause();
 			break;
 		case actionSeek:
-			m_context.Seek(seekTimeStamp);
+			ret = m_context.Seek(seekTimeStamp);
 			break;
 		default:
 			m_bRun = MFalse;
 			break;
+		}
+
+		if (!ret)
+		{
+			create_action(actionStop);
 		}
 
 		m_action = actionPlay;
@@ -214,18 +226,21 @@ MVoid Player::thread_read()
 	AVPkt* pktHead = MNull;
 	AVPkt* pktTail = MNull;
 	AVPkt* pkt = MNull;
+
+	MBool ret = MFalse;
 	while (m_bRunRead)
 	{
-		if (m_bSeek)
-		{
-			if (!m_pSourceParse->Seek(m_seekTimeStamp))
-			{
-				break;
-			}
-		}
-
-
-		if (!m_pSourceParse->ReadFrame(&pkt))
+		//if (m_bSeek)
+		//{
+		//	if (!m_pSourceParse->Seek(m_seekTimeStamp))
+		//	{
+		//		break;
+		//	}
+		//}
+		m_lockSource.Lock();
+		ret = m_pSourceParse->ReadFrame(&pkt);
+		m_lockSource.UnLock();
+		if (!ret)
 		{
 			break;
 		}
@@ -287,7 +302,7 @@ MVoid Player::thread_read()
 	}
 
 	m_bRunRead = MFalse;
-	m_context.SetState(Stoping);
+	//m_context.SetState(Stoping);
 }
 
 MBool Player::prepare()
@@ -602,13 +617,15 @@ MBool Player::State_Seeking(MInt64 seekTime)
 
 		MMutexUnlock(m_hMutexVideo);
 	}
+	m_lockSource.Lock();
+	MBool ret =  m_pSourceParse->Seek(m_seekTimeStamp);
+	m_lockSource.UnLock();
 
-	if (isSeek)
-	{
-		m_bSeek = isSeek;
-		m_context.SetState(Buffering);
-	}
+	return ret;
+}
 
-	return MTrue;
-	//2¡¢
+MBool Player::State_Pauseing()
+{
+	m_audioPlay->Pause();
+	m_avsync.Pause();
 }

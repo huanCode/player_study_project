@@ -9,7 +9,8 @@ enum State
 	Playing,
 	Stoping,
 	Pauseing,
-	Seeking
+	Seeking,
+	Idle
 };
 
 
@@ -25,6 +26,7 @@ public:
 	PlayerState* GetCurrentState() {
 		return  m_pCurrentObject;
 	};
+	MBool Handle();
 	MBool Play();
 	MVoid Stop();
 	MVoid Pause();
@@ -37,7 +39,7 @@ public:
 	PlayerState		*m_pPlayerStateStoping;
 	PlayerState		*m_pPlayerStatePauseing;
 	PlayerState		*m_pPlayerStateSeeking;
-
+	PlayerState		*m_pPlayerStateIdle;
 private:
 	PlayerState		*m_pCurrentObject;
 	PlayLock		m_playerStateLock;

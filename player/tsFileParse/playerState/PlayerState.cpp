@@ -18,6 +18,11 @@ MVoid PlayerState::SetPlayer(Player* pPlayer)
 	m_pPlayer = pPlayer;
 }
 
+MBool PlayerState::Handle()
+{
+	return MTrue;
+}
+
 MBool PlayerState::Play()
 {
 	//m_stateContext->SetState(State::Playing);

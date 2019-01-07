@@ -17,7 +17,7 @@ MVoid PlayerStateSeeking::Pause()
 
 }
 
-MBool PlayerStateSeeking::Seek()
+MBool PlayerStateSeeking::Seek(MInt64 seekTimeStamp)
 {
-	return MTrue;
+	return m_pPlayer->State_Seeking(seekTimeStamp);
 }

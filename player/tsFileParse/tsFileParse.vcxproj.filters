@@ -204,6 +204,9 @@
     <ClInclude Include="ToolList.h">
       <Filter>tool</Filter>
     </ClInclude>
+    <ClInclude Include="PlayerStateIdle.h">
+      <Filter>playerState</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -304,6 +307,9 @@
     </ClCompile>
     <ClCompile Include="AVSync.cpp">
       <Filter>tool</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerStateIdle.cpp">
+      <Filter>playerState</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

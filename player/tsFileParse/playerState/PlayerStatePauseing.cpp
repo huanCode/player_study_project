@@ -18,7 +18,7 @@ MVoid PlayerStatePauseing::Stop()
 
 MVoid PlayerStatePauseing::Pause()
 {
-
+	m_pPlayer->State_Pauseing();
 }
 
 MBool PlayerStatePauseing::Seek()

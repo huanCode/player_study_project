@@ -19,6 +19,7 @@ public:
 	{
 		return m_strState;
 	}
+	virtual MBool Handle();
 	virtual MBool Play();
 	virtual MVoid Stop();
 	virtual MVoid Pause();

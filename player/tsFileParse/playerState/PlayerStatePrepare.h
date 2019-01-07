@@ -4,6 +4,7 @@
 class PlayerStatePrepare :public PlayerState
 {
 public:
+	MBool Handle();
 	MBool Play();
 	//virtual MVoid Stop();
 	//virtual MVoid Pause();

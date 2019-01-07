@@ -6,6 +6,7 @@
 #include "PlayerStateStoping.h"
 #include "PlayerStatePauseing.h"
 #include "PlayerStateSeeking.h"
+#include "PlayerStateIdle.h"
 
 #define CREATE_STATE(object,class_name,pPlayer) 	if (!object) \
 						{	\
@@ -24,7 +25,10 @@ PlayerStateContext::PlayerStateContext()
 	m_pPlayerStateStoping		= MNull;
 	m_pPlayerStatePauseing		= MNull;
 	m_pPlayerStateSeeking		= MNull;
+	m_pPlayerStateIdle			= MNull;
+
 	m_pCurrentObject			= MNull;
+
 }
 
 MBool PlayerStateContext::Init(Player* pPlayer)
@@ -45,11 +49,13 @@ MBool PlayerStateContext::Init(Player* pPlayer)
 	//	}
 	//}
 	CREATE_STATE(m_pPlayerStatePrepare, PlayerStatePrepare, pPlayer)
-		CREATE_STATE(m_pPlayerStateBuffering, PlayerStateBuffering, pPlayer)
-		CREATE_STATE(m_pPlayerStatePlaying, PlayerStatePlaying, pPlayer)
-		CREATE_STATE(m_pPlayerStateStoping, PlayerStateStoping, pPlayer)
-		CREATE_STATE(m_pPlayerStatePauseing, PlayerStatePauseing, pPlayer)
-		CREATE_STATE(m_pPlayerStateSeeking, PlayerStateSeeking, pPlayer)
+	CREATE_STATE(m_pPlayerStateBuffering, PlayerStateBuffering, pPlayer)
+	CREATE_STATE(m_pPlayerStatePlaying, PlayerStatePlaying, pPlayer)
+	CREATE_STATE(m_pPlayerStateStoping, PlayerStateStoping, pPlayer)
+	CREATE_STATE(m_pPlayerStatePauseing, PlayerStatePauseing, pPlayer)
+	CREATE_STATE(m_pPlayerStateSeeking, PlayerStateSeeking, pPlayer)
+	CREATE_STATE(m_pPlayerStateIdle, PlayerStateIdle, pPlayer)
+
 	m_pCurrentObject = m_pPlayerStatePrepare;
 	return MTrue;
 }
@@ -81,18 +87,51 @@ MVoid PlayerStateContext::SetState(State state)
 	{
 		m_pCurrentObject = m_pPlayerStateSeeking;
 	}
+	else if (state == State::Idle)
+	{
+		m_pCurrentObject = m_pPlayerStateIdle;
+	}
 	m_playerStateLock.UnInit();
 }
 
-MVoid PlayerStateContext::Buffer()
+
+
+MBool PlayerStateContext::Handle()
 {
-	m_pCurrentObject->Buffer();
+	return m_pCurrentObject->Handle();
 }
+
 
 MBool PlayerStateContext::Play()
 {
 
 	return m_pCurrentObject->Play();
+}
+
+MVoid PlayerStateContext::Pause()
+{
+	SetState(Pauseing);
+	m_pCurrentObject->Pause();
+	SetState(Idle);
+}
+
+MBool PlayerStateContext::Seek(MInt64 seekTime)
+{
+	SetState(Seeking);
+	//PlayerStateSeeking*  seekObj = (PlayerStateSeeking*)m_pCurrentObject;
+	if (m_pCurrentObject->Seek(seekTime))
+	{
+		SetState(Buffering);
+		return MTrue;
+	}
+
+	return MFalse;
+}
+
+
+MVoid PlayerStateContext::Buffer()
+{
+	m_pCurrentObject->Buffer();
 }
 
 MVoid PlayerStateContext::Stop()
@@ -101,16 +140,4 @@ MVoid PlayerStateContext::Stop()
 	m_pCurrentObject->Stop();
 }
 
-MVoid PlayerStateContext::Pause()
-{
-	//SetState(Pauseing);
-	m_pCurrentObject->Pause();
-}
-
-MBool PlayerStateContext::Seek(MInt64 seekTime)
-{
-	//SetState(Seeking);
-	//PlayerStateSeeking*  seekObj = (PlayerStateSeeking*)m_pCurrentObject;
-	return m_pCurrentObject->Seek(seekTime);
-}
 

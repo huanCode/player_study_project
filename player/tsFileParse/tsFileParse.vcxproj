@@ -180,6 +180,7 @@
     <ClInclude Include="IVideoPlay.h" />
     <ClInclude Include="ParseFrame.h" />
     <ClInclude Include="ParseHls.h" />
+    <ClInclude Include="PlayerStateIdle.h" />
     <ClInclude Include="playerState\Player.h" />
     <ClInclude Include="playerState\PlayerState.h" />
     <ClInclude Include="playerState\PlayerStateBuffering.h" />
@@ -218,6 +219,7 @@
     <ClCompile Include="ParseFrame.cpp" />
     <ClCompile Include="ParseHls.cpp" />
     <ClCompile Include="PlayerStateBuffering.cpp" />
+    <ClCompile Include="PlayerStateIdle.cpp" />
     <ClCompile Include="playerState\Player.cpp" />
     <ClCompile Include="playerState\PlayerState.cpp" />
     <ClCompile Include="playerState\PlayerStateContext.cpp" />
