@@ -54,7 +54,7 @@ public:
 	MBool	ReadHeader(MPChar strUrl);
 	MBool	ReadPacket(AVPkt** pkt);
 	MVoid	Close();
-
+	MBool   Seek(MInt64 seekTimeStamp);
 	MBool	HasVideo()
 	{
 		if (m_pTs)
@@ -112,6 +112,7 @@ private:
 	ToolList<Playlist*>		m_playlistList;
 	MBool					m_playListType;
 	MInt32					m_curIndex;
+	MInt64					m_duration;
 
 
 	IParse*		m_pTs;

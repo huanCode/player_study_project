@@ -14,6 +14,7 @@ class AudioPlayAAC;
 
 enum PlayerAction
 {
+	actionNone,
 	actionPlay,
 	actionStop,
 	actionPause,
@@ -23,6 +24,19 @@ enum PlayerAction
 
 class Player
 {
+private:
+	typedef struct _playActionData
+	{
+		_playActionData()
+		{
+			m_action = actionNone;
+			seekTimeStamp = 0;
+		}
+		PlayerAction m_action;
+		MUInt32		seekTimeStamp;
+
+	}PlayActionData,*PtrPlayActionData;
+
 public:
 	Player();
 	MBool	Start(MPChar strUrl);
@@ -30,7 +44,7 @@ public:
 
 	virtual MVoid Stop();
 	virtual MVoid Pause();
-	virtual MVoid Seek();
+	virtual MVoid Seek(MInt64 seekTime);
 	MBool	AudioDecode(MPChar buffer, MInt32& bufferSize);
 
 
@@ -41,14 +55,23 @@ public:
 	MBool prepare();
 	MBool buffer();
 	MBool PlayOneFrame();
-private:
+	MBool State_Seeking(MInt64 seekTime);
+
+
+	//×´Ì¬×ª»»
+	MVoid Playing_to_Buffering();
+
+public:
 	MBool initDecode();
-	MBool initDisplay();
+
 private:
 	static MDWord run(MVoid* lpPara);
 	static MDWord run_read(MVoid* lpPara);
 	MVoid handle();
 	MVoid thread_read();
+
+
+	MVoid create_action(PlayerAction actionState);
 private:
 
 	PlayerStateContext	m_context;
@@ -64,7 +87,7 @@ private:
 
 	MBool			m_bRun;
 	MBool			m_bRunRead;
-	PlayerAction	m_action;
+
 	MHandle			m_threadHandleRun;
 
 	MHandle			m_threadHandleRead;
@@ -72,10 +95,12 @@ private:
 	//video and audio array
 	ToolList<AVPkt*>		m_arrayVideo;
 	ToolList<AVPkt*>		m_arrayAudio;
-
+	ToolList<PtrPlayActionData>	m_arrayPlayActionData;
 	//lock 
 	MHandle					m_hMutexVideo;
 	MHandle					m_hMutexAudio;
+	PlayLock				m_lockAction;
+
 	MInt64					m_bufferTime;
 	MInt64					m_bufferPercent;
 
@@ -109,6 +134,10 @@ private:
 	VideoInfo				m_videoInfo;
 
 	MInt64					m_time;
+
+	MInt64					m_seekTimeStamp;
+
+	MBool					m_bSeek;
 
 };
 

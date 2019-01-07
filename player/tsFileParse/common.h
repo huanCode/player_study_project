@@ -2,6 +2,7 @@
 #define _COMMON_H
 #include "TsStreamDef.h"
 #include "ammem.h"
+#include "amkernel.h"
 inline MUInt16 to_UInt16(MPChar p);
 inline MUInt8 to_UInt8(MPChar p);
 
@@ -143,5 +144,56 @@ typedef struct _Frame
 
 }Frame;
 
+
+class PlayLock
+{
+public:
+	PlayLock()
+	{
+		m_lock = MNull;
+	}
+	~PlayLock()
+	{
+		UnLock();
+	}
+	MBool Init()
+	{
+		m_lock = MMutexCreate();
+		if (m_lock)
+		{
+			return MTrue;
+		}
+		return MFalse;
+	}
+
+	MVoid Lock()
+	{
+		if (m_lock)
+		{
+			MMutexLock(m_lock);
+		}
+		
+	}
+
+	MVoid UnLock()
+	{
+		if (m_lock)
+		{
+			MMutexUnlock(m_lock);
+		}
+	}
+
+	MVoid UnInit()
+	{
+		if (m_lock)
+		{
+			MMutexDestroy(m_lock);
+		}
+	}
+
+private:
+	MHandle					m_lock;
+
+};
 
 #endif // !_COMMON_H

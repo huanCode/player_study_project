@@ -401,18 +401,32 @@ MBool TsStream::handle_packets(MInt32 nb_packets)
 		ret = m_dataRead->Read(&m_packetBuffer,TsStream::Packet_Size, iReadSize);
 		if (!ret)
 		{
-			if ( iReadSize == 0)
-			{
-				m_avpkt.isGetPacket = MFalse;
-				return MTrue;
-			}
-			else if(TsStream::Packet_Size != iReadSize)
-			{
-				return MFalse;
-				
-			}
+			return MFalse;
 		}
-			
+		if (iReadSize == 0)
+		{
+			m_avpkt.isGetPacket = MFalse;
+			return MTrue;
+		}
+		else if (TsStream::Packet_Size != iReadSize)
+		{
+			return MFalse;
+
+		}
+		//if (!ret)
+		//{
+			//if ( iReadSize == 0)
+			//{
+			//	m_avpkt.isGetPacket = MFalse;
+			//	return MTrue;
+			//}
+			//else if(TsStream::Packet_Size != iReadSize)
+			//{
+			//	return MFalse;
+			//	
+			//}
+		//}
+		//	
 
 		total += iReadSize;
 		if (!handle_packet(m_packetBuffer))
@@ -575,6 +589,7 @@ MBool	TsStream::ReadPacket(AVPkt** pkt)
 			//file.Write((MByte*)m_avpkt.bufferPkt, m_avpkt.bufferPktSize);
 			//
 			//file.Close();
+			int a = 1;
 
 
 
@@ -614,6 +629,13 @@ MVoid TsStream::Close()
 		m_dataRead->Close();
 		m_dataRead = MNull;
 	}
+}
+
+
+MBool   TsStream::Seek(MInt64 seekTimeStamp)
+{
+
+	return MTrue;
 }
 
 MVoid TsStream::parse_ts_packet_header(MPChar buffer, ts_packet_header &tsHeader)

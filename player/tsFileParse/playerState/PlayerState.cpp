@@ -5,6 +5,7 @@ PlayerState::PlayerState()
 {
 	m_pPlayer = MNull;
 	m_stateContext = MNull;
+	m_strState = MNull;
 }
 
 MVoid PlayerState::SetContext(PlayerStateContext *pContext)
@@ -35,10 +36,14 @@ MVoid PlayerState::Pause()
 	m_stateContext->GetCurrentState()->Pause();
 }
 
-MBool PlayerState::Seek()
+MBool PlayerState::Seek(MInt64 seekTimeStamp)
 {
-	m_stateContext->SetState(State::Seeking);
-	return m_stateContext->GetCurrentState()->Seek();
+	//m_stateContext->SetState(State::Seeking);
+	//return m_stateContext->GetCurrentState()->Seek();
+	return MTrue;
+}
 
+MVoid PlayerState::Buffer()
+{
 
 }

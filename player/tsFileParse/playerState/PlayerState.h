@@ -15,14 +15,19 @@ public:
 	//virtual MVoid Idle() =0;
 	MVoid SetContext(PlayerStateContext *pContext);
 	MVoid SetPlayer(Player* pPlayer);
+	MPChar GetStateName()
+	{
+		return m_strState;
+	}
 	virtual MBool Play();
 	virtual MVoid Stop();
 	virtual MVoid Pause();
-	virtual MBool Seek();
-
+	virtual MBool Seek(MInt64 seekTimeStamp);
+	virtual MVoid Buffer();
 public:
 	Player*				m_pPlayer;
 	PlayerStateContext	*m_stateContext;
+	MPChar				m_strState;
 };
 
 

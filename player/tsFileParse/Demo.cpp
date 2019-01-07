@@ -56,9 +56,9 @@ int main(int      argc, char    *argv[])
 	strURL = "http://38uni317.vod2.danghongyun.com/target/hls/2017/09/29/660_f5a387260dd2432a975401febfffc63a_10_1280x720.m3u8";
 	Player player;
 	player.Start(strURL);
-	Sleep(10000);
-	player.Seek();
-	Sleep(100000);
+	Sleep(5000);
+	player.Seek(15000);
+	Sleep(10000000);
 	return 0;
 
 

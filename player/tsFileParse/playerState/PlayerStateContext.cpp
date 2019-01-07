@@ -33,6 +33,9 @@ MBool PlayerStateContext::Init(Player* pPlayer)
 	{
 		return MFalse;
 	}
+
+	
+	RETURN_FALSE(m_playerStateLock.Init())
 	//if (!m_pPlayerStatePrepare)
 	//{
 	//	m_pPlayerStatePrepare = new PlayerStatePrepare();
@@ -53,6 +56,7 @@ MBool PlayerStateContext::Init(Player* pPlayer)
 
 MVoid PlayerStateContext::SetState(State state)
 {
+	m_playerStateLock.Lock();
 	if (state == State::Prepare)
 	{
 		m_pCurrentObject = m_pPlayerStatePrepare;
@@ -77,26 +81,36 @@ MVoid PlayerStateContext::SetState(State state)
 	{
 		m_pCurrentObject = m_pPlayerStateSeeking;
 	}
-	
+	m_playerStateLock.UnInit();
+}
+
+MVoid PlayerStateContext::Buffer()
+{
+	m_pCurrentObject->Buffer();
 }
 
 MBool PlayerStateContext::Play()
 {
+
 	return m_pCurrentObject->Play();
 }
 
 MVoid PlayerStateContext::Stop()
 {
-	return m_pCurrentObject->Stop();
+	//SetState(Stoping);
+	m_pCurrentObject->Stop();
 }
 
 MVoid PlayerStateContext::Pause()
 {
-	return m_pCurrentObject->Pause();
+	//SetState(Pauseing);
+	m_pCurrentObject->Pause();
 }
 
-MBool PlayerStateContext::Seek()
+MBool PlayerStateContext::Seek(MInt64 seekTime)
 {
-	return m_pCurrentObject->Seek();
+	//SetState(Seeking);
+	//PlayerStateSeeking*  seekObj = (PlayerStateSeeking*)m_pCurrentObject;
+	return m_pCurrentObject->Seek(seekTime);
 }
 

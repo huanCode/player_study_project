@@ -1,6 +1,7 @@
 #include "AVSync.h"
 #include "amkernel.h"
 #include <windows.h>
+#include <stdio.h>
 AVSync::AVSync()
 {
 	m_lastAudioTime = -1;
@@ -8,6 +9,28 @@ AVSync::AVSync()
 	m_lastVideoTime = -1;
 	m_lock = MMutexCreate();
 	m_CurTimeStampAudio = MGetCurTimeStamp();
+
+	m_bPause = MFalse;
+}
+
+
+MVoid AVSync::Pause()
+{
+	//if (!m_bPause)
+	//{
+	//	MMutexLock(m_lock);
+	//	MDWord timeDirrerent = MGetCurTimeStamp() - m_CurTimeStampAudio;
+	//	m_currentAudioTime += timeDirrerent;
+	//	MMutexUnlock(m_lock);
+	//	m_bPause = MTrue;
+	//}
+
+	MMutexLock(m_lock);
+	MDWord timeDirrerent = MGetCurTimeStamp() - m_CurTimeStampAudio;
+	m_currentAudioTime += timeDirrerent;
+	MMutexUnlock(m_lock);
+	m_bPause = MTrue;
+
 }
 
 MVoid AVSync::SetCurrentAudioTime(MInt64 currentAudioTime)
@@ -31,18 +54,26 @@ MBool AVSync::Adjust(MInt64 currentVideoTime)
 	MInt32 sleepTime = 0;
 	MBool ret = MTrue;
 	MMutexLock(m_lock);
-
+	MInt64 tmp = 9983;
 	MInt32 videoSpan = currentVideoTime - m_lastVideoTime;
-
+	if (currentVideoTime > tmp)
+	{
+		int b = 1;
+	}
 
 	MDWord timeDirrerent = MGetCurTimeStamp() - m_CurTimeStampAudio;
 	MInt64 realCurrentAudioTime = m_currentAudioTime + timeDirrerent;	//当前音频正在播放的时间
-
+	//printf("currentVideoTime = %lld ,realCurrentAudioTime = %lld \r\n", currentVideoTime,realCurrentAudioTime);
 	if (currentVideoTime >= realCurrentAudioTime)
 	{
 		//video > audio 
+		
 		sleepTime = currentVideoTime - m_currentAudioTime;
-
+		//printf("sleep = %d \r\n", sleepTime);
+		if (sleepTime >= 100)
+		{
+			int a = 1;
+		}
 	}
 	else
 	{

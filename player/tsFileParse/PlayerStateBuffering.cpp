@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "PlayerStateBuffering.h"
 
+PlayerStateBuffering::PlayerStateBuffering()
+{
+	m_strState = "Buffering";
+}
 
 MBool PlayerStateBuffering::Play()
 {

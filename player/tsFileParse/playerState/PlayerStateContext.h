@@ -1,7 +1,7 @@
 #ifndef _PLAYERSTATECONTEXT_H_
 #define _PLAYERSTATECONTEXT_H_
 #include "amcomdef.h"
-
+#include "common.h"
 enum State
 {
 	Prepare,
@@ -28,7 +28,8 @@ public:
 	MBool Play();
 	MVoid Stop();
 	MVoid Pause();
-	MBool Seek();
+	MBool Seek(MInt64 seekTime);
+	MVoid Buffer();
 public:
 	PlayerState		*m_pPlayerStatePrepare;
 	PlayerState		*m_pPlayerStateBuffering;
@@ -39,7 +40,7 @@ public:
 
 private:
 	PlayerState		*m_pCurrentObject;
-
+	PlayLock		m_playerStateLock;
 };
 
 

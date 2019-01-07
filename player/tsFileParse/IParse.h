@@ -15,6 +15,7 @@ public:
 	//virtual MBool   Init();
 	virtual MBool	ReadPacket(AVPkt** pkt) = 0;
 	virtual MVoid	Close() = 0;
+	virtual MBool   Seek(MInt64 seekTimeStamp) = 0;
 	MVoid	SetDataRead(IDataRead* obj)
 	{
 		m_dataRead = obj;

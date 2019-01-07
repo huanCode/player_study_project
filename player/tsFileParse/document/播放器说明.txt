@@ -37,4 +37,8 @@ PMT解析时能知道流类型
 基本信息:
 video	width、height、帧率
 
+
+
+
+
 	

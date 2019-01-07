@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "PlayerStatePauseing.h"
 
+PlayerStatePauseing::PlayerStatePauseing()
+{
+}
 
 MBool PlayerStatePauseing::Play()
 {

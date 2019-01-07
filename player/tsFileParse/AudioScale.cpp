@@ -5,7 +5,7 @@ AudioScale::AudioScale()
 {
 	m_pFrame = MNull;
 	au_convert_ctx = MNull;
-	audioFile.Open("audioScale.pcm", mv3File::stream_write);
+	//audioFile.Open("audioScale.pcm", mv3File::stream_write);
 	m_count = 0;
 	m_pcmBufferSize = 0;
 }
@@ -177,15 +177,15 @@ AVFrame* AudioScale::Scale(AVFrame *in_pFrame)
 	//m_pFrame->nb_samples = ret;
 	av_samples_get_buffer_size(&m_pFrame->linesize[0], m_out_audio.channels, ret, (AVSampleFormat)m_out_audio.sample_fmt, 1);
 	int count = 300;
-	if (m_count < count)
-	{
-		audioFile.Write((MByte*)m_pFrame->data[0], m_pFrame->linesize[0]);
-		
-	}
-	else if(m_count == count)
-	{
-		audioFile.Close();
-	}
+	//if (m_count < count)
+	//{
+	//	audioFile.Write((MByte*)m_pFrame->data[0], m_pFrame->linesize[0]);
+	//	
+	//}
+	//else if(m_count == count)
+	//{
+	//	audioFile.Close();
+	//}
 	m_count++;
 	m_pFrame->linesize[0] = m_pFrame->linesize[0];
 	m_pFrame->pts = in_pFrame->pts;

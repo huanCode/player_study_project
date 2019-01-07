@@ -4,8 +4,8 @@
 class PlayerStatePlaying :public PlayerState
 {
 public:
-	virtual MBool Play();
-	//virtual MVoid Stop();
+	MBool Play();
+	MVoid Buffer();
 	//virtual MVoid Pause();
 	//virtual MVoid Seek();
 

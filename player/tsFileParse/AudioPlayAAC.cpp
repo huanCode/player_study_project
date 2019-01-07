@@ -27,6 +27,10 @@ AudioPlayAAC::AudioPlayAAC()
 	audio_len = 0;
 	audio_pos = 0;
 	m_out_nb_samples = 1024;
+
+	m_bPause = MFalse;
+
+	audio_len_tmp = 0;
 }
 
 
@@ -59,9 +63,8 @@ MBool AudioPlayAAC::Open()
 
 	MInt32 bufferSize = out_buffer_size; //channel * bytesPerSample * samples = 2channels * stereo * 1024 samples =2 * 2 * 1024
 	audio_pos_tmp = (Uint8*)MMemAlloc(MNull, bufferSize);
-	audio_pos = (Uint8*)MMemAlloc(MNull, bufferSize);
 	MMemSet(audio_pos_tmp,0, bufferSize);
-	MMemSet(audio_pos, 0, bufferSize);
+
 	return MTrue;
 
 }
@@ -71,6 +74,20 @@ MVoid AudioPlayAAC::Close()
 {
 	SDL_CloseAudio();//Close SDL
 	SDL_Quit();
+
+	if (audio_pos_tmp)
+	{
+		MMemFree(MNull, audio_pos_tmp);
+		audio_pos_tmp = MNull;
+	}
+
+
+	m_player = MNull;
+}
+
+MVoid	AudioPlayAAC::Pause()
+{
+	SDL_PauseAudio(1);
 }
 
 
@@ -127,17 +144,29 @@ MVoid AudioPlayAAC::decode()
 
 	while (m_bRun)
 	{
+		if (m_bPause)
+		{
+			SDL_Delay(5);
+			continue;
+		}
+
+		audio_len_tmp = 0;
 		if (!m_player->AudioDecode((MPChar)audio_pos_tmp, audio_len_tmp))
 		{
 			return;
 		}
+		else if(audio_len_tmp == 0)
+		{
+			continue;
+		}
+
 
 		while(audio_len)
 		{
 			SDL_Delay(1);
 		}
 
-		MMemCpy(audio_pos, audio_pos_tmp, audio_len_tmp);
+		//MMemCpy(audio_pos, audio_pos_tmp, audio_len_tmp);
 		audio_len = audio_len_tmp;
 		SDL_PauseAudio(0);
 	}

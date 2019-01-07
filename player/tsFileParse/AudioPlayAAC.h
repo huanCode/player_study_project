@@ -31,7 +31,7 @@ public:
 	AudioPlayAAC();
 	virtual MBool Open();
 	virtual MVoid Close();
-
+	MVoid	Pause();
 	virtual MBool isStart() {
 		return m_bRun;
 	};
@@ -67,6 +67,8 @@ private:
 
 	MHandle			m_threadHandleRun;
 	MBool			m_bRun;
+
+	MBool			m_bPause;
 };
 
 
