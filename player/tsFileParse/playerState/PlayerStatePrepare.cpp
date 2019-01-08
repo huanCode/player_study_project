@@ -2,6 +2,18 @@
 #include "PlayerStatePrepare.h"
 
 
+PlayerStatePrepare::PlayerStatePrepare()
+{
+	m_strState = "Prepareing";
+	m_stateRight[actionStart]	= MTrue;
+	m_stateRight[actionPause]	= MTrue;
+	m_stateRight[actionSeek]	= MTrue;
+	m_stateRight[actionStop]	= MTrue;
+	m_stateRight[actionCircle]	= MFalse;
+
+	m_lastState = Prepare;
+}
+
 MBool PlayerStatePrepare::Handle()
 {
 	if (m_pPlayer->prepare())
@@ -13,7 +25,7 @@ MBool PlayerStatePrepare::Handle()
 	return MFalse;
 }
 
-MBool PlayerStatePrepare::Play()
+MBool PlayerStatePrepare::Start()
 {
 	//
 	//if (m_pPlayer->prepare())

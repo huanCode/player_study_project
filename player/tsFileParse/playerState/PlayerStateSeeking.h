@@ -4,11 +4,8 @@
 class PlayerStateSeeking :public PlayerState
 {
 public:
-	PlayerStateSeeking()
-	{
-		m_seekTimeStamp = 0;
-	}
-	virtual MBool Play();
+	PlayerStateSeeking();
+	virtual MBool Start();
 	virtual MVoid Stop();
 	virtual MVoid Pause();
 	virtual MBool Seek(MInt64 seekTimeStamp);

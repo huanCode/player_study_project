@@ -4,9 +4,17 @@
 PlayerStatePlaying::PlayerStatePlaying()
 {
 	m_strState = "Playing";
+
+	m_stateRight[actionStart] = MFalse;
+	m_stateRight[actionPause] = MTrue;
+	m_stateRight[actionSeek] = MTrue;
+	m_stateRight[actionStop] = MTrue;
+	m_stateRight[actionCircle] = MTrue;
+
+	m_lastState = Playing;
 }
 
-MBool PlayerStatePlaying::Play()
+MBool PlayerStatePlaying::Start()
 {
 	
 	if (!m_pPlayer->PlayOneFrame())

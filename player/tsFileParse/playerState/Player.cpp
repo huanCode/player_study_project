@@ -81,7 +81,7 @@ MBool Player::Start(MPChar strUrl)
 
 	RETURN_FALSE(m_lockAction.Init())
 
-	create_action(actionPlay);
+	create_action(actionStart);
 	if (!m_bRun && !m_threadHandleRun)
 	{
 		m_threadHandleRun = MThreadCreate(run, this);
@@ -186,11 +186,11 @@ MVoid Player::handle()
 
 		switch (m_action)
 		{
-		case actionCommon:
+		case actionCircle:
 			ret = m_context.Handle();
 			break;
-		case actionPlay:
-			m_context.Play();
+		case actionStart:
+			m_context.Start();
 			break;
 		case actionStop:
 			m_context.Stop();
@@ -212,7 +212,7 @@ MVoid Player::handle()
 			create_action(actionStop);
 		}
 
-		m_action = actionPlay;
+		//m_action = actionPlay;
 	}
 }
 
@@ -537,19 +537,16 @@ MBool Player::initDecode()
 }
 
 
-MBool Player::buffer()
+MInt32 Player::buffer()
 {
 	
-	if (m_bufferPercent >= 100)
+	if (m_bufferPercent < 100)
 	{
-		return MTrue;
+		MThreadSleep(m_threadHandleRun, 5);
 	}
-	else
-	{
-		
-	}
-	MThreadSleep(m_threadHandleRun,5);
-	return MFalse;
+
+	
+	return m_bufferPercent;
 }
 
 MBool Player::State_Seeking(MInt64 seekTime)

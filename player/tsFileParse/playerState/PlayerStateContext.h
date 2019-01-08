@@ -10,7 +10,19 @@ enum State
 	Stoping,
 	Pauseing,
 	Seeking,
-	Idle
+	Idle,
+	None
+};
+
+
+enum PlayerAction
+{
+	actionStart,
+	actionPause,
+	actionSeek,
+	actionStop,
+	actionCircle,
+	actionNone
 };
 
 
@@ -27,7 +39,7 @@ public:
 		return  m_pCurrentObject;
 	};
 	MBool Handle();
-	MBool Play();
+	MBool Start();
 	MVoid Stop();
 	MVoid Pause();
 	MBool Seek(MInt64 seekTime);

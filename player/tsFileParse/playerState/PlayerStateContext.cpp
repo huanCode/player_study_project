@@ -102,30 +102,22 @@ MBool PlayerStateContext::Handle()
 }
 
 
-MBool PlayerStateContext::Play()
+MBool PlayerStateContext::Start()
 {
 
-	return m_pCurrentObject->Play();
+	return m_pCurrentObject->Start();
 }
 
 MVoid PlayerStateContext::Pause()
 {
-	SetState(Pauseing);
+	
 	m_pCurrentObject->Pause();
-	SetState(Idle);
+	//SetState(Idle);
 }
 
 MBool PlayerStateContext::Seek(MInt64 seekTime)
 {
-	SetState(Seeking);
-	//PlayerStateSeeking*  seekObj = (PlayerStateSeeking*)m_pCurrentObject;
-	if (m_pCurrentObject->Seek(seekTime))
-	{
-		SetState(Buffering);
-		return MTrue;
-	}
-
-	return MFalse;
+	return m_pCurrentObject->Seek(seekTime);
 }
 
 

@@ -15,20 +15,26 @@ public:
 	//virtual MVoid Idle() =0;
 	MVoid SetContext(PlayerStateContext *pContext);
 	MVoid SetPlayer(Player* pPlayer);
+	MVoid SetLastState(State s);
+	MBool QueryRight(PlayerAction action);
+
 	MPChar GetStateName()
 	{
 		return m_strState;
 	}
 	virtual MBool Handle();
-	virtual MBool Play();
+	virtual MBool Start();
 	virtual MVoid Stop();
 	virtual MVoid Pause();
 	virtual MBool Seek(MInt64 seekTimeStamp);
-	virtual MVoid Buffer();
+	//virtual MInt32 Buffer();
 public:
 	Player*				m_pPlayer;
 	PlayerStateContext	*m_stateContext;
 	MPChar				m_strState;
+	MBool				m_stateRight[5];
+
+	State				m_lastState;
 };
 
 

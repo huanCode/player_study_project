@@ -4,11 +4,8 @@
 class PlayerStateStoping :public PlayerState
 {
 public:
-	PlayerStateStoping()
-	{
-		m_strState = "Stoping";
-	}
-	virtual MBool Play();
+	PlayerStateStoping();
+	virtual MBool Start();
 	virtual MVoid Stop();
 	virtual MVoid Pause();
 	virtual MBool Seek();

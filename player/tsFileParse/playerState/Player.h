@@ -12,15 +12,7 @@ class DecodecMgr;
 class VideoPlayWindow;
 class AudioPlayAAC;
 
-enum PlayerAction
-{
-	actionNone,
-	actionCommon,
-	actionPlay,
-	actionStop,
-	actionPause,
-	actionSeek
-};
+
 
 
 class Player
@@ -54,7 +46,7 @@ public:
 public:
 	//以下函数主要在状态模式中调用
 	MBool prepare();
-	MBool buffer();
+	MInt32 buffer();
 	MBool PlayOneFrame();
 	MBool State_Seeking(MInt64 seekTime);
 	MBool State_Pauseing();

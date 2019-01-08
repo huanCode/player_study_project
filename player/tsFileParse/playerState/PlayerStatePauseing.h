@@ -4,7 +4,8 @@
 class PlayerStatePauseing:public PlayerState
 {
 public:
-	virtual MBool Play();
+	PlayerStatePauseing();
+	virtual MBool Start();
 	virtual MVoid Stop();
 	virtual MVoid Pause();
 	virtual MBool Seek();
