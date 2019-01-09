@@ -81,17 +81,19 @@ MVoid PlayerStateContext::SetState(State state)
 	}
 	else if (state == State::Pauseing)
 	{
+		m_pPlayerStatePauseing->SetLastState(m_pCurrentObject->GetCurrentState());
 		m_pCurrentObject = m_pPlayerStatePauseing;
 	}
 	else if (state == State::Seeking)
 	{
+		m_pPlayerStatePauseing->SetLastState(m_pCurrentObject->GetCurrentState());
 		m_pCurrentObject = m_pPlayerStateSeeking;
 	}
 	else if (state == State::Idle)
 	{
 		m_pCurrentObject = m_pPlayerStateIdle;
 	}
-	m_playerStateLock.UnInit();
+	m_playerStateLock.UnLock();
 }
 
 
@@ -102,22 +104,21 @@ MBool PlayerStateContext::Handle()
 }
 
 
-MBool PlayerStateContext::Start()
+MVoid PlayerStateContext::Start()
 {
-
-	return m_pCurrentObject->Start();
+	m_pCurrentObject->Start();
 }
 
 MVoid PlayerStateContext::Pause()
 {
-	
+
 	m_pCurrentObject->Pause();
 	//SetState(Idle);
 }
 
-MBool PlayerStateContext::Seek(MInt64 seekTime)
+MVoid PlayerStateContext::Seek(MInt64 seekTime)
 {
-	return m_pCurrentObject->Seek(seekTime);
+	m_pCurrentObject->Seek(seekTime);
 }
 
 

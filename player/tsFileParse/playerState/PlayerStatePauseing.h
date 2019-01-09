@@ -9,7 +9,8 @@ public:
 	virtual MVoid Stop();
 	virtual MVoid Pause();
 	virtual MBool Seek();
-
+private:
+	MBool	m_bPause;
 };
 
 

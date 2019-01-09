@@ -39,10 +39,10 @@ public:
 		return  m_pCurrentObject;
 	};
 	MBool Handle();
-	MBool Start();
+	MVoid Start();
 	MVoid Stop();
 	MVoid Pause();
-	MBool Seek(MInt64 seekTime);
+	MVoid Seek(MInt64 seekTime);
 	MVoid Buffer();
 public:
 	PlayerState		*m_pPlayerStatePrepare;

@@ -32,6 +32,7 @@ public:
 	virtual MBool Open();
 	virtual MVoid Close();
 	MVoid	Pause();
+	MVoid	ReStart();
 	virtual MBool isStart() {
 		return m_bRun;
 	};

@@ -24,6 +24,10 @@ public:
 	//PtrUploadInfo GetNodeAndDel(mv3Upload* pUpload);
 	Node GetHeadNode();
 	Node GetTailNode();
+
+	Node GetHeadNodeDel();
+
+
 	MVoid 		DeleteLastNode();
 
 private:
@@ -110,6 +114,15 @@ Node ToolList<Node>::GetTailNode()
 {
 	return m_pTail->data;
 }
+
+template<class Node>
+Node ToolList<Node>::GetHeadNodeDel()
+{
+	return GetNodeAndDelByIndex(1);
+}
+
+
+
 
 template<class Node>
 MVoid 	ToolList<Node>::DeleteLastNode()

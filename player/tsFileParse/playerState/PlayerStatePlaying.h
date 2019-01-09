@@ -6,7 +6,7 @@ class PlayerStatePlaying :public PlayerState
 public:
 	PlayerStatePlaying();
 	MBool Start();
-	MVoid Buffer();
+	//MVoid Buffer();
 	//virtual MVoid Pause();
 	//virtual MVoid Seek();
 

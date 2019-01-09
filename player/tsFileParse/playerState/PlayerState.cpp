@@ -12,6 +12,11 @@ PlayerState::PlayerState()
 }
 
 
+State PlayerState::GetCurrentState()
+{
+	return m_currentState;
+}
+
 MVoid PlayerState::SetLastState(State s)
 {
 	m_lastState = s;
@@ -40,7 +45,7 @@ MBool PlayerState::Handle()
 
 MBool PlayerState::Start()
 {
-	//m_stateContext->SetState(State::Playing);
+	m_stateContext->Start();
 	return MTrue;
 }
 
@@ -52,28 +57,48 @@ MVoid PlayerState::Stop()
 
 MVoid PlayerState::Pause()
 {
+	
 	m_stateContext->SetState(State::Pauseing);
 	m_stateContext->GetCurrentState()->Pause();
 }
 
 MBool PlayerState::Seek(MInt64 seekTimeStamp)
 {
-	m_stateContext->SetState(Seeking);
+	m_stateContext->SetState(State::Seeking);
 	//PlayerStateSeeking*  seekObj = (PlayerStateSeeking*)m_pCurrentObject;
 	if (m_stateContext->GetCurrentState()->Seek(seekTimeStamp))
 	{
-		m_stateContext->SetState(Buffering);
+		if (m_lastState == State::Pauseing)
+		{
+			//if (m_pPlayer->Pauseing_to_Seeking())
+			//{
+			//	m_stateContext->SetState(State::Pauseing);
+			//	m_pPlayer->create_action(PlayerAction::actionPause);
+			//}
+			//else
+			//{
+			//	m_pPlayer->create_action(PlayerAction::actionStop);
+			//	return MFalse;
+			//}
+			m_stateContext->SetState(State::Pauseing);
+			
+		}
+		else
+		{
+			m_stateContext->SetState(State::Buffering);
+			
+		}
+		m_pPlayer->create_action(PlayerAction::actionStart);
+
 		return MTrue;
 	}
+	m_pPlayer->create_action(PlayerAction::actionStop);
 	return MFalse;
 }
 
-MInt32 PlayerState::Buffer()
+MVoid PlayerState::Buffer()
 {
 	m_stateContext->SetState(Buffering);
-	if (m_stateContext->GetCurrentState()->B)
-	{
-
-	}
+	m_stateContext->GetCurrentState()->Buffer();
 
 }

@@ -12,24 +12,13 @@ PlayerStateStoping::PlayerStateStoping()
 	m_stateRight[actionCircle] = MFalse;
 
 	m_lastState = Stoping;
+	m_currentState = State::Stoping;
 }
 
-MBool PlayerStateStoping::Start()
-{
-	return MTrue;
-}
+
 
 MVoid PlayerStateStoping::Stop()
 {
-
+	m_pPlayer->State_Stoping();
 }
 
-MVoid PlayerStateStoping::Pause()
-{
-
-}
-
-MBool PlayerStateStoping::Seek()
-{
-	return MTrue;
-}

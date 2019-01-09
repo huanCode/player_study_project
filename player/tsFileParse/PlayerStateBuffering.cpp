@@ -12,11 +12,12 @@ PlayerStateBuffering::PlayerStateBuffering()
 	m_stateRight[actionCircle] = MTrue;
 
 	m_lastState = Buffering;
+	m_currentState = State::Buffering;
 }
 
 MBool PlayerStateBuffering::Start()
 {
-	if (m_pPlayer->buffer())
+	if (m_pPlayer->buffer() >= 100)
 	{
 		m_stateContext->SetState(State::Playing);
 	}

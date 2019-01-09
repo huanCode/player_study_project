@@ -10,6 +10,7 @@ public:
 	MBool Adjust(MInt64 currentVideoTime);
 	MVoid SetPerAudioFrameDuration(MInt32 span);
 	MVoid Pause();
+	MVoid Restart();
 private:
 	MInt64	m_lastAudioTime;
 	MInt64	m_currentAudioTime;

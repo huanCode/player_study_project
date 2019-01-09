@@ -14,6 +14,11 @@ AVSync::AVSync()
 }
 
 
+MVoid AVSync::Restart()
+{
+	m_CurTimeStampAudio = MGetCurTimeStamp();
+}
+
 MVoid AVSync::Pause()
 {
 	//if (!m_bPause)

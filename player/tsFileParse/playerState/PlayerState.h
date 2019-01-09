@@ -17,7 +17,7 @@ public:
 	MVoid SetPlayer(Player* pPlayer);
 	MVoid SetLastState(State s);
 	MBool QueryRight(PlayerAction action);
-
+	State GetCurrentState();
 	MPChar GetStateName()
 	{
 		return m_strState;
@@ -27,7 +27,7 @@ public:
 	virtual MVoid Stop();
 	virtual MVoid Pause();
 	virtual MBool Seek(MInt64 seekTimeStamp);
-	//virtual MInt32 Buffer();
+	virtual MVoid Buffer();
 public:
 	Player*				m_pPlayer;
 	PlayerStateContext	*m_stateContext;
@@ -35,6 +35,7 @@ public:
 	MBool				m_stateRight[5];
 
 	State				m_lastState;
+	State				m_currentState;
 };
 
 

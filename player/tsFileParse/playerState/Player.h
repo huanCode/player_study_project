@@ -47,12 +47,21 @@ public:
 	//以下函数主要在状态模式中调用
 	MBool prepare();
 	MInt32 buffer();
-	MBool PlayOneFrame();
+	State PlayOneFrame();
 	MBool State_Seeking(MInt64 seekTime);
 	MBool State_Pauseing();
+	MVoid State_Stoping();
+	MVoid State_Restart();	//pause-->restart
 
 	//状态转换
 	MVoid Playing_to_Buffering();
+	MBool Pauseing_to_Seeking();
+	
+
+	//条件状态切换
+	MVoid create_action(PlayerAction actionState,MBool bClear = MFalse,MInt64 seekTimeStamp = 0);
+
+
 
 public:
 	MBool initDecode();
@@ -64,7 +73,7 @@ private:
 	MVoid thread_read();
 
 
-	MVoid create_action(PlayerAction actionState,MBool bClear = MFalse);
+	
 private:
 
 	PlayerStateContext	m_context;
@@ -129,9 +138,10 @@ private:
 
 	MInt64					m_time;
 
-	MInt64					m_seekTimeStamp;
 
 	MBool					m_bSeek;
+
+	MBool					m_bForbidRead;
 
 };
 

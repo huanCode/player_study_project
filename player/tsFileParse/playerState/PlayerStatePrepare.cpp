@@ -12,9 +12,12 @@ PlayerStatePrepare::PlayerStatePrepare()
 	m_stateRight[actionCircle]	= MFalse;
 
 	m_lastState = Prepare;
+
+	m_currentState = State::Prepare;
 }
 
-MBool PlayerStatePrepare::Handle()
+
+MBool PlayerStatePrepare::Start()
 {
 	if (m_pPlayer->prepare())
 	{
@@ -22,18 +25,6 @@ MBool PlayerStatePrepare::Handle()
 		return MTrue;
 	}
 
-	return MFalse;
-}
-
-MBool PlayerStatePrepare::Start()
-{
-	//
-	//if (m_pPlayer->prepare())
-	//{
-	//	m_stateContext->SetState(Buffering);
-	//	return MTrue;
-	//}
-	
 	return MFalse;
 }
 

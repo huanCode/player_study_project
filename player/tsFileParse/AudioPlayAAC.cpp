@@ -87,7 +87,14 @@ MVoid AudioPlayAAC::Close()
 
 MVoid	AudioPlayAAC::Pause()
 {
+	m_bPause = MTrue;
 	SDL_PauseAudio(1);
+}
+
+MVoid	AudioPlayAAC::ReStart()
+{
+	m_bPause = MFalse;
+	SDL_PauseAudio(0);
 }
 
 
@@ -141,12 +148,12 @@ MVoid AudioPlayAAC::decode()
 	{
 		return;
 	}
-
+	MInt32 delayTimeMS = 5;
 	while (m_bRun)
 	{
 		if (m_bPause)
 		{
-			SDL_Delay(5);
+			SDL_Delay(10);
 			continue;
 		}
 
@@ -161,15 +168,18 @@ MVoid AudioPlayAAC::decode()
 		}
 
 
-		while(audio_len)
+		while(m_bRun && audio_len)
 		{
-			SDL_Delay(1);
+			delayTimeMS = m_bPause ? 10 : 1;
+			SDL_Delay(delayTimeMS);
 		}
 
 		//MMemCpy(audio_pos, audio_pos_tmp, audio_len_tmp);
 		audio_len = audio_len_tmp;
 		SDL_PauseAudio(0);
 	}
+
+	int i = 1;
 }
 
 MBool AudioPlayAAC::Start()

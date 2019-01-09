@@ -5,10 +5,10 @@ class PlayerStateStoping :public PlayerState
 {
 public:
 	PlayerStateStoping();
-	virtual MBool Start();
+	//virtual MBool Start();
 	virtual MVoid Stop();
-	virtual MVoid Pause();
-	virtual MBool Seek();
+	//virtual MVoid Pause();
+	//virtual MBool Seek();
 
 };
 

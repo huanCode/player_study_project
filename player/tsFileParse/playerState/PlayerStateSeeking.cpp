@@ -14,22 +14,10 @@ PlayerStateSeeking::PlayerStateSeeking()
 	m_stateRight[actionCircle] = MFalse;
 
 	m_lastState = Seeking;
+	m_currentState = State::Seeking;
 }
 
-MBool PlayerStateSeeking::Start()
-{
-	return MTrue;
-}
 
-MVoid PlayerStateSeeking::Stop()
-{
-
-}
-
-MVoid PlayerStateSeeking::Pause()
-{
-
-}
 
 MBool PlayerStateSeeking::Seek(MInt64 seekTimeStamp)
 {

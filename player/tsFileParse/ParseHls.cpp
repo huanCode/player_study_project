@@ -197,11 +197,12 @@ MVoid ParseHls::Close()
 
 MBool   ParseHls::Seek(MInt64 seekTimeStamp)
 {
+	//seekTimeStamp = seekTimeStamp / 1000;
 	MInt32 size = m_curPlaylist->segmentList.GetSize();
 	MInt32 duration = 0;
 	for (MInt32 i = 1; i <= size; i++)
 	{
-		duration += m_curPlaylist->segmentList.GetNodePtrByIndex(i)->duration;
+		duration += m_curPlaylist->segmentList.GetNodePtrByIndex(i)->duration * 1000;
 		if (duration >= seekTimeStamp)
 		{
 			m_curSementIndex = i;

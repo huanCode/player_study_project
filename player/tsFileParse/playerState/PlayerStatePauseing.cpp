@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "PlayerStatePauseing.h"
-
+#include <windows.h>
 PlayerStatePauseing::PlayerStatePauseing()
 {
 	m_strState = "Pauseing";
@@ -12,12 +12,23 @@ PlayerStatePauseing::PlayerStatePauseing()
 	m_stateRight[actionCircle] = MFalse;
 
 	m_lastState = Pauseing;
+	m_currentState = State::Pauseing;
+	m_bPause = MFalse;
 }
 
 MBool PlayerStatePauseing::Start()
 {
-	return MTrue;
+	m_pPlayer->State_Restart();
+	if (m_lastState == State::Prepare || m_lastState == State::Seeking || m_lastState == State::Buffering)
+	{
+		m_stateContext->SetState(State::Buffering);
+	}
+	else if (m_lastState == State::Playing)
+	{
+		m_stateContext->SetState(State::Playing);
+	}
 
+	return MTrue;
 }
 
 MVoid PlayerStatePauseing::Stop()
@@ -27,7 +38,16 @@ MVoid PlayerStatePauseing::Stop()
 
 MVoid PlayerStatePauseing::Pause()
 {
-	m_pPlayer->State_Pauseing();
+	if (m_bPause)
+	{
+		Sleep(20);
+	}
+	else
+	{
+		m_pPlayer->State_Pauseing();
+		m_bPause = MTrue;
+	}
+	
 }
 
 MBool PlayerStatePauseing::Seek()
