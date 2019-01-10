@@ -12,7 +12,7 @@ Player::Player()
 {
 	m_pSourceParse = MNull;
 	m_bRun = MFalse;
-	m_bRunRead = MFalse;
+	m_bExit = MFalse;
 	m_bufferTime = BUFFER_TIME;
 	m_bufferPercent = 0;
 
@@ -113,6 +113,7 @@ MVoid Player::Pause()
 {
 	if (m_bRun)
 	{
+		//printf("Pause\r\n");
 		create_action(actionPause);
 	}
 	//m_action = actionPause;
@@ -123,6 +124,7 @@ MVoid Player::Seek(MInt64 seekTime)
 	//m_action = actionSeek;
 	if (m_bRun)
 	{
+		//printf("seek\r\n");
 		create_action(actionSeek,MFalse, seekTime);
 	}
 	//m_seekTimeStamp = seekTime;
@@ -176,6 +178,7 @@ MDWord Player::run_read(MVoid* lpPara)
 
 MVoid Player::handle()
 {
+	printf("run_hand ++\r\n");
 	m_bRun = MTrue;
 	PlayerAction	m_action = actionNone;
 
@@ -192,6 +195,7 @@ MVoid Player::handle()
 			delete actionTmp;
 
 		}
+		//printf("run_hand %s\r\n", m_context.GetStateName());
 		m_lockAction.UnLock();
 		switch (m_action)
 		{
@@ -203,21 +207,28 @@ MVoid Player::handle()
 			m_bRun = MFalse;
 			break;
 		case actionPause:
+			//printf("run_hand Pause\r\n");
 			m_context.Pause();
 			break;
 		case actionSeek:
+			//printf("run_hand Seek\r\n");
 			m_context.Seek(seekTimeStamp);
 			break;
 		default:
 			m_bRun = MFalse;
 			break;
 		}
+
+		if (!m_bExit)
+		{
+			create_action(actionStop, MTrue);
+		}
 	}
 }
 
 MVoid Player::thread_read()
 {
-	m_bRunRead = MTrue;
+
 
 
 	MInt32 videoPercent = 0;
@@ -227,7 +238,7 @@ MVoid Player::thread_read()
 	AVPkt* pkt = MNull;
 
 	MBool ret = MFalse;
-	while (m_bRunRead)
+	while (m_bExit)
 	{
 		if (m_bForbidRead)
 		{
@@ -239,6 +250,7 @@ MVoid Player::thread_read()
 		m_lockSource.UnLock();
 		if (!ret)
 		{
+			m_bExit = MFalse;
 			break;
 		}
 		if (pkt->mediaType == AV_MEDIA_TYPE_VIDEO)
@@ -286,7 +298,7 @@ MVoid Player::thread_read()
 				MMutexUnlock(m_hMutexAudio);
 			}
 			//选择比较大的
-			m_bufferPercent = videoPercent > audioPercent ? videoPercent : audioPercent;
+			m_bufferPercent = videoPercent > audioPercent ? audioPercent : videoPercent;
 			if (m_bufferPercent >= 100)
 			{
 				m_bufferPercent = 100;
@@ -301,7 +313,7 @@ MVoid Player::thread_read()
 
 	}
 
-	m_bRunRead = MFalse;
+	//m_bRunRead = MFalse;
 	//m_context.SetState(Stoping);
 }
 
@@ -319,7 +331,8 @@ MVoid Player::State_Stoping()
 
 MBool Player::prepare()
 {
-
+	MDWord timeDuration = 0;
+	MDWord timeBegin = MGetCurTimeStamp();
 	//1、初始化数据读取
 	if (!m_pSourceParse)
 	{
@@ -328,13 +341,17 @@ MBool Player::prepare()
 		RETURN_FALSE(m_pSourceParse->Open(m_strURL.Get()))
 
 	}
-
+	timeDuration = MGetCurTimeStamp() - timeBegin;
+	
+	printf("prepare cost 0 time = %d ms\r\n", timeDuration);
+	
 	//2、初始化解码
 	
 
 	RETURN_FALSE(initDecode())
 
 	//3、初始化播放
+	timeDuration = MGetCurTimeStamp();
 	if (m_pSourceParse->HasAudio())
 	{
 		m_audioPlay = new AudioPlayAAC();
@@ -342,7 +359,8 @@ MBool Player::prepare()
 		RETURN_FALSE(m_audioPlay->Open())
 
 	}
-
+	timeDuration = MGetCurTimeStamp() - timeDuration;
+	printf("prepare cost 1 time = %d ms\r\n", timeDuration);
 	if (m_pSourceParse->HasVideo())
 	{
 		m_videoPlay = new VideoPlayWindow();
@@ -353,15 +371,17 @@ MBool Player::prepare()
 	}
 
 	//创建读取数据线程
-	if (!m_bRunRead)
+	if (!m_bExit)
 	{
+		m_bExit = MTrue;
 		m_threadHandleRead = MThreadCreate(run_read, this);
 		if (!m_threadHandleRead)
 		{
+			m_bExit = MFalse;
 			return MFalse;
 		}
 		MThreadResume(m_threadHandleRead);
-
+		
 	}
 
 	
@@ -373,6 +393,9 @@ MBool Player::prepare()
 	m_bHasAudio = m_pSourceParse->HasAudio();
 
 	m_bForbidRead = MFalse;
+	MDWord timeEnd = MGetCurTimeStamp();
+	timeDuration = timeEnd - timeBegin;
+	printf("prepare cost end time = %d ms\r\n", timeDuration);
 	return MTrue;
 }
 
@@ -395,6 +418,7 @@ MBool	 Player::AudioDecode(MPChar buffer, MInt32& bufferSize)
 	MMutexUnlock(m_hMutexAudio);
 	if (!m_pFrameAudio)
 	{
+		m_bExit = MFalse;
 		return MFalse;
 	}
 	
@@ -589,12 +613,12 @@ MInt32 Player::buffer()
 		MMutexUnlock(m_hMutexAudio);
 	}
 	//选择比较大的
-	MInt64 bufferPercent = videoPercent > audioPercent ? videoPercent : audioPercent;
+	MInt64 bufferPercent = videoPercent > audioPercent ? audioPercent : videoPercent;
 	if (bufferPercent < 100)
 	{
-		Sleep(5);
+		Sleep(10);
 	}
-
+	printf("buffer = %d\r\n", bufferPercent);
 	return bufferPercent;
 }
 
@@ -670,51 +694,83 @@ MBool Player::State_Seeking(MInt64 seekTime)
 	m_lockSource.Lock();
 	MBool ret =  m_pSourceParse->Seek(seekTime);
 	m_lockSource.UnLock();
-
+	m_pDecodeVideo->Flush_buffers();
 	return ret;
 }
 
 
-MBool Player::Pauseing_to_Seeking()
+MBool Player::Pauseing_to_Seeking(MInt64 seekTimeStamp)
 {
 	MBool ret = MFalse;
 	m_lockSource.Lock();
 	AVPkt* pkt = MNull;
-
+	m_pDecodeVideo->Flush_buffers();
 	MBool isRead = MFalse;
-	while (true)
+	MInt64 baseTimeStamp = seekTimeStamp;
+	while (m_bExit)
 	{
 		ret = m_pSourceParse->ReadFrame(&pkt);
 		if (!ret)
 		{
+			m_bExit = MFalse;
 			break;
 		}
-		if (pkt->bIsSync || isRead)
+
+		if (!isRead)
+		{
+			baseTimeStamp = pkt->pts;
+			isRead = MTrue;
+		}
+
+		if (!isRead && pkt->pts >= baseTimeStamp && pkt->mediaType == AV_MEDIA_TYPE_VIDEO && pkt->bIsSync)
 		{
 			isRead = MTrue;
-			m_pFrameVideo = m_pDecodeVideo->DecodeFrame(pkt->bufferPkt, pkt->bufferPktSize, pkt->pts, pkt->dts);
-			
-			if (!m_pFrameVideo)
+		}
+
+		if(isRead)
+		{
+			if (pkt->mediaType == AV_MEDIA_TYPE_VIDEO)
 			{
-				ret = MFalse;
-				
+				MMutexLock(m_hMutexVideo);
+				m_arrayVideo.AddNode(pkt);
+				MMutexUnlock(m_hMutexVideo);
+
+				m_pFrameVideo = m_pDecodeVideo->DecodeFrame(pkt->bufferPkt, pkt->bufferPktSize, pkt->pts, pkt->dts);
+				if (!m_pFrameVideo)
+				{
+					ret = MFalse;
+					m_bExit = MFalse;
+					break;
+
+				}
+				else if (m_pFrameVideo && m_pFrameVideo->bSuccess && m_pFrameVideo->pts >= baseTimeStamp)
+				{
+					m_videoPlay->Display(m_pFrameVideo->pBuffer);
+					ret = MTrue;
+					break;
+				}
+
+
+
 			}
-			else if (m_pFrameVideo && m_pFrameVideo->bSuccess)
+			else if (pkt->mediaType == AV_MEDIA_TYPE_AUDIO)
 			{
-				m_videoPlay->Display(m_pFrameVideo->pBuffer);
-				ret = MTrue;
+				MMutexLock(m_hMutexAudio);
+				m_arrayAudio.AddNode(pkt);
+				MMutexUnlock(m_hMutexAudio);
 			}
-			//break;
 		}
 		else
 		{
 			delete pkt;
 			pkt = MNull;
 		}
+
+
 	}
 
 
-
+	m_pDecodeVideo->Flush_buffers();
 	m_lockSource.UnLock();
 
 	return ret;

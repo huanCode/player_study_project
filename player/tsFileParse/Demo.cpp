@@ -57,11 +57,13 @@ int main(int      argc, char    *argv[])
 	Player player;
 	player.Start(strURL);
 	Sleep(5000);
-	player.Pause();
+	//player.Pause();
 	//player.Seek(30000);
 	Sleep(5000);
-	player.Seek(70000);
+	player.Seek(90000);
 	Sleep(5000);
+	player.Seek(600000);
+
 	//player.Start(strURL);
 	//player.Seek(170000);
 	Sleep(10000000);

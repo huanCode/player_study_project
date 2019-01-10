@@ -10,6 +10,9 @@ public:
 	virtual MVoid Pause();
 	virtual MBool Seek();
 
+private:
+	MBool	m_bFirstBuffer;
+
 };
 
 

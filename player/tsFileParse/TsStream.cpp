@@ -590,9 +590,6 @@ MBool	TsStream::ReadPacket(AVPkt** pkt)
 			//
 			//file.Close();
 			int a = 1;
-
-
-
 		}
 		else if (m_avpkt.mediaType == AV_MEDIA_TYPE_AUDIO)
 		{

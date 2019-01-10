@@ -125,8 +125,6 @@ private:
 
 private:
 	MUInt32		m_pcr_pid;
-
-
 	MpegTSState	m_pes_state;
 	Packet		m_packet;
 	bool		m_bReadOneFrame;	//表示是否成功读完一帧

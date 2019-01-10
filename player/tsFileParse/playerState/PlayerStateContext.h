@@ -35,6 +35,7 @@ public:
 	PlayerStateContext();
 	MBool Init(Player* pPlayer);
 	MVoid SetState(State state);
+	MPChar GetStateName();
 	PlayerState* GetCurrentState() {
 		return  m_pCurrentObject;
 	};

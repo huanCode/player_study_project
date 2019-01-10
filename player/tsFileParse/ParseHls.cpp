@@ -108,7 +108,7 @@ MBool ParseHls::switchSegment()
 	if (m_curPlaylist->segmentList.GetSize() >= m_curSementIndex)
 	{
 		//m_curSementIndex = 70;
-		printf("tsIndex = %d  mtl = %s\r\n", m_curSementIndex, m_curPlaylist->segmentList.GetNodePtrByIndex(m_curSementIndex)->url);
+		//printf("tsIndex = %d  mtl = %s\r\n", m_curSementIndex, m_curPlaylist->segmentList.GetNodePtrByIndex(m_curSementIndex)->url);
 		if (m_dataRead->Open(m_curPlaylist->segmentList.GetNodePtrByIndex(m_curSementIndex)->url))
 		{
 			MPChar tmpBuffer = (MPChar)MMemAlloc(MNull, PROBE_BUFFER_SIZE);
@@ -171,7 +171,7 @@ MBool ParseHls::ReadPacket(AVPkt** pkt)
 			(*pkt)->pts = (((*pkt)->pts - m_beginPts) * 1000) / 90000;
 			if ((*pkt)->mediaType == AV_MEDIA_TYPE_VIDEO)
 			{
-				printf("video pts = %lld \r\n", (*pkt)->pts);
+				/*printf("video pts = %lld \r\n", (*pkt)->pts);*/
 			}
 			else if((*pkt)->mediaType == AV_MEDIA_TYPE_AUDIO)
 			{

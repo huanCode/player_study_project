@@ -80,6 +80,7 @@ MBool AVSync::Adjust(MInt64 currentVideoTime)
 		//printf("sleep = %d \r\n", sleepTime);
 		if (sleepTime >= 100)
 		{
+			printf("sleepTime = %d ,currentVideoTime = %lld ,realCurrentAudioTime = %lld \r\n", sleepTime, currentVideoTime, realCurrentAudioTime);
 			int a = 1;
 		}
 	}

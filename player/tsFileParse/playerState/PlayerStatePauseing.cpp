@@ -23,7 +23,7 @@ MBool PlayerStatePauseing::Start()
 	{
 		m_stateContext->SetState(State::Buffering);
 	}
-	else if (m_lastState == State::Playing)
+	else if (m_lastState == State::Playing || m_lastState == State::Pauseing)
 	{
 		m_stateContext->SetState(State::Playing);
 	}

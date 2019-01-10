@@ -55,7 +55,7 @@ public:
 
 	//×´Ì¬×ª»»
 	MVoid Playing_to_Buffering();
-	MBool Pauseing_to_Seeking();
+	MBool Pauseing_to_Seeking(MInt64 seekTimeStamp);
 	
 
 	//Ìõ¼þ×´Ì¬ÇÐ»»
@@ -88,7 +88,7 @@ private:
 
 
 	MBool			m_bRun;
-	MBool			m_bRunRead;
+	MBool			m_bExit;
 
 	MHandle			m_threadHandleRun;
 

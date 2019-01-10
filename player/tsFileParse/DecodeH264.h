@@ -19,7 +19,7 @@ public:
 
 	Frame*	DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize,MInt64 pts, MInt64 dts);
 
-
+	MVoid  Flush_buffers();
 private:
 	MBool OpenSwsCtx();
 private:

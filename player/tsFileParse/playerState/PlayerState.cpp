@@ -70,25 +70,26 @@ MBool PlayerState::Seek(MInt64 seekTimeStamp)
 	{
 		if (m_lastState == State::Pauseing)
 		{
-			//if (m_pPlayer->Pauseing_to_Seeking())
-			//{
-			//	m_stateContext->SetState(State::Pauseing);
-			//	m_pPlayer->create_action(PlayerAction::actionPause);
-			//}
-			//else
-			//{
-			//	m_pPlayer->create_action(PlayerAction::actionStop);
-			//	return MFalse;
-			//}
-			m_stateContext->SetState(State::Pauseing);
+			if (m_pPlayer->Pauseing_to_Seeking(seekTimeStamp))
+			{
+				m_stateContext->SetState(State::Pauseing);
+				m_pPlayer->create_action(PlayerAction::actionPause);
+			}
+			else
+			{
+				m_pPlayer->create_action(PlayerAction::actionStop);
+				return MFalse;
+			}
+			//m_stateContext->SetState(State::Pauseing);
 			
 		}
 		else
 		{
 			m_stateContext->SetState(State::Buffering);
+			m_pPlayer->create_action(PlayerAction::actionStart);
 			
 		}
-		m_pPlayer->create_action(PlayerAction::actionStart);
+		
 
 		return MTrue;
 	}

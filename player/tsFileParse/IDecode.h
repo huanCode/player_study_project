@@ -17,7 +17,7 @@ public:
 	virtual MVoid SetInfo(MPVoid info) = 0;
 
 	virtual Frame*	DecodeFrame(MPChar srcBuffer,MInt32 srcBufferSize,MInt64 pts,MInt64 dts) = 0;
-
+	virtual MVoid  Flush_buffers() {};
 protected:
 	Frame		m_pOneFrame;
 };

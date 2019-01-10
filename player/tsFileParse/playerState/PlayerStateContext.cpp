@@ -93,9 +93,16 @@ MVoid PlayerStateContext::SetState(State state)
 	{
 		m_pCurrentObject = m_pPlayerStateIdle;
 	}
+
+	printf("change State = %s\r\n", m_pCurrentObject->GetStateName());
 	m_playerStateLock.UnLock();
 }
 
+
+MPChar PlayerStateContext::GetStateName()
+{
+	return m_pCurrentObject->GetStateName();
+}
 
 
 MBool PlayerStateContext::Handle()

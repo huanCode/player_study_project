@@ -13,13 +13,25 @@ PlayerStateBuffering::PlayerStateBuffering()
 
 	m_lastState = Buffering;
 	m_currentState = State::Buffering;
+
+	m_bFirstBuffer = MTrue;
 }
 
 MBool PlayerStateBuffering::Start()
 {
+	if (m_bFirstBuffer)
+	{
+		m_pPlayer->State_Pauseing();
+		m_bFirstBuffer = MFalse;
+	}
 	if (m_pPlayer->buffer() >= 100)
 	{
 		m_stateContext->SetState(State::Playing);
+		if (!m_bFirstBuffer)
+		{
+			m_pPlayer->State_Restart();
+			m_bFirstBuffer = MTrue;
+		}
 	}
 
 	return MTrue;

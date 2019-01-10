@@ -69,3 +69,12 @@ Frame*	DecodecMgr::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize, MInt64 pt
 
 	return MNull;
 }
+
+
+MVoid  DecodecMgr::Flush_buffers()
+{
+	if (m_decode)
+	{
+		m_decode->Flush_buffers();
+	}
+}
