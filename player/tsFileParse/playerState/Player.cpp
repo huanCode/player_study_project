@@ -679,15 +679,6 @@ MBool Player::State_Seeking(MInt64 seekTime)
 			}
 
 		}
-		//if (m_bHasVideo)
-		//{
-		//	Sleep(5);
-		//}
-		//else
-		//{
-		//	isSeek = MTrue;
-		//	m_context.SetState(Buffering);
-		//}
 
 		MMutexUnlock(m_hMutexAudio);
 	}

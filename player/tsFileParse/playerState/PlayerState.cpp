@@ -68,6 +68,7 @@ MBool PlayerState::Seek(MInt64 seekTimeStamp)
 	//PlayerStateSeeking*  seekObj = (PlayerStateSeeking*)m_pCurrentObject;
 	if (m_stateContext->GetCurrentState()->Seek(seekTimeStamp))
 	{
+		m_pPlayer->create_action(PlayerAction::actionStart);
 		if (m_lastState == State::Pauseing)
 		{
 			if (m_pPlayer->Pauseing_to_Seeking(seekTimeStamp))

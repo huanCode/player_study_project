@@ -401,10 +401,12 @@ MBool TsStream::handle_packets(MInt32 nb_packets)
 		ret = m_dataRead->Read(&m_packetBuffer,TsStream::Packet_Size, iReadSize);
 		if (!ret)
 		{
+
 			return MFalse;
 		}
 		if (iReadSize == 0)
 		{
+			printf("TsStream::handle_packets ===========\r\n");
 			m_avpkt.isGetPacket = MFalse;
 			return MTrue;
 		}

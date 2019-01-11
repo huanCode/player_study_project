@@ -31,25 +31,23 @@ MBool SourceParse::Open(MPChar strUrl)
 
 	if (m_sourceFrame.Open(strUrl))
 	{
-		
-
-		
-		
 		if (m_sourceFrame.Read(&m_pBuffer, BUFFER_SIZE, m_iBufferCanReadSize))
 		{
 
-			MDWord timeDuration = 0;
-			MDWord timeBegin = MGetCurTimeStamp();
+
 			if (m_parseFrame.FindParse(m_pBuffer, m_iBufferCanReadSize))
 			{
 				m_sourceFrame.Close();
 				m_parseFrame.SetDataRead(&m_sourceFrame);
 				//if (m_sourceFrame.Open(strUrl))
 				//{
-				timeDuration = MGetCurTimeStamp() - timeBegin;
-				printf("SourceParse::Open 0 time = %d ms\r\n", timeDuration);
+				MDWord timeDuration = 0;
+				MDWord timeBegin = MGetCurTimeStamp();
 				MBool ret  = m_parseFrame.ReadHeader(strUrl);
 				//}
+				timeDuration = MGetCurTimeStamp() - timeBegin;
+				printf("SourceParse::Open 0 time = %d ms\r\n", timeDuration);
+				return ret;
 
 				
 			}

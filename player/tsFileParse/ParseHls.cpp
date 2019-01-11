@@ -36,11 +36,14 @@ MBool ParseHls::ReadHeader(MPChar strUrl)
 	//MPChar strUrl = "bipbopall.m3u8";
 
 	//解析m3u8
+	MDWord timeDuration = 0;
+	MDWord timeBegin = MGetCurTimeStamp();
 	if (!ParseM3u8(strUrl))
 	{
 		return MFalse;
 	}
-
+	timeDuration = MGetCurTimeStamp() - timeBegin;
+	printf("ParseHls::ReadHeader 0 time = %d ms\r\n", timeDuration);
 	//判断上面解析的m3u8是否为嵌套,是嵌套则去解析新的
 
 	if (m_playlistList.GetSize() > 1 || m_playlistList.GetHeadNode()->segmentList.GetSize() == 0)
@@ -57,39 +60,6 @@ MBool ParseHls::ReadHeader(MPChar strUrl)
 		m_curPlaylist = m_playlistList.GetHeadNode();
 	}
 	m_bTsReady = MTrue;
-
-	//if (m_curPlaylist->segmentList.GetSize() > 0)
-	//{
-	//	if (m_dataRead->Open(m_curPlaylist->segmentList.GetLastNode()->url))
-	//	{
-	//		MPChar tmpBuffer = (MPChar)MMemAlloc(MNull, PROBE_BUFFER_SIZE);
-	//		if (tmpBuffer == MNull)
-	//		{
-	//			return MFalse;
-	//		}
-
-	//		MMemSet(tmpBuffer, 0, PROBE_BUFFER_SIZE);
-	//		MInt32 iReadSize = 0;
-	//		m_dataRead->Read(&tmpBuffer, PROBE_BUFFER_SIZE, iReadSize);
-	//		if (iReadSize != PROBE_BUFFER_SIZE)
-	//		{
-	//			return MFalse;
-	//		}
-
-	//		m_pTs = TsStream::read_probe(tmpBuffer, PROBE_BUFFER_SIZE);
-	//		if (m_pTs == MNull)
-	//		{
-	//			return MFalse;
-	//		}
-	//		m_dataRead->Close();
-	//		m_pTs->SetDataRead(m_dataRead);
-	//		m_pTs->ReadHeader(m_curPlaylist->segmentList.GetLastNode()->url);
-	//		m_curSementIndex++;
-	//		return MTrue;
-	//	}
-	//	
-	//}
-
 
 
 	return switchSegment();
@@ -171,7 +141,7 @@ MBool ParseHls::ReadPacket(AVPkt** pkt)
 			(*pkt)->pts = (((*pkt)->pts - m_beginPts) * 1000) / 90000;
 			if ((*pkt)->mediaType == AV_MEDIA_TYPE_VIDEO)
 			{
-				/*printf("video pts = %lld \r\n", (*pkt)->pts);*/
+				printf("video pts = %lld \r\n", (*pkt)->pts);
 			}
 			else if((*pkt)->mediaType == AV_MEDIA_TYPE_AUDIO)
 			{
