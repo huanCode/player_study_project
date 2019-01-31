@@ -1,9 +1,12 @@
 #pragma once
+#ifndef _DEMUXER_TS_H
+#define _DEMUXER_TS_H
+
 #include "amcomdef.h"
 #include "mv3File.h"
 #include "TsStreamDef.h"
 //#include "tsFilter.h"
-#include "IParse.h"
+#include "IDemuxer.h"
 #include "common.h"
 #include "H264Parse.h"
 #define PACKET_SIZE	188
@@ -11,10 +14,10 @@
 #define PROBE_BUFFER_SIZE	204 * 10
 using namespace std;
 class tsFilter;
-class TsStream :public IParse
+class DemuxerTs :public IDemuxer
 {
 public:
-	TsStream();
+	DemuxerTs();
 private:
 	struct Packet
 	{
@@ -79,7 +82,7 @@ private:
 public:
 	MUInt32 mpegts_read_header();
 	//½âÎöts
-	static IParse*	read_probe(MPChar p_buffer, MUInt32 p_size);
+	static IDemuxer*	read_probe(MPChar p_buffer, MUInt32 p_size);
 	//MInt32	read_header(MPChar p_buffer, MUInt32 p_size);
 
 
@@ -142,7 +145,7 @@ private:
 
 
 	MPChar		m_packetBuffer;
-	MInt32		m_iReadSize = 0;
+	// MInt32		m_iReadSize = 0;
 
 
 	static MInt32	Packet_Size;
@@ -170,3 +173,5 @@ public:
 
 
 };
+
+#endif // !_DEMUXER_TS_H

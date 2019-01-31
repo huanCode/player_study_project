@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "DecodeH264.h"
 #include "common.h"
-
+#include "mv3File.h"
 
 //AVERROR_BSF_NOT_FOUND = -1179861752
 //AVERROR_BUG = -558323010
@@ -36,6 +36,8 @@ DecodeH264::DecodeH264()
 	m_out_buffer = MNull;
 
 	m_pFrameYUV = MNull;
+
+	m_yuv420pSize = 0;
 }
 
 
@@ -188,11 +190,23 @@ Frame*	DecodeH264::DecodeFrame(MPChar srcBuffer, MInt32 srcBufferSize,MInt64 pts
 
 
 				sws_scale(m_img_convert_ctx, (const uint8_t* const*)m_pFrame->data, m_pFrame->linesize, 0, m_pCodecCtx->height, m_pFrameYUV->data, m_pFrameYUV->linesize);
-
+				
 				m_pOneFrame.pBuffer = (MPChar)m_pFrameYUV->data[0];
 				m_pOneFrame.iBufferSize = m_pFrameYUV->linesize[0];
 				m_pOneFrame.pts = m_pFrame->pts;
 				m_pOneFrame.bSuccess = MTrue;
+
+				mv3File		videoYuvFileRead;
+				MBool ret = MFalse;
+				if (videoYuvFileRead.Open("1280_720.yuv420", mv3File::stream_read))
+				{
+					//ret = videoYuvFileRead.Read((MByte*)yuvBuffer, yuv420Size, readSize);
+					videoYuvFileRead.Close();
+				}
+
+
+
+
 				return &m_pOneFrame;
 			}
 		}
@@ -219,6 +233,8 @@ MBool DecodeH264::OpenSwsCtx()
 			m_pCodecCtx->width, m_pCodecCtx->height, AV_PIX_FMT_YUV420P, SWS_BICUBIC, NULL, NULL, NULL);
 		RETURN_FALSE(m_img_convert_ctx)
 	}
+
+	m_yuv420pSize = avpicture_get_size(AV_PIX_FMT_YUV420P, m_pCodecCtx->width, m_pCodecCtx->height);
 
 	if (!m_pFrameYUV)
 	{

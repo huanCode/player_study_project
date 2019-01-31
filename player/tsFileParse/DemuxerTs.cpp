@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "tsFilter.h"
-#include "TsStream.h"
+#include "DemuxerTs.h"
 #include "common.h"
 #include "ammem.h"
 
@@ -38,13 +38,13 @@
 //(((const uint8_t*)(x))[2] << 8) | /
 //((const uint8_t*)(x))[3])
 
-TsStream::TsStream()
+DemuxerTs::DemuxerTs()
 {
 	m_pcr_pid = 0;
 	m_pes_state = MPEGTS_HEADER;
 	m_pes_header_size = 0;
-	memset(&m_packet,0,sizeof(Packet));
-	memset(&m_buffer, 0, 512000);
+	MMemSet(&m_packet,0,sizeof(Packet));
+	MMemSet(&m_buffer, 0, 512000);
 	//MBool ret = m_fileWrite.Open("bigbuckbunny_480x272.h265", mv3File::stream_write);
 	m_isStart = MFalse;
 	m_packetBuffer = MNull;
@@ -69,9 +69,9 @@ TsStream::TsStream()
 }
 
 
-MInt32	TsStream::Packet_Size = 0;
+MInt32	DemuxerTs::Packet_Size = 0;
 
-MBool TsStream::Init()
+MBool DemuxerTs::Init()
 {
 
 	//MHandle m_hHttp = Http_Open("hhh", HTTP_POST, 0);
@@ -82,7 +82,7 @@ MBool TsStream::Init()
 		goto Exit;
 	}
 
-	m_packetBuffer = (MPChar)MMemAlloc(MNull, TsStream::Packet_Size);
+	m_packetBuffer = (MPChar)MMemAlloc(MNull, DemuxerTs::Packet_Size);
 	if (m_packetBuffer == MNull)
 	{
 		return MFalse;
@@ -99,7 +99,7 @@ Exit:
 }
 
 
-MInt32 TsStream::get_packet_size(MPChar buf, MInt32 size)
+MInt32 DemuxerTs::get_packet_size(MPChar buf, MInt32 size)
 {
 	int score, fec_score, dvhs_score;
 
@@ -121,14 +121,14 @@ MInt32 TsStream::get_packet_size(MPChar buf, MInt32 size)
 		return 0;
 }
 
-MInt32 TsStream::analyze(MPChar buf, MInt32 size, MInt32 packet_size, MInt32 probe)
+MInt32 DemuxerTs::analyze(MPChar buf, MInt32 size, MInt32 packet_size, MInt32 probe)
 {
 	int stat[TS_MAX_PACKET_SIZE];
 	int stat_all = 0;
 	int i;
 	int best_score = 0;
 
-	memset(stat, 0, packet_size * sizeof(*stat));
+	MMemSet(stat, 0, packet_size * sizeof(*stat));
 
 	for (i = 0; i < size - 3; i++) {
 		if (buf[i] == 0x47) {
@@ -149,7 +149,7 @@ MInt32 TsStream::analyze(MPChar buf, MInt32 size, MInt32 packet_size, MInt32 pro
 }
 
 
-MUInt32 TsStream::mpegts_read_header()
+MUInt32 DemuxerTs::mpegts_read_header()
 {
 	//MUInt32 ret = 0;
 	//mv3File file;
@@ -192,7 +192,7 @@ MUInt32 TsStream::mpegts_read_header()
 	return 0;
 }
 
-MVoid TsStream::Release()
+MVoid DemuxerTs::Release()
 {
 	for (MInt32 i = 0;i < FILTER_NUM;i++)
 	{
@@ -205,7 +205,7 @@ MVoid TsStream::Release()
 	}
 }
 
-IParse* TsStream::read_probe(MPChar p_buffer, MUInt32 p_size)
+IDemuxer* DemuxerTs::read_probe(MPChar p_buffer, MUInt32 p_size)
 {
 	if (p_buffer == MNull || p_size < PROBE_BUFFER_SIZE)
 	{
@@ -230,8 +230,8 @@ IParse* TsStream::read_probe(MPChar p_buffer, MUInt32 p_size)
 	}
 	if (check_count == standard_count)
 	{
-		TsStream::Packet_Size = PACKET_SIZE;
-		IParse* obj = new TsStream();
+		DemuxerTs::Packet_Size = PACKET_SIZE;
+		IDemuxer* obj = new DemuxerTs();
 
 		return obj;
 		//return Init();
@@ -246,114 +246,9 @@ IParse* TsStream::read_probe(MPChar p_buffer, MUInt32 p_size)
 }
 
 
-//
-//MInt32 TsStream::read_header(MPByte p_buffer_packet, MUInt32 p_size)
-//{
-//	if (p_buffer_packet == MNull || p_size != PACKET_SIZE)
-//	{
-//		return -1;
-//	}
-//	ts_packet_header tsHeader;
-//	parse_ts_packet_header(p_buffer_packet, tsHeader);
-//	MPByte	pData = p_buffer_packet + TS_PACKET_HEADER_SIZE;
-//	if (tsHeader.sync_byte != TS_PACKET_SYNC_BYTE || tsHeader.transport_error)
-//	{
-//		return -1;
-//	}
-//
-//	if (tsHeader.pid == 0x1FFF || tsHeader.has_payload == MFalse)
-//	{
-//		return 0;
-//	}
-//
-//	MUInt16 adaptation_length = 0;
-//	if (tsHeader.has_adaptation)
-//	{
-//		adaptation_length = get8(pData) + 1;
-//		if (adaptation_length > 1)
-//		{
-//			bool is_discontinuity = get8(pData) & 0x80;
-//			if (is_discontinuity)
-//			{
-//				int i = 0;
-//			}
-//			//printf("is_discontinuity = %d =====================\n", is_discontinuity);
-//		}
-//		//printf("has_adaptation ,adaptation_length = %d\n", adaptation_length);
-//	}
-//	//printf("continuity_counter = %d\n", tsHeader.continuity_counter);
-//
-//
-//
-//	pData += adaptation_length + 1;
-//	MInt32 remainderSize = PACKET_SIZE - adaptation_length - 1 - TS_PACKET_HEADER_SIZE;
-//
-//	tsFilter* filter = get_filter(tsHeader.pid);
-//	if (!filter)
-//	{
-//		filter = add_filter(tsHeader.pid);
-//	}
-//
-//
-//	if (filter->GetType() == tsFilter::MPEGTS_SECTION)
-//	{
-//		if (tsHeader.bStart_payload)
-//		{
-//			/* pointer field present */
-//			MByte* point_field = p_buffer_packet + TS_PACKET_HEADER_SIZE + adaptation_length;
-//			MUInt16 point_field_length = point_field[0];
-//			//MUInt32 expected_cc = tsHeader.has_payload ? (filter->last_cc + 1) & 0x0f : filter->last_cc;
-//			//if (expected_cc == tsHeader.continuity_counter && point_field_length)
-//			//{
-//			//	filter->write_section_data(pData, remainderSize, MFalse);
-//			//}
-//			if (point_field_length)
-//			{
-//				return -1;
-//			}
-//			tsSection* filterTmp = (tsSection*)filter;
-//			filterTmp->write_section_data(this, point_field + 1, remainderSize, MTrue);
-//		}
-//		else
-//		{
-//			//
-//			return -1;
-//		}
-//	}
-//	else
-//	{
-//		m_isStart = tsHeader.bStart_payload;
-//		filter->parse(this,pData, remainderSize);
-//	}
-//
-//
-//	return 0;
-//}
 
 
-//MBool TsStream::_AVPKT::CopyBuffer(MPChar pBuffer, MInt32 bufferSize, AV_MediaType& type)
-//{
-//	if (pBuffer == MNull || bufferSize <= 0)
-//	{
-//		return MFalse;
-//	}
-//
-//
-//	bufferPkt = (MPChar)MMemAlloc(MNull, bufferSize);
-//	if (bufferPkt == MNull)
-//	{
-//		return MFalse;
-//	}
-//
-//	MMemCpy(bufferPkt, pBuffer, bufferSize);
-//	bufferPktSize = bufferSize;
-//	mediaType = type;
-//
-//}
-
-
-
-MBool TsStream::handle_packets(MInt32 nb_packets)
+MBool DemuxerTs::handle_packets(MInt32 nb_packets)
 {
 
 	m_stopParse = 0;
@@ -398,7 +293,7 @@ MBool TsStream::handle_packets(MInt32 nb_packets)
 			int a = 0;
 		}
 
-		ret = m_dataRead->Read(&m_packetBuffer,TsStream::Packet_Size, iReadSize);
+		ret = m_dataRead->Read(&m_packetBuffer,DemuxerTs::Packet_Size, iReadSize);
 		if (!ret)
 		{
 
@@ -406,11 +301,15 @@ MBool TsStream::handle_packets(MInt32 nb_packets)
 		}
 		if (iReadSize == 0)
 		{
-			printf("TsStream::handle_packets ===========\r\n");
+			//if (m_dataRead->)
+			//{
+
+			//}
+			printf("DemuxerTs::handle_packets ===========\r\n");
 			m_avpkt.isGetPacket = MFalse;
 			return MTrue;
 		}
-		else if (TsStream::Packet_Size != iReadSize)
+		else if (DemuxerTs::Packet_Size != iReadSize)
 		{
 			return MFalse;
 
@@ -422,7 +321,7 @@ MBool TsStream::handle_packets(MInt32 nb_packets)
 			//	m_avpkt.isGetPacket = MFalse;
 			//	return MTrue;
 			//}
-			//else if(TsStream::Packet_Size != iReadSize)
+			//else if(DemuxerTs::Packet_Size != iReadSize)
 			//{
 			//	return MFalse;
 			//	
@@ -438,7 +337,7 @@ MBool TsStream::handle_packets(MInt32 nb_packets)
 	return ret;
 }
 
-MBool TsStream::handle_packet(MPChar pBuffer)
+MBool DemuxerTs::handle_packet(MPChar pBuffer)
 {
 	ts_packet_header tsHeader;
 	parse_ts_packet_header(pBuffer, tsHeader);
@@ -533,7 +432,7 @@ MBool TsStream::handle_packet(MPChar pBuffer)
 
 
 
-MBool TsStream::ReadHeader(MPChar strUrl)
+MBool DemuxerTs::ReadHeader(MPChar strUrl)
 {
 	//1、通过解析ts前面，得到ts packet_size,这步在read_probe已经处理过
 
@@ -547,13 +446,13 @@ MBool TsStream::ReadHeader(MPChar strUrl)
 	{
 		return MFalse;
 	}
-	//if (!m_dataRead->Read(&m_packetBuffer, TsStream::Packet_Size, m_iReadSize))
+	//if (!m_dataRead->Read(&m_packetBuffer, DemuxerTs::Packet_Size, m_iReadSize))
 	//{
 	//	return MFalse;
 	//}
 	
 
-	//if (m_iReadSize != TsStream::Packet_Size)
+	//if (m_iReadSize != DemuxerTs::Packet_Size)
 	//{
 	//	return MFalse;
 	//}
@@ -563,7 +462,7 @@ MBool TsStream::ReadHeader(MPChar strUrl)
 
 
 
-MBool	TsStream::ReadPacket(AVPkt** pkt)
+MBool	DemuxerTs::ReadPacket(AVPkt** pkt)
 {
 	static int a = 1;
 	if (!handle_packets()) {
@@ -621,7 +520,7 @@ MBool	TsStream::ReadPacket(AVPkt** pkt)
 
 
 
-MVoid TsStream::Close()
+MVoid DemuxerTs::Close()
 {
 	if (m_dataRead)
 	{
@@ -631,13 +530,13 @@ MVoid TsStream::Close()
 }
 
 
-MBool   TsStream::Seek(MInt64 seekTimeStamp)
+MBool   DemuxerTs::Seek(MInt64 seekTimeStamp)
 {
 
 	return MTrue;
 }
 
-MVoid TsStream::parse_ts_packet_header(MPChar buffer, ts_packet_header &tsHeader)
+MVoid DemuxerTs::parse_ts_packet_header(MPChar buffer, ts_packet_header &tsHeader)
 {
 	tsHeader.sync_byte = buffer[0];
 
@@ -672,7 +571,7 @@ MVoid TsStream::parse_ts_packet_header(MPChar buffer, ts_packet_header &tsHeader
 
 
 
-tsFilter* TsStream::add_filter(MInt32 type,MInt32 pid)
+tsFilter* DemuxerTs::add_filter(MInt32 type,MInt32 pid)
 {
 	for (int i = 0;i<FILTER_NUM;i++)
 	{
@@ -686,7 +585,7 @@ tsFilter* TsStream::add_filter(MInt32 type,MInt32 pid)
 	return MNull;
 }
 
-tsFilter*	TsStream::get_filter(MInt32 p_pid)
+tsFilter*	DemuxerTs::get_filter(MInt32 p_pid)
 {
 	for (int i = 0; i < FILTER_NUM; i++)
 	{

@@ -6,9 +6,9 @@ class ToolString
 {
 public:
 	static MInt32 Read_line(MPChar bufferBegin, MPChar bufferEnd, MPChar dstBuffer,MInt32 idstMaxLen/*,MBool& isLine*/);
-	static MInt32 av_strlcpy(char *dst, const char *src, size_t size);
+	static MInt32 av_strlcpy(char *dst, const char *src, MInt32 size);
 	static MInt32 av_strstart(MPChar str, MPChar pfx, MChar** ptr);
-	static MInt32 av_strlcat(char *dst, const char *src, size_t size);
+	static MInt32 av_strlcat(char *dst, const char *src, MInt32 size);
 
 	//功能:根据参数s，重新创建一个大小刚好的字符串指针,然后返回
 	static MPChar av_strdup(MPChar s);

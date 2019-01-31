@@ -1,11 +1,10 @@
 #include "stdafx.h"
 #include "AudioScale.h"
-#include "AudioPlayAAC.h"
 AudioScale::AudioScale()
 {
 	m_pFrame = MNull;
 	au_convert_ctx = MNull;
-	//audioFile.Open("audioScale.pcm", mv3File::stream_write);
+	audioFile.Open("audio.pcm", mv3File::stream_write);
 	m_count = 0;
 	m_pcmBufferSize = 0;
 }
@@ -105,7 +104,7 @@ MBool AudioScale::Open()
 	}
 
 	int ret = swr_init(au_convert_ctx);
-	if (ret != MERR_NONE)
+	if (ret != MNull)
 	{
 
 		return MFalse;
@@ -123,7 +122,7 @@ MBool AudioScale::Open()
 	//	//-----------dst
 	//	int dst_channel_layout = av_get_default_channel_layout(m_out_audio.channels);
 	//	av_opt_set_int(au_convert_ctx, "out_channel_layout", dst_channel_layout, 0);
-	//	av_opt_set_int(au_convert_ctx, "out_sample_rate", m_out_audio.sample_rate, 0);
+		//av_opt_set_int(au_convert_ctx, "out_sample_rate", m_out_audio.sample_rate, 0);
 	//	av_opt_set_sample_fmt(au_convert_ctx, "out_sample_fmt", (AVSampleFormat)m_out_audio.sample_fmt, 0);
 
 	//	if (swr_init(au_convert_ctx) >= 0)
@@ -176,19 +175,29 @@ AVFrame* AudioScale::Scale(AVFrame *in_pFrame)
 	}
 	//m_pFrame->nb_samples = ret;
 	av_samples_get_buffer_size(&m_pFrame->linesize[0], m_out_audio.channels, ret, (AVSampleFormat)m_out_audio.sample_fmt, 1);
-	int count = 300;
-	//if (m_count < count)
-	//{
-	//	audioFile.Write((MByte*)m_pFrame->data[0], m_pFrame->linesize[0]);
-	//	
-	//}
-	//else if(m_count == count)
-	//{
-	//	audioFile.Close();
-	//}
+	int count = 1500;
+	if (m_count < count)
+	{
+		audioFile.Write((MByte*)m_pFrame->data[0], m_pFrame->linesize[0]);
+		
+	}
+	else if(m_count == count)
+	{
+		audioFile.Close();
+	}
 	m_count++;
 	m_pFrame->linesize[0] = m_pFrame->linesize[0];
 	m_pFrame->pts = in_pFrame->pts;
+
+
+
+	//mv3File		videoYuvFile;
+	//videoYuvFile.Open("1280_720.yuv420", mv3File::stream_write);
+	//videoYuvFile.Write(m_pFrameYUV->data[0], m_yuv420pSize);
+	//videoYuvFile.Close();
+
+
+
 
 	return m_pFrame;
 }

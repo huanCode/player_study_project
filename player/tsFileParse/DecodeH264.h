@@ -34,6 +34,8 @@ private:
 	MBool		m_bSwsInit;
 
 	uint8_t		*m_out_buffer;
+
+	MInt32		m_yuv420pSize;
 };
 
 

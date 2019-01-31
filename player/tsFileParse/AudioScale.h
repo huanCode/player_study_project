@@ -11,7 +11,6 @@ extern "C"
 #include <libavutil/opt.h>
 #include <libavutil/channel_layout.h>
 #include "libswresample/swresample.h"
-#include <SDL/SDL.h>
 };
 
 typedef struct _AudioInfo

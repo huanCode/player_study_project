@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "AudioPlayAAC.h"
-
+#include "AudioPlayWindow.h"
+#include "ammem.h"
 
 #if _MSC_VER>=1900  
 #include "stdio.h"   
@@ -22,7 +22,7 @@ extern "C"
 #define DUFAULT_SAMPLE_RATE 44100;
 
 SDL_AudioSpec	m_wanted_spec;
-AudioPlayAAC::AudioPlayAAC()
+AudioPlayWindow::AudioPlayWindow()
 {
 	audio_len = 0;
 	audio_pos = 0;
@@ -34,7 +34,7 @@ AudioPlayAAC::AudioPlayAAC()
 }
 
 
-MBool AudioPlayAAC::Open()
+MBool AudioPlayWindow::Open()
 {
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER)) {
 		return MFalse;
@@ -51,7 +51,7 @@ MBool AudioPlayAAC::Open()
 	m_wanted_spec.channels = out_channels;
 	m_wanted_spec.silence = 0;
 	m_wanted_spec.samples = m_out_nb_samples;
-	m_wanted_spec.callback = AudioPlayAAC::fill_audio;
+	m_wanted_spec.callback = AudioPlayWindow::fill_audio;
 	m_wanted_spec.userdata = this;
 	m_wanted_spec.size = out_buffer_size;
 	if (SDL_OpenAudio(&m_wanted_spec, NULL)<0) {
@@ -70,7 +70,7 @@ MBool AudioPlayAAC::Open()
 }
 
 
-MVoid AudioPlayAAC::Close()
+MVoid AudioPlayWindow::Close()
 {
 	SDL_CloseAudio();//Close SDL
 	SDL_Quit();
@@ -82,16 +82,16 @@ MVoid AudioPlayAAC::Close()
 	}
 
 
-	m_player = MNull;
+	//m_player = MNull;
 }
 
-MVoid	AudioPlayAAC::Pause()
+MVoid	AudioPlayWindow::Pause()
 {
 	m_bPause = MTrue;
 	SDL_PauseAudio(1);
 }
 
-MVoid	AudioPlayAAC::ReStart()
+MVoid	AudioPlayWindow::ReStart()
 {
 	m_bPause = MFalse;
 	SDL_PauseAudio(0);
@@ -100,10 +100,10 @@ MVoid	AudioPlayAAC::ReStart()
 
 
 
-void  AudioPlayAAC::fill_audio(void *udata, Uint8 *stream, int len) {
+void  AudioPlayWindow::fill_audio(void *udata, Uint8 *stream, int len) {
 	//SDL 2.0
 
-	AudioPlayAAC* pHandle = (AudioPlayAAC*)udata;
+	AudioPlayWindow* pHandle = (AudioPlayWindow*)udata;
 	if (!pHandle)
 	{
 		return;
@@ -123,9 +123,9 @@ void  AudioPlayAAC::fill_audio(void *udata, Uint8 *stream, int len) {
 	pHandle->m_bPlay = MFalse;
 }
 
-MDWord AudioPlayAAC::run(MVoid* lpPara)
+MDWord AudioPlayWindow::run(MVoid* lpPara)
 {
-	AudioPlayAAC* audioPlay = (AudioPlayAAC*)lpPara;
+	AudioPlayWindow* audioPlay = (AudioPlayWindow*)lpPara;
 	if (!audioPlay)
 	{
 		return 0;
@@ -135,20 +135,21 @@ MDWord AudioPlayAAC::run(MVoid* lpPara)
 
 }
 
-MInt32 AudioPlayAAC::GetPerFrameDuration()
+MInt32 AudioPlayWindow::GetPerFrameDuration()
 {
 	MInt32 duration = (m_out_nb_samples * 1000) / DUFAULT_SAMPLE_RATE;
 	return duration;
 }
 
-MVoid AudioPlayAAC::decode()
+MVoid AudioPlayWindow::decode()
 {
 	m_bRun = MTrue;
-	if (!m_player)
+	if (!m_interfaceObject)
 	{
 		return;
 	}
 	MInt32 delayTimeMS = 5;
+	MInt64 audioPts = 0;
 	while (m_bRun)
 	{
 		if (m_bPause)
@@ -158,7 +159,7 @@ MVoid AudioPlayAAC::decode()
 		}
 
 		audio_len_tmp = 0;
-		if (!m_player->AudioDecode((MPChar)audio_pos_tmp, audio_len_tmp))
+		if (!m_interfaceObject->AudioDecode((MPChar)audio_pos_tmp, audio_len_tmp, &audioPts))
 		{
 			return;
 		}
@@ -173,7 +174,7 @@ MVoid AudioPlayAAC::decode()
 			delayTimeMS = m_bPause ? 10 : 1;
 			SDL_Delay(delayTimeMS);
 		}
-
+		m_interfaceObject->SetAudioPts(audioPts);
 		//MMemCpy(audio_pos, audio_pos_tmp, audio_len_tmp);
 		audio_len = audio_len_tmp;
 		SDL_PauseAudio(0);
@@ -182,7 +183,7 @@ MVoid AudioPlayAAC::decode()
 	int i = 1;
 }
 
-MBool AudioPlayAAC::Start()
+MBool AudioPlayWindow::Start()
 {
 	if (!m_bRun)
 	{
@@ -199,35 +200,35 @@ MBool AudioPlayAAC::Start()
 }
 
 
-MBool AudioPlayAAC::Display(MPChar pBuffer, MInt32 bufferSize)
-{
-	//while(audio_len)
-	//{
-	//	SDL_Delay(1);
-	//}
-	//audio_len = bufferSize;
-	//audio_pos = (Uint8 *)pBuffer;
-	while(m_bPlay)
-	{
-		SDL_Delay(1);
-	}
+//MBool AudioPlayWindow::Display(MPChar pBuffer, MInt32 bufferSize)
+//{
+//	//while(audio_len)
+//	//{
+//	//	SDL_Delay(1);
+//	//}
+//	//audio_len = bufferSize;
+//	//audio_pos = (Uint8 *)pBuffer;
+//	while(m_bPlay)
+//	{
+//		SDL_Delay(1);
+//	}
+//
+//	audio_len_tmp = bufferSize;
+//	audio_pos_tmp = (Uint8 *)pBuffer;
+//	SDL_PauseAudio(0);
+//
+//	m_bPlay = MTrue;
+//
+//
+//	return MTrue;
+//}
 
-	audio_len_tmp = bufferSize;
-	audio_pos_tmp = (Uint8 *)pBuffer;
-	SDL_PauseAudio(0);
-
-	m_bPlay = MTrue;
-
-
-	return MTrue;
-}
-
-MVoid	AudioPlayAAC::SetSampleRate(MInt32 sampleRate)
+MVoid	AudioPlayWindow::SetSampleRate(MInt32 sampleRate)
 {
 	m_out_sample_rate = sampleRate;
 }
 
-MVoid	AudioPlayAAC::SetSampleSize(MInt32 frameSize)
+MVoid	AudioPlayWindow::SetSampleSize(MInt32 frameSize)
 {
 	m_out_nb_samples = frameSize;
 }

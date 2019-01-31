@@ -3,12 +3,12 @@
 
 #include "stdafx.h"
 #include "mv3File.h"
-#include "TsStream.h"
-#include "ParseHls.h"
+#include "DemuxerTs.h"
+#include "DemuxerM3u8.h"
 #include "ToolList.h"
 #include "ToolString.h"
 #include "SourceParse.h"
-#include "AudioPlayAAC.h"
+#include "AudioPlayWindow.h"
 #include "DecodeAAC.h"
 #include "DecodeH264.h"
 #include "Player.h"
@@ -56,13 +56,13 @@ int main(int      argc, char    *argv[])
 	strURL = "http://38uni317.vod2.danghongyun.com/target/hls/2017/09/29/660_f5a387260dd2432a975401febfffc63a_10_1280x720.m3u8";
 	Player player;
 	player.Start(strURL);
-	Sleep(5000);
+	//Sleep(5000);
 	//player.Pause();
 	//player.Seek(30000);
-	Sleep(5000);
-	player.Seek(90000);
-	Sleep(5000);
-	player.Seek(800000);
+	//Sleep(5000);
+	//player.Seek(90000);
+	//Sleep(5000);
+	//player.Seek(800000);
 
 	//player.Start(strURL);
 	//player.Seek(170000);
@@ -134,7 +134,7 @@ int main(int      argc, char    *argv[])
 
 	//DecodeH264 video;
 
-	//AudioPlayAAC audioPlay;
+	//AudioPlayWindow audioPlay;
 	//audioPlay.Open();
 	//video.Open();
 	//if (!aac.Open())

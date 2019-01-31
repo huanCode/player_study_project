@@ -131,7 +131,7 @@ MVoid PlayerStateContext::Seek(MInt64 seekTime)
 
 MVoid PlayerStateContext::Buffer()
 {
-	m_pCurrentObject->Buffer();
+	SetState(Buffering);
 }
 
 MVoid PlayerStateContext::Stop()

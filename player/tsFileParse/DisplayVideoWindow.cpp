@@ -1,28 +1,18 @@
 #include "stdafx.h"
-#include "VideoPlayWindow.h"
+#include "DisplayVideoWindow.h"
 
-VideoPlayWindow::VideoPlayWindow()
+DisplayVideoWindow::DisplayVideoWindow()
 {
 	m_screen = MNull;
 	m_sdlRenderer = MNull;
 	m_sdlTexture = MNull;
-	m_windowWidth = 0;
-	m_windowHeight = 0;
+
 
 	
 }
 
-MVoid VideoPlayWindow::SetVideoInfo(VideoInfo* info)
-{
-	m_windowWidth = info->width;
-	m_windowHeight = info->height;
 
-	m_info.width = info->width;
-	m_info.height = info->height;
-}
-
-
-MBool VideoPlayWindow::Open()
+MBool DisplayVideoWindow::Open()
 {
 	if (m_info.width <= 0 || m_info.height <= 0)
 	{
@@ -62,13 +52,13 @@ MBool VideoPlayWindow::Open()
 
 	m_sdlRect.x = 0;
 	m_sdlRect.y = 0;
-	m_sdlRect.w = m_windowWidth;
-	m_sdlRect.h = m_windowHeight;
+	m_sdlRect.w = m_info.width;
+	m_sdlRect.h = m_info.height;
 
 	return MTrue;
 }
 
-MVoid VideoPlayWindow::Close()
+MVoid DisplayVideoWindow::Close()
 {
 	m_screen = MNull;
 	m_sdlRenderer = MNull;
@@ -76,12 +66,12 @@ MVoid VideoPlayWindow::Close()
 	SDL_Quit();
 }
 
-MBool VideoPlayWindow::Display(MPChar pBuffer)
+MVoid DisplayVideoWindow::Display(MPChar pBuffer)
 {
 	SDL_UpdateTexture(m_sdlTexture, NULL, pBuffer, m_info.width);
 	SDL_RenderClear(m_sdlRenderer);
 	SDL_RenderCopy(m_sdlRenderer, m_sdlTexture, NULL, &m_sdlRect);
 	SDL_RenderPresent(m_sdlRenderer);
 
-	return MTrue;
+
 }

@@ -1,14 +1,14 @@
 #include "stdafx.h"
-#include "ParseFrame.h"
-#include "ParseHls.h"
-#include "IParse.h"
-ParseFrame::ParseFrame()
+#include "DemuxerMgr.h"
+#include "DemuxerM3u8.h"
+#include "IDemuxer.h"
+DemuxerMgr::DemuxerMgr()
 {
 	//m_probeList.AddNode(ParseHls::hls_probe);
 	m_parse = MNull;
 }
 
-MBool	ParseFrame::HasVideo()
+MBool	DemuxerMgr::HasVideo()
 {
 	if (m_parse)
 	{
@@ -18,7 +18,7 @@ MBool	ParseFrame::HasVideo()
 	return MFalse;
 }
 
-MBool	ParseFrame::HasAudio()
+MBool	DemuxerMgr::HasAudio()
 {
 	if (m_parse)
 	{
@@ -29,14 +29,14 @@ MBool	ParseFrame::HasAudio()
 }
 
 
-MBool ParseFrame::FindParse(MPChar pbuf, MInt32 iBufSize)
+MBool DemuxerMgr::FindParse(MPChar pbuf, MInt32 iBufSize)
 {
 	read_probe probeFuntion = MNull;
-	m_parse = ParseHls::hls_probe(pbuf, iBufSize);
+	m_parse = DemuxerM3u8::hls_probe(pbuf, iBufSize);
 	return m_parse ? MTrue : MFalse;
 }
 
-MVoid	ParseFrame::SetDataRead(IDataRead* obj)
+MVoid	DemuxerMgr::SetDataRead(IStreamRead* obj)
 {
 	if (m_parse)
 	{
@@ -45,12 +45,12 @@ MVoid	ParseFrame::SetDataRead(IDataRead* obj)
 }
 
 
-MBool	ParseFrame::ReadHeader(MPChar strUrl)
+MBool	DemuxerMgr::ReadHeader(MPChar strUrl)
 {
 	return m_parse->ReadHeader(strUrl);
 }
 
-MBool ParseFrame::ReadFrame(AVPkt** pkt)
+MBool DemuxerMgr::ReadFrame(AVPkt** pkt)
 {
 	if (m_parse)
 	{
@@ -59,7 +59,7 @@ MBool ParseFrame::ReadFrame(AVPkt** pkt)
 	return MFalse;
 }
 
-MBool ParseFrame::Seek(MInt64 seekTimeStamp)
+MBool DemuxerMgr::Seek(MInt64 seekTimeStamp)
 {
 	return m_parse->Seek(seekTimeStamp);
 }

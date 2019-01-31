@@ -11,13 +11,15 @@ public:
 	MBool IoOpen(MPChar strUrl);
 	MInt32 IoRead(MPChar pBuf, MDWord dwSize, MInt64 llOffset = 0);
 	MVoid IoClose();
-
+	MInt32	GetSize();
+	MBool	isComplete();
 	MVoid IoGetConfig(MInt32 dwCfgType, MVoid** pdwValue);
 private:
 	MPChar GetLocationUrl();
 private:
 	
 	MHandle m_hHttp;
+	MInt32	m_alreadyReadSize;
 
 };
 

@@ -1,10 +1,12 @@
 #ifndef _COMMON_H
 #define _COMMON_H
-#include "TsStreamDef.h"
+#include "AVConfig.h"
 #include "ammem.h"
 #include "amkernel.h"
-inline MUInt16 to_UInt16(MPChar p);
-inline MUInt8 to_UInt8(MPChar p);
+MUInt16 to_UInt16(MPChar p);
+MUInt8 to_UInt8(MPChar p);
+
+
 
 
 #define RETURN_FALSE(ret) if(!ret){return MFalse;}

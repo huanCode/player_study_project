@@ -1,10 +1,11 @@
 #include "stdafx.h"
 #include "Player.h"
 #include "SourceParse.h"
-#include "AudioPlayAAC.h"
-#include "VideoPlayWindow.h"
+//#include "AudioPlayWindow.h"
+//#include "VideoPlayWindow.h"
+#include "PlatformConfig.h"
 #include "DecodecMgr.h"
-#include <windows.h>
+//#include <windows.h>
 #define BUFFER_TIME		3000  //5s
 //#define 
 
@@ -242,7 +243,7 @@ MVoid Player::thread_read()
 	{
 		if (m_bForbidRead)
 		{
-			Sleep(5);
+			MSleep(5);
 			continue;
 		}
 		m_lockSource.Lock();
@@ -354,7 +355,7 @@ MBool Player::prepare()
 	timeDuration = MGetCurTimeStamp();
 	if (m_pSourceParse->HasAudio())
 	{
-		m_audioPlay = new AudioPlayAAC();
+		m_audioPlay = PlatformFactory::CreateAudioPlay();
 		RETURN_FALSE(m_audioPlay)
 		RETURN_FALSE(m_audioPlay->Open())
 
@@ -363,7 +364,7 @@ MBool Player::prepare()
 	printf("prepare cost 1 time = %d ms\r\n", timeDuration);
 	if (m_pSourceParse->HasVideo())
 	{
-		m_videoPlay = new VideoPlayWindow();
+		m_videoPlay = PlatformFactory::CreateDisplayVideo();
 		RETURN_FALSE(m_videoPlay)
 		m_videoPlay->SetVideoInfo(&m_videoInfo);
 		RETURN_FALSE(m_videoPlay->Open())
@@ -400,7 +401,13 @@ MBool Player::prepare()
 }
 
 
-MBool	 Player::AudioDecode(MPChar buffer, MInt32& bufferSize)
+
+MVoid Player::SetAudioPts(MInt64 pts)
+{
+	m_avsync.SetCurrentAudioTime(pts);
+}
+
+MBool	 Player::AudioDecode(MPChar buffer, MInt32& bufferSize, MInt64* out_pts)
 {
 	MMutexLock(m_hMutexAudio);
 	if (m_arrayAudio.GetSize()==0)
@@ -410,10 +417,9 @@ MBool	 Player::AudioDecode(MPChar buffer, MInt32& bufferSize)
 		return MTrue;
 	}
 
-
 	AVPkt* pktFirst = m_arrayAudio.GetNodeAndDelByIndex(1);
 	
-	m_avsync.SetCurrentAudioTime(pktFirst->pts);
+	//m_avsync.SetCurrentAudioTime(pktFirst->pts);
 	m_pFrameAudio = m_pDecodeAudio->DecodeFrame(pktFirst->bufferPkt, pktFirst->bufferPktSize, pktFirst->pts, pktFirst->dts);
 	MMutexUnlock(m_hMutexAudio);
 	if (!m_pFrameAudio)
@@ -427,6 +433,7 @@ MBool	 Player::AudioDecode(MPChar buffer, MInt32& bufferSize)
 	MMemCpy(buffer, m_pFrameAudio->pBuffer, m_pFrameAudio->iBufferSize);
 	bufferSize = m_pFrameAudio->iBufferSize;
 	m_bFirstFrameAudio = MFalse;
+	*out_pts = pktFirst->dts;
 	//m_currentAudioTime = m_pFrameAudio->pts;
 	return MTrue;
 
@@ -532,11 +539,12 @@ State Player::PlayOneFrame()
 	if (m_currentVideoTime == m_lastVideoTime)
 	{	
 		//表示解第一帧
+		m_audioPlay->SetInterface(this);
 		if (!m_audioPlay->Start())
 		{
 			return State::Stoping;
 		}
-		m_audioPlay->SetPlayer(this);
+		
 	}
 
 
@@ -616,7 +624,7 @@ MInt32 Player::buffer()
 	MInt64 bufferPercent = videoPercent > audioPercent ? audioPercent : videoPercent;
 	if (bufferPercent < 100)
 	{
-		Sleep(10);
+		MSleep(10);
 	}
 	printf("buffer = %d\r\n", bufferPercent);
 	return bufferPercent;

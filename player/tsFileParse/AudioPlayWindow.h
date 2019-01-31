@@ -3,7 +3,7 @@
 #define _IAUDIOPLAYAAC_H
 #include "amcomdef.h"
 #include "amkernel.h"
-#include "Player.h"
+//#include "Player.h"
 //#if _MSC_VER>=1900  
 //#include "stdio.h"   
 //_ACRTIMP_ALT FILE* __cdecl __acrt_iob_func(unsigned);
@@ -24,31 +24,39 @@ extern "C"
 #include <SDL/SDL.h>
 };
 
+#include "IAudioPlay.h"
 
-class AudioPlayAAC
+
+class AudioPlayWindow:public IAudioPlay
 {
 public:
-	AudioPlayAAC();
-	virtual MBool Open();
-	virtual MVoid Close();
+	AudioPlayWindow();
+	MBool Open();
+	MVoid Close();
 	MVoid	Pause();
 	MVoid	ReStart();
-	virtual MBool isStart() {
-		return m_bRun;
-	};
-	virtual MBool Display(MPChar pBuffer,MInt32 bufferSize);
-	MVoid SetPlayer(Player* player)
-	{
-		m_player = player;
-	};
+	MVoid	Stop() {};
+	//virtual MBool isStart() {
+	//	return m_bRun;
+	//};
+	//virtual MBool Display(MPChar pBuffer,MInt32 bufferSize);
+	//MVoid SetPlayer(Player* player)
+	//{
+	//	m_player = player;
+	//};
 
 	MBool Start();
-	static void  fill_audio(void *udata, Uint8 *stream, int len);
+
 	MVoid	SetSampleRate(MInt32 sampleRate);
 	MVoid	SetSampleSize(MInt32 frameSize);
-	static MDWord run(MVoid* lpPara);
+
 
 	MInt32 GetPerFrameDuration();
+
+
+private:
+	static void  fill_audio(void *udata, Uint8 *stream, int len);
+	static MDWord run(MVoid* lpPara);
 	MVoid decode();
 private:
 	//SDL_AudioSpec	m_wanted_spec;
@@ -64,7 +72,7 @@ private:
 	Uint8  *audio_pos_tmp;
 
 	MBool	m_bPlay;
-	Player*		m_player;
+	//Player*		m_player;
 
 	MHandle			m_threadHandleRun;
 	MBool			m_bRun;

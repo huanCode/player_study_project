@@ -2,7 +2,7 @@
 #include "tsFilter.h"
 #include "common.h"
 #include "TsStreamDef.h"
-#include "TsStream.h"
+#include "DemuxerTs.h"
 #include "ammem.h"
 
 #include<assert.h>
@@ -21,7 +21,7 @@ tsSection::tsSection()
 	memset(m_section_buf,0, MAX_SECTION_SIZE);
 }
 
-MVoid tsSection::write_section_data(TsStream* p_tsStream, const MPChar p_buf, MUInt32 p_buf_size, MBool p_is_start)
+MVoid tsSection::write_section_data(DemuxerTs* p_tsStream, const MPChar p_buf, MUInt32 p_buf_size, MBool p_is_start)
 {
 	if (!m_section_buf)
 	{
@@ -115,7 +115,7 @@ MInt32 tsFilter::parse_section_header(MPChar buffer_section_header, SectionHeade
 }
 /*========================================================================*/
 
-MUInt32 tsSectionPat::parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buffer_size)
+MUInt32 tsSectionPat::parse(DemuxerTs* p_tsStream, MPChar p_buffer, MUInt32 p_buffer_size)
 {
 	SectionHeader section_header;
 	MPChar pat_data = p_buffer;
@@ -197,7 +197,7 @@ MBool tsSectionPmt::is_pes_stream(int stream_type, MUInt32 prog_reg_desc)
 //	}
 //}
 
-MUInt32 tsSectionPmt::parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buffer_size)
+MUInt32 tsSectionPmt::parse(DemuxerTs* p_tsStream, MPChar p_buffer, MUInt32 p_buffer_size)
 {
 	SectionHeader section_header;
 	MInt32 ret = parse_section_header(p_buffer, section_header);
@@ -326,7 +326,7 @@ MBool tsSectionPes::mpegts_find_stream_type(MInt32 stream_type, const StreamType
 	return MFalse;
 }
 
-MUInt32 tsSectionPes::parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buffer_size)
+MUInt32 tsSectionPes::parse(DemuxerTs* p_tsStream, MPChar p_buffer, MUInt32 p_buffer_size)
 {
 	//is_start = 1，表示这个时pes的开始
 	//is_start = 0,表示这个时pes中的后续字节

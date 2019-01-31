@@ -84,20 +84,11 @@
     <ClInclude Include="include\mhttp.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="SourceFrame.h">
-      <Filter>SourceFrame</Filter>
-    </ClInclude>
     <ClInclude Include="ToolBuffer.h">
       <Filter>tool</Filter>
     </ClInclude>
     <ClInclude Include="SourceParse.h">
       <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="ParseFrame.h">
-      <Filter>ParseFrame</Filter>
-    </ClInclude>
-    <ClInclude Include="TsStream.h">
-      <Filter>ParseFrame\ts</Filter>
     </ClInclude>
     <ClInclude Include="tsFilter.h">
       <Filter>ParseFrame\ts</Filter>
@@ -107,15 +98,6 @@
     </ClInclude>
     <ClInclude Include="tool\mv3File.h">
       <Filter>tool</Filter>
-    </ClInclude>
-    <ClInclude Include="IParse.h">
-      <Filter>ParseFrame</Filter>
-    </ClInclude>
-    <ClInclude Include="IDataRead.h">
-      <Filter>SourceFrame</Filter>
-    </ClInclude>
-    <ClInclude Include="ParseHls.h">
-      <Filter>ParseFrame\hls</Filter>
     </ClInclude>
     <ClInclude Include="TsStreamDef.h">
       <Filter>ParseFrame\ts</Filter>
@@ -132,19 +114,10 @@
     <ClInclude Include="DecodeH264.h">
       <Filter>decode</Filter>
     </ClInclude>
-    <ClInclude Include="IVideoPlay.h">
-      <Filter>play\videoPlay</Filter>
-    </ClInclude>
-    <ClInclude Include="VideoPlayWindow.h">
-      <Filter>play\videoPlay</Filter>
-    </ClInclude>
     <ClInclude Include="DecodeAAC.h">
       <Filter>decode</Filter>
     </ClInclude>
     <ClInclude Include="IAudioPlay.h">
-      <Filter>play\audioPlay</Filter>
-    </ClInclude>
-    <ClInclude Include="AudioPlayAAC.h">
       <Filter>play\audioPlay</Filter>
     </ClInclude>
     <ClInclude Include="AudioScale.h">
@@ -189,12 +162,6 @@
     <ClInclude Include="tool\mv3String.h">
       <Filter>tool</Filter>
     </ClInclude>
-    <ClInclude Include="ToolListLock.h">
-      <Filter>tool</Filter>
-    </ClInclude>
-    <ClInclude Include="DecodecAudioMgr.h">
-      <Filter>decode</Filter>
-    </ClInclude>
     <ClInclude Include="DecodecMgr.h">
       <Filter>decode</Filter>
     </ClInclude>
@@ -207,6 +174,42 @@
     <ClInclude Include="PlayerStateIdle.h">
       <Filter>playerState</Filter>
     </ClInclude>
+    <ClInclude Include="IDisplayVideo.h">
+      <Filter>play\videoPlay</Filter>
+    </ClInclude>
+    <ClInclude Include="PlatformFactory.h">
+      <Filter>playerState</Filter>
+    </ClInclude>
+    <ClInclude Include="IDemuxer.h">
+      <Filter>ParseFrame</Filter>
+    </ClInclude>
+    <ClInclude Include="DemuxerTs.h">
+      <Filter>ParseFrame\ts</Filter>
+    </ClInclude>
+    <ClInclude Include="DemuxerMgr.h">
+      <Filter>ParseFrame</Filter>
+    </ClInclude>
+    <ClInclude Include="DemuxerM3u8.h">
+      <Filter>ParseFrame\hls</Filter>
+    </ClInclude>
+    <ClInclude Include="IStreamRead.h">
+      <Filter>SourceFrame</Filter>
+    </ClInclude>
+    <ClInclude Include="StreamReadMgr.h">
+      <Filter>SourceFrame</Filter>
+    </ClInclude>
+    <ClInclude Include="DisplayVideoWindow.h">
+      <Filter>play\videoPlay</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioPlayWindow.h">
+      <Filter>play\audioPlay</Filter>
+    </ClInclude>
+    <ClInclude Include="AVConfig.h">
+      <Filter>tool</Filter>
+    </ClInclude>
+    <ClInclude Include="PlatformConfig.h">
+      <Filter>tool</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -218,20 +221,11 @@
     <ClCompile Include="HttpIo.cpp">
       <Filter>SourceFrame</Filter>
     </ClCompile>
-    <ClCompile Include="SourceFrame.cpp">
-      <Filter>SourceFrame</Filter>
-    </ClCompile>
     <ClCompile Include="ToolBuffer.cpp">
       <Filter>tool</Filter>
     </ClCompile>
     <ClCompile Include="SourceParse.cpp">
       <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="ParseFrame.cpp">
-      <Filter>ParseFrame</Filter>
-    </ClCompile>
-    <ClCompile Include="TsStream.cpp">
-      <Filter>ParseFrame\ts</Filter>
     </ClCompile>
     <ClCompile Include="tsFilter.cpp">
       <Filter>ParseFrame\ts</Filter>
@@ -242,23 +236,14 @@
     <ClCompile Include="tool\mv3File.cpp">
       <Filter>tool</Filter>
     </ClCompile>
-    <ClCompile Include="ParseHls.cpp">
-      <Filter>ParseFrame\hls</Filter>
-    </ClCompile>
     <ClCompile Include="H264Parse.cpp">
       <Filter>H264</Filter>
     </ClCompile>
     <ClCompile Include="DecodeH264.cpp">
       <Filter>decode</Filter>
     </ClCompile>
-    <ClCompile Include="VideoPlayWindow.cpp">
-      <Filter>play\videoPlay</Filter>
-    </ClCompile>
     <ClCompile Include="DecodeAAC.cpp">
       <Filter>decode</Filter>
-    </ClCompile>
-    <ClCompile Include="AudioPlayAAC.cpp">
-      <Filter>play\audioPlay</Filter>
     </ClCompile>
     <ClCompile Include="AudioScale.cpp">
       <Filter>decode</Filter>
@@ -296,12 +281,6 @@
     <ClCompile Include="tool\mv3String.cpp">
       <Filter>tool</Filter>
     </ClCompile>
-    <ClCompile Include="ToolListLock.cpp">
-      <Filter>tool</Filter>
-    </ClCompile>
-    <ClCompile Include="DecodecAudioMgr.cpp">
-      <Filter>decode</Filter>
-    </ClCompile>
     <ClCompile Include="DecodecMgr.cpp">
       <Filter>decode</Filter>
     </ClCompile>
@@ -310,6 +289,27 @@
     </ClCompile>
     <ClCompile Include="PlayerStateIdle.cpp">
       <Filter>playerState</Filter>
+    </ClCompile>
+    <ClCompile Include="DemuxerTs.cpp">
+      <Filter>ParseFrame\ts</Filter>
+    </ClCompile>
+    <ClCompile Include="DemuxerMgr.cpp">
+      <Filter>ParseFrame</Filter>
+    </ClCompile>
+    <ClCompile Include="DemuxerM3u8.cpp">
+      <Filter>ParseFrame\hls</Filter>
+    </ClCompile>
+    <ClCompile Include="StreamReadMgr.cpp">
+      <Filter>SourceFrame</Filter>
+    </ClCompile>
+    <ClCompile Include="PlatformFactory.cpp">
+      <Filter>playerState</Filter>
+    </ClCompile>
+    <ClCompile Include="DisplayVideoWindow.cpp">
+      <Filter>play\videoPlay</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioPlayWindow.cpp">
+      <Filter>play\audioPlay</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

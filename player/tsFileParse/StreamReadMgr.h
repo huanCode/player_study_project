@@ -1,10 +1,10 @@
 #pragma once
-#ifndef _SOURCEFRAME_H
-#define _SOURCEFRAME_H
+#ifndef _STREAMREADMGR_H
+#define _STREAMREADMGR_H
 #include "amcomdef.h"
 #include "ToolList.h"
 #include "ToolBuffer.h"
-#include "IDataRead.h"
+#include "IStreamRead.h"
 
 enum IBaseIoType
 {
@@ -16,12 +16,12 @@ enum IBaseIoType
 
 
 class IBaseIo;
-class SourceFrame:public IDataRead
+class StreamReadMgr:public IStreamRead
 {
 public:
 
 
-	SourceFrame();
+	StreamReadMgr();
 	
 	MBool Open(MPChar strUrl);
 	MBool Read(MChar** pBuf, MDWord dwSize,MInt32& out_readSize);
@@ -49,4 +49,4 @@ private:
 
 
 
-#endif // !_SOURCEFRAME_H
+#endif // !_STREAMREADMGR_H

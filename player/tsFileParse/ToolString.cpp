@@ -123,7 +123,7 @@ void ToolString::ff_make_absolute_url(MPChar buf, MInt32 size, MPChar base, MPCh
 		return;
 	}
 	/* If rel actually is an absolute url, just copy it */
-	if (!base || strstr(rel, "://") || rel[0] == '/') {
+	if (!base || MStrStr(rel, "://") || rel[0] == '/') {
 		ToolString::av_strlcpy(buf, rel, size);
 		return;
 	}
@@ -147,7 +147,7 @@ void ToolString::ff_make_absolute_url(MPChar buf, MInt32 size, MPChar base, MPCh
 		sep[1] = '\0';
 	else
 		buf[0] = '\0';
-	while (ToolString::av_strstart(rel, "../", NULL) && sep) {
+	while (ToolString::av_strstart(rel, "../", MNull) && sep) {
 		/* Remove the path delimiter at the end */
 		sep[0] = '\0';
 		sep = MStrRChr(buf, '/');
@@ -181,7 +181,7 @@ MInt32 ToolString::av_strstart(MPChar str, MPChar pfx, MChar** ptr)
 }
 
 
-MInt32 ToolString::av_strlcpy(char *dst, const char *src, size_t size)
+MInt32 ToolString::av_strlcpy(char *dst, const char *src, MInt32 size)
 {
 	MInt32 len = 0;
 	while (++len < size && *src)
@@ -191,7 +191,7 @@ MInt32 ToolString::av_strlcpy(char *dst, const char *src, size_t size)
 	return len + MStrLen(src) - 1;
 }
 
-MInt32 ToolString::av_strlcat(char *dst, const char *src, size_t size)
+MInt32 ToolString::av_strlcat(char *dst, const char *src, MInt32 size)
 {
 	MInt32 len = MStrLen(dst);
 	if (size <= len + 1)
@@ -202,10 +202,10 @@ MInt32 ToolString::av_strlcat(char *dst, const char *src, size_t size)
 
 MPChar ToolString::av_strdup(MPChar s)
 {
-	MPChar ptr = NULL;
+	MPChar ptr = MNull;
 	if (s) {
-		size_t len = MStrLen(s) + 1;
-		ptr = (MPChar)MMemAlloc(NULL, len);
+		MInt32 len = MStrLen(s) + 1;
+		ptr = (MPChar)MMemAlloc(MNull, len);
 		if (ptr)
 			MSCsNCpy(ptr, s, len);
 	}

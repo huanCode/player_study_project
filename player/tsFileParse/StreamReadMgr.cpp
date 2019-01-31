@@ -1,12 +1,12 @@
 #include "stdafx.h"
-#include "SourceFrame.h"
+#include "StreamReadMgr.h"
 #include "HttpIo.h"
 #include "amstring.h"
 #include "ToolString.h"
 
 #include "common.h"
 #include <string.h>
-#include <windows.h>
+#include "PlatformConfig.h"
 #define URL_SCHEME_CHARS                        \
     "abcdefghijklmnopqrstuvwxyz"                \
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"                \
@@ -23,7 +23,7 @@ static inline int is_dos_path(const char *path)
 }
 
 
-SourceFrame::SourceFrame()
+StreamReadMgr::StreamReadMgr()
 {
 	m_baseIoType = none;
 	m_isFinish = MFalse;
@@ -34,7 +34,7 @@ SourceFrame::SourceFrame()
 }
 
 
-MBool SourceFrame::Open(MPChar strUrl)
+MBool StreamReadMgr::Open(MPChar strUrl)
 {
 	if (strUrl == MNull)
 	{
@@ -56,13 +56,13 @@ MBool SourceFrame::Open(MPChar strUrl)
 }
 
 
-MVoid SourceFrame::Close()
+MVoid StreamReadMgr::Close()
 {
 	m_baseIo->IoClose();
 }
 
 
-MVoid SourceFrame::GetConfig(MInt32 dwCfgType, MVoid** pdwValue)
+MVoid StreamReadMgr::GetConfig(MInt32 dwCfgType, MVoid** pdwValue)
 {
 	if (m_baseIo)
 	{
@@ -70,7 +70,7 @@ MVoid SourceFrame::GetConfig(MInt32 dwCfgType, MVoid** pdwValue)
 	}
 }
 
-MBool SourceFrame::Read(MChar** pBuf, MDWord dwSize, MInt32& out_readSize)
+MBool StreamReadMgr::Read(MChar** pBuf, MDWord dwSize, MInt32& out_readSize)
 {
 	if (pBuf == MNull || dwSize <=0)
 	{
@@ -94,12 +94,17 @@ MBool SourceFrame::Read(MChar** pBuf, MDWord dwSize, MInt32& out_readSize)
 		}
 		else if (readSize == -1)
 		{
+			if (!m_baseIo->isComplete())
+			{
+				int a = 1;
+			}
+
 			//表明没有数据了,
 			return MTrue;
 		}
 		else if (readSize == 0)
 		{
-			Sleep(10);
+			MSleep(5);
 		}
 		
 	}
@@ -107,9 +112,6 @@ MBool SourceFrame::Read(MChar** pBuf, MDWord dwSize, MInt32& out_readSize)
 	{
 		return MFalse;
 	}
-
-
-
 
 	return MTrue;
 }
@@ -125,7 +127,7 @@ MBool SourceFrame::Read(MChar** pBuf, MDWord dwSize, MInt32& out_readSize)
 //
 //}
 
-IBaseIoType SourceFrame::parseUrl(MPChar strUrl)
+IBaseIoType StreamReadMgr::parseUrl(MPChar strUrl)
 {
 
 	char proto_str[128], proto_nested[128], *ptr;
@@ -168,12 +170,12 @@ IBaseIoType SourceFrame::parseUrl(MPChar strUrl)
 }
 
 
-MBool SourceFrame::findParse(MPChar buffer, MInt32 bufSize)
+MBool StreamReadMgr::findParse(MPChar buffer, MInt32 bufSize)
 {
 	return MFalse;
 }
 
-MBool SourceFrame::fillBuffer()
+MBool StreamReadMgr::fillBuffer()
 {
 	while (m_buffer.GetWriteSize())
 	{
@@ -183,7 +185,7 @@ MBool SourceFrame::fillBuffer()
 	return MFalse;
 }
 
-MBool SourceFrame::createBaseIo(MPChar strUrl)
+MBool StreamReadMgr::createBaseIo(MPChar strUrl)
 {
 	IBaseIoType type = parseUrl(strUrl);
 

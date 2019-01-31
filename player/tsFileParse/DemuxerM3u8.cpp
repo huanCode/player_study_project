@@ -1,23 +1,23 @@
 #include "stdafx.h"
-#include "ParseHls.h"
+#include "DemuxerM3u8.h"
 #include "mv3File.h"
 #include "ToolString.h"
 #include "amstring.h"
 #include "ammem.h"
-#include "TsStream.h"
+#include "DemuxerTs.h"
 #include "AllConfig.h"
 #define MAX_URL_SIZE 1024
 #define AV_TIME_BASE            1000000
 
 
 
-void ParseHls::Playlist::AddSegment(segment* ts)
+void DemuxerM3u8::Playlist::AddSegment(segment* ts)
 {
 	segmentList.AddNode(ts);
 }
 
 
-ParseHls::ParseHls()
+DemuxerM3u8::DemuxerM3u8()
 {
 	m_curIndex = 0;
 	m_pTs = MNull;
@@ -31,7 +31,7 @@ ParseHls::ParseHls()
 	m_duration = 0;
 }
 
-MBool ParseHls::ReadHeader(MPChar strUrl)
+MBool DemuxerM3u8::ReadHeader(MPChar strUrl)
 {
 	//MPChar strUrl = "bipbopall.m3u8";
 
@@ -43,7 +43,7 @@ MBool ParseHls::ReadHeader(MPChar strUrl)
 		return MFalse;
 	}
 	timeDuration = MGetCurTimeStamp() - timeBegin;
-	printf("ParseHls::ReadHeader 0 time = %d ms\r\n", timeDuration);
+	printf("DemuxerM3u8::ReadHeader 0 time = %d ms\r\n", timeDuration);
 	//判断上面解析的m3u8是否为嵌套,是嵌套则去解析新的
 
 	if (m_playlistList.GetSize() > 1 || m_playlistList.GetHeadNode()->segmentList.GetSize() == 0)
@@ -65,7 +65,7 @@ MBool ParseHls::ReadHeader(MPChar strUrl)
 	return switchSegment();
 }
 
-MBool ParseHls::switchSegment()
+MBool DemuxerM3u8::switchSegment()
 {
 	if (m_pTs)
 	{
@@ -95,7 +95,7 @@ MBool ParseHls::switchSegment()
 				return MFalse;
 			}
 
-			m_pTs = TsStream::read_probe(tmpBuffer, PROBE_BUFFER_SIZE);
+			m_pTs = DemuxerTs::read_probe(tmpBuffer, PROBE_BUFFER_SIZE);
 			if (m_pTs == MNull)
 			{
 				return MFalse;
@@ -112,7 +112,7 @@ MBool ParseHls::switchSegment()
 	return MFalse;
 }
 
-MBool ParseHls::ReadPacket(AVPkt** pkt)
+MBool DemuxerM3u8::ReadPacket(AVPkt** pkt)
 {
 	MBool ret = MFalse;
 	if (m_pTs)
@@ -145,7 +145,7 @@ MBool ParseHls::ReadPacket(AVPkt** pkt)
 			}
 			else if((*pkt)->mediaType == AV_MEDIA_TYPE_AUDIO)
 			{
-				//printf("audio pts = %lld \r\n", (*pkt)->pts);
+				printf("audio pts = %lld \r\n", (*pkt)->pts);
 			}
 			
 		}
@@ -159,13 +159,13 @@ MBool ParseHls::ReadPacket(AVPkt** pkt)
 	return ret;
 }
 
-MVoid ParseHls::Close()
+MVoid DemuxerM3u8::Close()
 {
 
 }
 
 
-MBool   ParseHls::Seek(MInt64 seekTimeStamp)
+MBool   DemuxerM3u8::Seek(MInt64 seekTimeStamp)
 {
 	//seekTimeStamp = seekTimeStamp / 1000;
 	MInt32 size = m_curPlaylist->segmentList.GetSize();
@@ -184,7 +184,7 @@ MBool   ParseHls::Seek(MInt64 seekTimeStamp)
 }
 
 
-void ParseHls::ff_parse_key_val_cb(void* srcData, MPChar key, MInt32 keyLen, MPChar value)
+void DemuxerM3u8::ff_parse_key_val_cb(void* srcData, MPChar key, MInt32 keyLen, MPChar value)
 {
 	if (srcData == MNull || key == MNull || value == MNull)
 	{
@@ -212,10 +212,10 @@ void ParseHls::ff_parse_key_val_cb(void* srcData, MPChar key, MInt32 keyLen, MPC
 
 }
 
-IParse* ParseHls::hls_probe(MPChar p_buffer, MUInt32 p_size)
+IDemuxer* DemuxerM3u8::hls_probe(MPChar p_buffer, MUInt32 p_size)
 {
 	if (MStrNCmp(p_buffer, "#EXTM3U", 7) == 0) {
-		return new ParseHls();
+		return new DemuxerM3u8();
 	}
 		
 
@@ -226,7 +226,7 @@ IParse* ParseHls::hls_probe(MPChar p_buffer, MUInt32 p_size)
 
 
 
-MBool ParseHls::ParseM3u8(MPChar strUrl, Playlist* playlist)
+MBool DemuxerM3u8::ParseM3u8(MPChar strUrl, Playlist* playlist)
 {
 	if (m_dataRead == MNull)
 	{
@@ -343,7 +343,7 @@ MBool ParseHls::ParseM3u8(MPChar strUrl, Playlist* playlist)
 				// #EXT-X-STREAM-INF:值指定码率值
 				is_variant = 1;	//表示为嵌套m3u8
 				playlist = new Playlist();
-				ToolString::ff_parse_key_value(ptr, ParseHls::ff_parse_key_val_cb, playlist);
+				ToolString::ff_parse_key_value(ptr, DemuxerM3u8::ff_parse_key_val_cb, playlist);
 
 			}
 			else if (ToolString::av_strstart(line, "#EXT-X-KEY:", &ptr)) {

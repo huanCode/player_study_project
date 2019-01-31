@@ -1,9 +1,9 @@
 #pragma once
-#ifndef _PARSEHLS_H
-#define _PARSEHLS_H
+#ifndef _DEMUXER_HLS_H
+#define _DEMUXER_HLS_H
 #include "amcomdef.h"
 #include "ToolList.h"
-#include "IParse.h"
+#include "IDemuxer.h"
 struct segment {
 	MInt64 duration;
 	MInt64 url_offset;
@@ -20,7 +20,7 @@ struct segment {
 
 
 
-class ParseHls:public IParse
+class DemuxerM3u8:public IDemuxer
 {
 private:
 	class Playlist
@@ -48,7 +48,7 @@ private:
 	};
 
 public:
-	ParseHls();
+	DemuxerM3u8();
 
 
 	MBool	ReadHeader(MPChar strUrl);
@@ -75,7 +75,7 @@ public:
 		return MFalse;
 	}
 
-	static IParse* hls_probe(MPChar p_buffer, MUInt32 p_size);
+	static IDemuxer* hls_probe(MPChar p_buffer, MUInt32 p_size);
 
 	MBool ParseM3u8(MPChar strUrl,Playlist* playlist = MNull);
 private:
@@ -115,7 +115,7 @@ private:
 	MInt64					m_duration;
 
 
-	IParse*		m_pTs;
+	IDemuxer*		m_pTs;
 	MBool		m_bTsReady;
 
 	MInt32		m_curSementIndex;
@@ -130,4 +130,4 @@ private:
 
 
 
-#endif // !_PARSEHLS_H
+#endif // !_DEMUXER_HLS_H

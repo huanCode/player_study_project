@@ -1,7 +1,7 @@
 #include "amcomdef.h"
 #include "TsStreamDef.h"
 #define FILTER_NUM	6
-class TsStream;
+class DemuxerTs;
 class tsFilter
 {
 public:
@@ -19,7 +19,7 @@ public:
 		m_description = MNull;
 		m_last_version = -1;
 	}
-	virtual MUInt32 parse(TsStream* p_tsStream, MPChar p_buffer,MUInt32 p_buffer_size) = 0;
+	virtual MUInt32 parse(DemuxerTs* p_tsStream, MPChar p_buffer,MUInt32 p_buffer_size) = 0;
 	virtual MVoid	SetPid(MInt32 p_pid) = 0;
 
 
@@ -69,7 +69,7 @@ class tsSection :public tsFilter
 {
 public:
 	tsSection();
-	MVoid write_section_data(TsStream* p_tsStream, const MPChar p_buf, MUInt32 p_buf_size, MBool p_is_start);
+	MVoid write_section_data(DemuxerTs* p_tsStream, const MPChar p_buf, MUInt32 p_buf_size, MBool p_is_start);
 protected:
 	MInt32 m_section_index;
 	MInt32 m_section_length;
@@ -90,7 +90,7 @@ public:
 		m_pid = SDT_PID;
 		m_description = "sdt";
 	}
-	MUInt32 parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buffer_size) { return 0; };
+	MUInt32 parse(DemuxerTs* p_tsStream, MPChar p_buffer, MUInt32 p_buffer_size) { return 0; };
 	MVoid	SetPid(MInt32 p_pid) {};
 };
 
@@ -104,7 +104,7 @@ public:
 		m_pid = PAT_PID;
 		m_description = "pat";
 	}
-	MUInt32 parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buffer_size);
+	MUInt32 parse(DemuxerTs* p_tsStream, MPChar p_buffer, MUInt32 p_buffer_size);
 	MVoid	SetPid(MInt32 p_pid) {};
 };
 
@@ -119,7 +119,7 @@ public:
 		m_type = MPEGTS_SECTION;
 		m_description = "pmt";
 	}
-	MUInt32 parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buffer_size);
+	MUInt32 parse(DemuxerTs* p_tsStream, MPChar p_buffer, MUInt32 p_buffer_size);
 	MVoid	SetPid(MInt32 p_pid) {
 		m_pid = p_pid;
 	};
@@ -155,7 +155,7 @@ public:
 		m_flags = false;
 
 	}
-	MUInt32 parse(TsStream* p_tsStream, MPChar p_buffer, MUInt32 p_buffer_size);
+	MUInt32 parse(DemuxerTs* p_tsStream, MPChar p_buffer, MUInt32 p_buffer_size);
 	MVoid	SetPid(MInt32 p_pid) {
 		m_pid = p_pid;
 	};

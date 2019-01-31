@@ -1,7 +1,7 @@
 #ifndef _TSSTREAMDEF_H
 #define _TSSTREAMDEF_H
 #include "amcomdef.h"
-
+#include "AVConfig.h"
 /*PSI*/
 #define PAT_PID                 0x0000
 #define SDT_PID                 0x0011		//17
@@ -30,57 +30,23 @@
 	((const MByte*)(x))[0])
 
 
-//enum MpegTSFilterType {
-//	MPEGTS_PES,
-//	MPEGTS_SECTION,
-//	MPEGTS_PCR
-//};
 
-//typedef struct MpegTSSectionFilter {
-//	int section_index;
-//	int section_length;
-//	int last_ver;
-//	unsigned crc;
-//	unsigned last_crc;
-//	MByte *section_buf;
-//	unsigned int check_crc : 1;
-//	unsigned int end_of_section_reached : 1;
-//	//SectionCallback *section_cb;
-//	void *opaque;
-//} MpegTSSectionFilter;
 //
-//typedef struct MpegTSPESFilter {
-//	//PESCallback *pes_cb;
-//	void *opaque;
-//} MpegTSPESFilter;
-//
-//struct MpegTSFilter {
-//	int pid;
-//	int es_id;
-//	int last_cc; /* last cc code (-1 if first packet) */
-//	MInt64 last_pcr;
-//	MpegTSFilterType type;
-//	union {
-//		MpegTSPESFilter pes_filter;
-//		MpegTSSectionFilter section_filter;
-//	} section_or_pes;
+//enum AV_MediaType {
+//	AV_MEDIA_TYPE_UNKNOWN = -1,  ///< Usually treated as AVMEDIA_TYPE_DATA
+//	AV_MEDIA_TYPE_VIDEO,
+//	AV_MEDIA_TYPE_AUDIO,
+//	AV_MEDIA_TYPE_DATA,          ///< Opaque data information usually continuous
+//	AV_MEDIA_TYPE_SUBTITLE,
+//	AV_MEDIA_TYPE_ATTACHMENT,    ///< Opaque data information usually sparse
+//	AV_MEDIA_TYPE_NB
 //};
-
-enum AV_MediaType {
-	AV_MEDIA_TYPE_UNKNOWN = -1,  ///< Usually treated as AVMEDIA_TYPE_DATA
-	AV_MEDIA_TYPE_VIDEO,
-	AV_MEDIA_TYPE_AUDIO,
-	AV_MEDIA_TYPE_DATA,          ///< Opaque data information usually continuous
-	AV_MEDIA_TYPE_SUBTITLE,
-	AV_MEDIA_TYPE_ATTACHMENT,    ///< Opaque data information usually sparse
-	AV_MEDIA_TYPE_NB
-};
-
-enum AV_CodecID {
-	_AV_CODEC_ID_NONE,
-	_AV_CODEC_ID_AAC,
-	_AV_CODEC_ID_H264
-};
+//
+//enum AV_CodecID {
+//	_AV_CODEC_ID_NONE,
+//	_AV_CODEC_ID_AAC,
+//	_AV_CODEC_ID_H264
+//};
 
 typedef struct StreamType {
 	MUInt32 stream_type;

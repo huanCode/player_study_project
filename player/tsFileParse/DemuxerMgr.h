@@ -1,30 +1,30 @@
 #pragma once
-#ifndef _PARSEFRAME_H
-#define _PARSEFRAME_H
+#ifndef _DEMUXER_MGR_H
+#define _DEMUXER_MGR_H
 #include "amcomdef.h"
 #include "IBaseIo.h"
 #include "ToolList.h"
 #include "common.h"
-class IDataRead;
-class IParse;
-class ParseFrame
+class IStreamRead;
+class IDemuxer;
+class DemuxerMgr
 {
 public:
 	typedef MBool(*read_probe)(MPChar p_buffer, MUInt32 p_size);
-	ParseFrame();
+	DemuxerMgr();
 
 	MBool FindParse(MPChar pbuf,MInt32 iBufSize);
 	MBool	ReadHeader(MPChar strUrl);
 
 	MBool ReadFrame(AVPkt** pkt);
-	MVoid SetDataRead(IDataRead* obj);
+	MVoid SetDataRead(IStreamRead* obj);
 	MBool Seek(MInt64 seekTimeStamp);
 	MBool	HasVideo();
 
 	MBool	HasAudio();
 
 private:
-	IParse*	m_parse;
+	IDemuxer*	m_parse;
 	//ToolList<read_probe>	m_probeList;
 
 };
@@ -32,4 +32,4 @@ private:
 
 
 
-#endif // !_PARSEFRAME_H
+#endif // !_DEMUXER_MGR_H

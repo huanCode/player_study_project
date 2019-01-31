@@ -1,6 +1,6 @@
 #include "AVSync.h"
 #include "amkernel.h"
-#include <windows.h>
+#include "PlatformConfig.h"
 #include <stdio.h>
 AVSync::AVSync()
 {
@@ -102,7 +102,7 @@ MBool AVSync::Adjust(MInt64 currentVideoTime)
 
 	if (sleepTime)
 	{
-		Sleep(sleepTime);
+		MSleep(sleepTime);
 	}
 
 	return ret;

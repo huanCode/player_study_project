@@ -1,9 +1,9 @@
 #pragma once
-#ifndef _IDATAREAD_H
-#define _IDATAREAD_H
+#ifndef _ISTREAMREAD_H
+#define _ISTREAMREAD_H
 #include "amcomdef.h"
 //#include "AllConfig.h"
-class IDataRead
+class IStreamRead
 {
 public:
 	virtual MBool Open(MPChar strUrl) = 0;
@@ -15,4 +15,4 @@ public:
 
 
 
-#endif // !_IDATAREAD_H
+#endif // !_ISTREAMREAD_H

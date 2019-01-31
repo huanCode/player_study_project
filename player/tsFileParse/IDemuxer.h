@@ -1,13 +1,13 @@
 #pragma once
-#ifndef _IPARSE_H
-#define _IPARSE_H
+#ifndef _IDEMUXER_H
+#define _IDEMUXER_H
 #include "amcomdef.h"
-#include "IDataRead.h"
+#include "IStreamRead.h"
 #include "common.h"
-class IParse
+class IDemuxer
 {
 public:
-	IParse()
+	IDemuxer()
 	{
 		m_dataRead = MNull;
 	}
@@ -16,7 +16,7 @@ public:
 	virtual MBool	ReadPacket(AVPkt** pkt) = 0;
 	virtual MVoid	Close() = 0;
 	virtual MBool   Seek(MInt64 seekTimeStamp) = 0;
-	MVoid	SetDataRead(IDataRead* obj)
+	MVoid	SetDataRead(IStreamRead* obj)
 	{
 		m_dataRead = obj;
 	}
@@ -25,11 +25,11 @@ public:
 
 	virtual MBool	HasAudio() = 0;
 protected:
-	IDataRead*	m_dataRead;
+	IStreamRead*	m_dataRead;
 
 };
 
 
 
 
-#endif // !_IPARSE_H
+#endif // !_IDEMUXER_H

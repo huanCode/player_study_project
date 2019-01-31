@@ -87,7 +87,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;PLATFORM_WIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>false</SDLCheck>
       <AdditionalIncludeDirectories>tool;include;.;playerState</AdditionalIncludeDirectories>
       <AdditionalOptions>/D _CRT_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
@@ -155,19 +155,19 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AllConfig.h" />
-    <ClInclude Include="AudioPlayAAC.h" />
+    <ClInclude Include="AudioPlayWindow.h" />
     <ClInclude Include="AudioScale.h" />
+    <ClInclude Include="AVConfig.h" />
     <ClInclude Include="AVSync.h" />
     <ClInclude Include="common.h" />
     <ClInclude Include="DecodeAAC.h" />
-    <ClInclude Include="DecodecAudioMgr.h" />
     <ClInclude Include="DecodecMgr.h" />
     <ClInclude Include="DecodeH264.h" />
     <ClInclude Include="H264Parse.h" />
     <ClInclude Include="HttpIo.h" />
     <ClInclude Include="IAudioPlay.h" />
     <ClInclude Include="IBaseIo.h" />
-    <ClInclude Include="IDataRead.h" />
+    <ClInclude Include="IStreamRead.h" />
     <ClInclude Include="IDecode.h" />
     <ClInclude Include="include\amcomdef.h" />
     <ClInclude Include="include\amkernel.h" />
@@ -177,10 +177,12 @@
     <ClInclude Include="include\merror.h" />
     <ClInclude Include="include\mhttp.h" />
     <ClInclude Include="include\MKernel.h" />
-    <ClInclude Include="IParse.h" />
-    <ClInclude Include="IVideoPlay.h" />
-    <ClInclude Include="ParseFrame.h" />
-    <ClInclude Include="ParseHls.h" />
+    <ClInclude Include="IDemuxer.h" />
+    <ClInclude Include="IDisplayVideo.h" />
+    <ClInclude Include="DemuxerMgr.h" />
+    <ClInclude Include="DemuxerM3u8.h" />
+    <ClInclude Include="PlatformConfig.h" />
+    <ClInclude Include="PlatformFactory.h" />
     <ClInclude Include="PlayerStateIdle.h" />
     <ClInclude Include="playerState\Player.h" />
     <ClInclude Include="playerState\PlayerState.h" />
@@ -191,34 +193,33 @@
     <ClInclude Include="playerState\PlayerStatePrepare.h" />
     <ClInclude Include="playerState\PlayerStateSeeking.h" />
     <ClInclude Include="playerState\PlayerStateStoping.h" />
-    <ClInclude Include="SourceFrame.h" />
+    <ClInclude Include="StreamReadMgr.h" />
     <ClInclude Include="SourceParse.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="ToolBuffer.h" />
     <ClInclude Include="ToolList.h" />
-    <ClInclude Include="ToolListLock.h" />
     <ClInclude Include="ToolString.h" />
     <ClInclude Include="tool\mv3File.h" />
     <ClInclude Include="tool\mv3String.h" />
     <ClInclude Include="tsFilter.h" />
-    <ClInclude Include="TsStream.h" />
+    <ClInclude Include="DemuxerTs.h" />
     <ClInclude Include="TsStreamDef.h" />
-    <ClInclude Include="VideoPlayWindow.h" />
+    <ClInclude Include="DisplayVideoWindow.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AudioPlayAAC.cpp" />
+    <ClCompile Include="AudioPlayWindow.cpp" />
     <ClCompile Include="AudioScale.cpp" />
     <ClCompile Include="AVSync.cpp" />
     <ClCompile Include="common.cpp" />
     <ClCompile Include="DecodeAAC.cpp" />
-    <ClCompile Include="DecodecAudioMgr.cpp" />
     <ClCompile Include="DecodecMgr.cpp" />
     <ClCompile Include="DecodeH264.cpp" />
     <ClCompile Include="H264Parse.cpp" />
     <ClCompile Include="HttpIo.cpp" />
-    <ClCompile Include="ParseFrame.cpp" />
-    <ClCompile Include="ParseHls.cpp" />
+    <ClCompile Include="DemuxerMgr.cpp" />
+    <ClCompile Include="DemuxerM3u8.cpp" />
+    <ClCompile Include="PlatformFactory.cpp" />
     <ClCompile Include="PlayerStateBuffering.cpp" />
     <ClCompile Include="PlayerStateIdle.cpp" />
     <ClCompile Include="playerState\Player.cpp" />
@@ -229,7 +230,7 @@
     <ClCompile Include="playerState\PlayerStatePrepare.cpp" />
     <ClCompile Include="playerState\PlayerStateSeeking.cpp" />
     <ClCompile Include="playerState\PlayerStateStoping.cpp" />
-    <ClCompile Include="SourceFrame.cpp" />
+    <ClCompile Include="StreamReadMgr.cpp" />
     <ClCompile Include="SourceParse.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -238,14 +239,13 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ToolBuffer.cpp" />
-    <ClCompile Include="ToolListLock.cpp" />
     <ClCompile Include="ToolString.cpp" />
     <ClCompile Include="tool\mv3File.cpp" />
     <ClCompile Include="Demo.cpp" />
     <ClCompile Include="tool\mv3String.cpp" />
     <ClCompile Include="tsFilter.cpp" />
-    <ClCompile Include="TsStream.cpp" />
-    <ClCompile Include="VideoPlayWindow.cpp" />
+    <ClCompile Include="DemuxerTs.cpp" />
+    <ClCompile Include="DisplayVideoWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

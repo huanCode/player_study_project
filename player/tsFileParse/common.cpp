@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "common.h"
 
-inline MUInt16 to_UInt16(MPChar p)
+MUInt16 to_UInt16(MPChar p)
 {
 	MUInt16 n = ((MPChar)p)[0];
 	n <<= 8;
 	n += ((MPChar)p)[1]; return n;
 }
-inline MUInt8 to_UInt8(MPChar p)
+MUInt8 to_UInt8(MPChar p)
 {
 	return *((MPChar)p);
 }

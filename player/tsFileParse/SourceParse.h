@@ -2,8 +2,8 @@
 #ifndef _SOURCEPARSE_H
 #define _SOURCEPARSE_H
 #include "amcomdef.h"
-#include "SourceFrame.h"
-#include "ParseFrame.h"
+#include "StreamReadMgr.h"
+#include "DemuxerMgr.h"
 #include "common.h"
 class SourceParse
 {
@@ -22,8 +22,8 @@ public:
 
 
 private:
-	SourceFrame	m_sourceFrame;
-	ParseFrame	m_parseFrame;
+	StreamReadMgr	m_sourceFrame;
+	DemuxerMgr	m_parseFrame;
 	MPChar		m_pBuffer;
 	MInt32		m_iBufferCanReadSize;
 	MBool		m_hasVideo;

@@ -2,20 +2,19 @@
 #define _PLAYER_H_
 #include "amcomdef.h"
 #include "amkernel.h"
-#include "PlayerStateContext.h"
 #include "ToolList.h"
 #include "common.h"
 #include "mv3String.h"
 #include "AVSync.h"
+#include "PlayerStateContext.h"
+#include "PlatformFactory.h"
 class SourceParse;
 class DecodecMgr;
-class VideoPlayWindow;
-class AudioPlayAAC;
 
 
 
 
-class Player
+class Player:public IAudioDecode
 {
 private:
 	typedef struct _playActionData
@@ -38,8 +37,8 @@ public:
 	virtual MVoid Stop();
 	virtual MVoid Pause();
 	virtual MVoid Seek(MInt64 seekTime);
-	MBool	AudioDecode(MPChar buffer, MInt32& bufferSize);
-
+	MBool	AudioDecode(MPChar buffer, MInt32& bufferSize, MInt64* out_pts);
+	MVoid SetAudioPts(MInt64 pts);
 
 	MBool	HasVideo();
 	MBool	HasAudio();
@@ -83,8 +82,8 @@ private:
 	DecodecMgr		*m_pDecodeAudio;
 
 	//²¥·Å
-	AudioPlayAAC	*m_audioPlay;
-	VideoPlayWindow	*m_videoPlay;
+	IAudioPlay	*m_audioPlay;
+	IDisplayVideo	*m_videoPlay;
 
 
 	MBool			m_bRun;

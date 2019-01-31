@@ -5,6 +5,7 @@ HttpIo::HttpIo():
 	IBaseIo("http")
 {
 	m_hHttp = MNull;
+	m_alreadyReadSize = 0;
 }
 
 
@@ -18,7 +19,7 @@ MBool HttpIo::IoOpen(MPChar strUrl)
 		MInt32 ret = Http_Connect(m_hHttp);
 		if (ret == 0)
 		{
-
+			m_streamSize = Http_Size(m_hHttp);
 
 
 			return MTrue;
@@ -74,6 +75,26 @@ MInt32 HttpIo::IoRead(MPChar pBuf, MDWord dwSize, MInt64 llOffset)
 	MInt32 lReadSize = 0;
 
 	lReadSize = Http_Read(m_hHttp, (MByte*)pBuf, dwSize);
+	if (lReadSize > 0)
+	{
+		m_alreadyReadSize += lReadSize;
+	}
+
 	return lReadSize;
+}
+MInt32	HttpIo::GetSize()
+{
+	if (m_hHttp)
+	{
+		return Http_Size(m_hHttp);
+	}
+
+	return -1;
+
+}
+
+MBool	HttpIo::isComplete()
+{
+	return m_alreadyReadSize == m_streamSize?MTrue:MFalse;
 }
 
